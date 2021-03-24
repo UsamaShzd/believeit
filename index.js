@@ -42,12 +42,13 @@ app.use(require("./middlewares/globalRouteExceptionHandler"));
 
 const server = http.createServer(app);
 
-const port = process.env.PORT || 8080;
-
-server.listen(port, () => {
-  console.log(
-    `Server is listening on port ${port} in ${NODE_ENV} environment.`
-  );
-});
+if (process.env.NODE_ENV !== "test") {
+  const port = process.env.PORT || 8080;
+  server.listen(port, () => {
+    console.log(
+      `Server is listening on port ${port} in ${NODE_ENV} environment.`
+    );
+  });
+}
 
 module.exports = server;
