@@ -26,8 +26,7 @@ module.exports = (
     if (
       !authSession || // if there is no entry of auth session
       authSession.isExpired || // if token is expired
-      typeof authSession.user !== "object" || // if user is not populated
-      authSession.user === null
+      typeof authSession.user !== "object" // if user is not populated
     )
       return res.status(401).send({
         error: { message: "Access denied! Invalid token provided." },

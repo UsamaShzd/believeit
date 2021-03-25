@@ -1,13 +1,16 @@
 const express = require("express");
 const _ = require("lodash");
+
 const GoalCategory = require("../../models/GoalCategory");
 
+const authorize = require("../../middlewares/authorize");
 const requestValidator = require("../../middlewares/requestValidator");
 const {
   createGoalCategorySchema,
   editGoalCategorySchema,
 } = require("../../validators/goalCategory");
 
+const { ADMIN } = require("../../enums/roles");
 const router = express.Router();
 
 router.get("/:id", async (req, res) => {
@@ -28,6 +31,7 @@ router.get("/", async (req, res) => {
 
 router.post(
   "/",
+  authorize(ADMIN),
   requestValidator(createGoalCategorySchema),
   async (req, res) => {
     const body = _.pick(req.body, ["name", "color"]);
@@ -39,6 +43,7 @@ router.post(
 
 router.put(
   "/:id",
+  authorize(ADMIN),
   requestValidator(editGoalCategorySchema),
   async (req, res) => {
     const { id } = req.params;
@@ -56,7 +61,7 @@ router.put(
   }
 );
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authorize(ADMIN), async (req, res) => {
   const { id } = req.params;
   const category = await GoalCategory.findByIdAndDelete(id);
 

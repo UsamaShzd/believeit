@@ -2,6 +2,17 @@ const request = require("supertest");
 const mongoose = require("mongoose");
 
 const GoalCategory = require("../../../../models/GoalCategory");
+const User = require("../../../../models/User");
+const AuthSession = require("../../../../models/AuthSession");
+
+const jwt = require("../../../../services/jwt");
+
+const {
+  generateUserSession,
+  cleanUserSession,
+} = require("../../test_helpers/userSessionHelper");
+const { ADMIN } = require("../../../../enums/roles");
+
 let server;
 describe("/api/goal_categories/", () => {
   beforeEach(() => {
@@ -59,11 +70,22 @@ describe("/api/goal_categories/", () => {
   describe("POST /api/goal_categories", () => {
     const route = "/api/goal_categories/";
 
+    let authToken = "";
+
+    beforeEach(async () => {
+      authToken = await generateUserSession(ADMIN);
+    });
+
+    afterEach(cleanUserSession);
+
     it("should return 400 response with error if request body is not valid", async () => {
       const body = {
         color: "1234567",
       };
-      const result = await request(server).post(route).send(body);
+      const result = await request(server)
+        .post(route)
+        .set("x-auth-token", authToken)
+        .send(body);
 
       expect(result.status).toBe(400);
       expect(result.body.error).not.toBeNull();
@@ -74,7 +96,10 @@ describe("/api/goal_categories/", () => {
         name: "category",
         color: "#ffffff",
       };
-      const result = await request(server).post(route).send(body);
+      const result = await request(server)
+        .post(route)
+        .set("x-auth-token", authToken)
+        .send(body);
 
       expect(result.status).toBe(200);
       expect(result.body).toMatchObject(body);
@@ -85,7 +110,10 @@ describe("/api/goal_categories/", () => {
         name: "category",
         color: "#ffffff",
       };
-      const result = await request(server).post(route).send(body);
+      const result = await request(server)
+        .post(route)
+        .set("x-auth-token", authToken)
+        .send(body);
       const category = await GoalCategory.findOne(body);
       expect(category._id.toHexString()).toEqual(result.body._id);
     });
@@ -94,12 +122,21 @@ describe("/api/goal_categories/", () => {
   describe("PUT /api/goal_categories/:id", () => {
     const route = "/api/goal_categories/";
 
+    let authToken = "";
+
+    beforeEach(async () => {
+      authToken = await generateUserSession(ADMIN);
+    });
+
+    afterEach(cleanUserSession);
+
     it("should return 400 response with error if request body is not valid", async () => {
       const body = {
         color: "1234567",
       };
       const result = await request(server)
         .put(route + mongoose.Types.ObjectId().toHexString())
+        .set("x-auth-token", authToken)
         .send(body);
 
       expect(result.status).toBe(400);
@@ -113,6 +150,7 @@ describe("/api/goal_categories/", () => {
       };
       const result = await request(server)
         .put(route + mongoose.Types.ObjectId().toHexString())
+        .set("x-auth-token", authToken)
         .send(body);
 
       expect(result.status).toBe(404);
@@ -132,6 +170,7 @@ describe("/api/goal_categories/", () => {
 
       await request(server)
         .put(route + category._id.toHexString())
+        .set("x-auth-token", authToken)
         .send(body);
 
       const updatedCategory = await GoalCategory.findById(category._id);
@@ -155,6 +194,7 @@ describe("/api/goal_categories/", () => {
 
       const result = await request(server)
         .put(route + category._id.toHexString())
+        .set("x-auth-token", authToken)
         .send(updateData);
 
       expect(result.body).toMatchObject(updateData);
@@ -165,15 +205,23 @@ describe("/api/goal_categories/", () => {
   describe("DELETE /api/goal_categories/:id", () => {
     const route = "/api/goal_categories/";
 
+    let authToken = "";
+
+    beforeEach(async () => {
+      authToken = await generateUserSession(ADMIN);
+    });
+
+    afterEach(cleanUserSession);
+
     it("should return 200 status code with deleted category", async () => {
       const category = await new GoalCategory({
         name: "category",
         color: "#ffffff",
       }).save();
 
-      const result = await request(server).delete(
-        route + category._id.toHexString()
-      );
+      const result = await request(server)
+        .delete(route + category._id.toHexString())
+        .set("x-auth-token", authToken);
 
       expect(result.status).toBe(200);
       expect(result.body._id).toEqual(category._id.toHexString());
@@ -185,7 +233,9 @@ describe("/api/goal_categories/", () => {
         color: "#ffffff",
       }).save();
 
-      await request(server).delete(route + category._id.toHexString());
+      await request(server)
+        .delete(route + category._id.toHexString())
+        .set("x-auth-token", authToken);
 
       const deleted = await GoalCategory.findById(category._id);
       expect(deleted).toBeNull();
