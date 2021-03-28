@@ -73,7 +73,8 @@ describe("/api/goal_categories/", () => {
     let authToken = "";
 
     beforeEach(async () => {
-      authToken = await generateUserSession(ADMIN);
+      const { token } = await generateUserSession(ADMIN);
+      authToken = token;
     });
 
     afterEach(cleanUserSession);
@@ -125,7 +126,8 @@ describe("/api/goal_categories/", () => {
     let authToken = "";
 
     beforeEach(async () => {
-      authToken = await generateUserSession(ADMIN);
+      const { token } = await generateUserSession(ADMIN);
+      authToken = token;
     });
 
     afterEach(cleanUserSession);
@@ -208,7 +210,8 @@ describe("/api/goal_categories/", () => {
     let authToken = "";
 
     beforeEach(async () => {
-      authToken = await generateUserSession(ADMIN);
+      const { token } = await generateUserSession(ADMIN);
+      authToken = token;
     });
 
     afterEach(cleanUserSession);

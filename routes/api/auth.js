@@ -4,13 +4,27 @@ const _ = require("lodash");
 const User = require("../../models/User");
 const AuthSession = require("../../models/AuthSession");
 
+const authorize = require("../../middlewares/authorize");
 const requestValidator = require("../../middlewares/requestValidator");
-const { signupSchema, loginSchema } = require("../../validators/auth");
+const {
+  signupSchema,
+  loginSchema,
+  verifyEmailSchema,
+  requestPasswordResetSchema,
+  passwordResetVerifiationSchema,
+  resetPasswordSchema,
+  changePasswordSchema,
+} = require("../../validators/auth");
 const jwt = require("../../services/jwt");
 
-const userTransformer = require("../../transformers/user");
+const sanitizeUser = require("../../sanitizers/user");
+const { response } = require("express");
 
 const router = express.Router();
+
+router.get("/me", authorize("", { emailVerifid: false }), (req, res) => {
+  res.send(sanitizeUser(req.authSession.user));
+});
 
 router.post("/signup", requestValidator(signupSchema), async (req, res) => {
   const body = _.pick(req.body, ["firstname", "lastname", "email", "password"]);
@@ -26,6 +40,9 @@ router.post("/signup", requestValidator(signupSchema), async (req, res) => {
 
   const user = new User({ ...body, createdAt: new Date() });
   user.password = await user.hashPassword(body.password);
+
+  const emailVerificationCode = user.generateEmailVerificationCode();
+
   await user.save();
   createUserSessionAndSendResponse(res, user);
 });
@@ -54,6 +71,128 @@ router.post("/signin", requestValidator(loginSchema), async (req, res) => {
   createUserSessionAndSendResponse(res, user);
 });
 
+router.post(
+  "/request_password_reset",
+  requestValidator(requestPasswordResetSchema),
+  async (req, res) => {
+    const { email } = _.pick(req.body, ["email"]);
+    //check if email already exists
+    const user = await User.findOne({ email });
+
+    if (!user)
+      return res.status(404).send({
+        error: {
+          message: "User not found!",
+        },
+      });
+
+    const passwordResetCode = user.generatePasswordResetCode();
+    await user.save();
+
+    res.send({
+      message: "Password reset code has been sent to your email.",
+    });
+  }
+);
+
+router.post(
+  "/password_reset_code_verification",
+  requestValidator(passwordResetVerifiationSchema),
+  async (req, res) => {
+    const body = _.pick(req.body, ["email", "resetCode"]);
+    const { email, resetCode } = body;
+    const user = await User.findOne({ email });
+    if (!user) res.status(400).send({ error: { message: "Invalid Code" } });
+
+    if (user.passwordResetCode !== resetCode)
+      return res.status(400).send({ error: { message: "Invalid Code" } });
+
+    res.send({ message: "OK!" });
+  }
+);
+
+router.put(
+  "/change_password",
+  requestValidator(changePasswordSchema),
+  authorize(),
+  async (req, res) => {
+    const body = _.pick(req.body, ["password", "previousPassword"]);
+    const { previousPassword, password } = body;
+
+    const { user } = req.authSession;
+
+    const isPreviousPassValid = await user.comparePassword(previousPassword);
+    if (!isPreviousPassValid)
+      return res.status(400).send({
+        error: {
+          message: "Invalid Password",
+        },
+      });
+
+    user.password = await user.hashPassword(password);
+    user.save();
+
+    res.send({ message: "Password Changed Successfully" });
+  }
+);
+
+router.put(
+  "/reset_password",
+  requestValidator(resetPasswordSchema),
+  async (req, res) => {
+    const body = _.pick(req.body, ["email", "resetCode", "password"]);
+
+    const { email, password, resetCode } = body;
+    //check if email already exists
+
+    const user = await User.findOne({ email });
+
+    if (!user)
+      return res.status(400).send({
+        error: {
+          message: "Invalid reset code.",
+        },
+      });
+
+    if (user.passwordResetCode !== resetCode)
+      return res.status(400).send({
+        error: {
+          message: "Invalid reset code.",
+        },
+      });
+
+    //generating password hash
+    user.password = await user.hashPassword(password);
+    user.passwordResetCode = "";
+    await user.save();
+
+    res.send({ message: "password reset successfull" });
+  }
+);
+
+router.put(
+  "/verify_email",
+  requestValidator(verifyEmailSchema),
+  authorize("", { emailVerified: false }),
+  async (req, res) => {
+    const body = _.pick(req.body, ["verificationCode"]);
+    const { user } = req.authSession;
+
+    if (user.emailVerificationCode !== body.verificationCode)
+      return res.status(400).send({
+        error: {
+          message: "Invalid verification code.",
+        },
+      });
+
+    user.emailVerified = true;
+    user.emailVerificationCode = "";
+
+    await user.save();
+    res.send({ message: "your email is verified." });
+  }
+);
+
 const createUserSessionAndSendResponse = async (res, user) => {
   const session = await new AuthSession({
     user: user._id,
@@ -62,7 +201,7 @@ const createUserSessionAndSendResponse = async (res, user) => {
 
   const token = jwt.encrypt({ _id: session._id });
   res.header("token", token).header("Access-Control-Expose-Headers", "token");
-  res.send({ token, user: userTransformer(user) });
+  res.send({ token, user: sanitizeUser(user) });
 };
 
 module.exports = router;

@@ -5,6 +5,11 @@ const AuthSession = require("../../../../models/AuthSession");
 
 const jwt = require("../../../../services/jwt");
 
+const {
+  generateUserSession,
+  cleanUserSession,
+} = require("../../test_helpers/userSessionHelper");
+
 let server;
 describe("/api/auth", () => {
   beforeEach(() => {
@@ -14,6 +19,27 @@ describe("/api/auth", () => {
     server.close();
     await User.deleteMany({});
     await AuthSession.deleteMany({});
+  });
+
+  describe("GET /me", () => {
+    const route = "/api/auth/me";
+    let authToken = "";
+    let user;
+    beforeEach(async () => {
+      const session = await generateUserSession();
+      authToken = session.token;
+      user = session.user;
+    });
+
+    afterEach(cleanUserSession);
+    it("should return 200 response with logged in user", async () => {
+      const result = await request(server)
+        .get(route)
+        .set("x-auth-token", authToken);
+
+      expect(result.status).toBe(200);
+      expect(result.body._id).toEqual(user._id.toHexString());
+    });
   });
 
   describe("POST /signup", () => {

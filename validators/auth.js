@@ -14,3 +14,27 @@ exports.signupSchema = yup.object().shape({
   email,
   password,
 });
+
+exports.verifyEmailSchema = yup.object().shape({
+  verificationCode: yup.string().trim().min(6).max(6).required(),
+});
+
+exports.requestPasswordResetSchema = yup.object().shape({
+  email,
+});
+
+exports.passwordResetVerifiationSchema = yup.object().shape({
+  email,
+  resetCode: yup.string().trim().min(6).max(6).required(),
+});
+
+exports.resetPasswordSchema = yup.object().shape({
+  email,
+  resetCode: yup.string().trim().min(6).max(6).required(),
+  password,
+});
+
+exports.changePasswordSchema = yup.object().shape({
+  previousPassword: password,
+  password,
+});

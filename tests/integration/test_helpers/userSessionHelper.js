@@ -20,7 +20,7 @@ exports.generateUserSession = async (role = USER) => {
     createdAt: new Date(),
   }).save();
 
-  return jwt.encrypt({ _id: authSesion._id });
+  return { token: jwt.encrypt({ _id: authSesion._id }), authSesion, user };
 };
 
 exports.cleanUserSession = async () => {

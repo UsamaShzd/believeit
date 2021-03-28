@@ -52,7 +52,8 @@ module.exports = (
       });
 
     //good to go.
-    req.user = user;
+    req.authSession = authSession;
+
     next();
   } catch (ex) {
     return res.status(401).send({

@@ -64,7 +64,8 @@ userSchema.methods.comparePassword = async function (password) {
 const genereteRandomCode = () => Math.floor(100000 + Math.random() * 900000);
 
 userSchema.methods.generateEmailVerificationCode = function () {
-  this.emailVerificationCode = genereteRandomCode();
+  if (!this.emailVerificationCode)
+    this.emailVerificationCode = genereteRandomCode();
   return this.emailVerificationCode;
 };
 
