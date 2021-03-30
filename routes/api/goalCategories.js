@@ -11,10 +11,17 @@ const {
 } = require("../../validators/goalCategory");
 
 const { ADMIN } = require("../../enums/roles");
+const validateObjectId = require("../../helpers/validateObjectId");
 const router = express.Router();
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
+
+  if (!validateObjectId(id))
+    return res
+      .status(404)
+      .send({ error: { message: "Goal Category not found!" } });
+
   const category = await GoalCategory.findById(id);
   if (!category)
     return res
@@ -47,7 +54,14 @@ router.put(
   requestValidator(editGoalCategorySchema),
   async (req, res) => {
     const { id } = req.params;
+
+    if (!validateObjectId(id))
+      return res
+        .status(404)
+        .send({ error: { message: "Goal Category not found!" } });
+
     const body = _.pick(req.body, ["name", "color"]);
+
     const category = await GoalCategory.findByIdAndUpdate(id, body, {
       new: true,
     });
@@ -63,6 +77,12 @@ router.put(
 
 router.delete("/:id", authorize(ADMIN), async (req, res) => {
   const { id } = req.params;
+
+  if (!validateObjectId(id))
+    return res
+      .status(404)
+      .send({ error: { message: "Goal Category not found!" } });
+
   const category = await GoalCategory.findByIdAndDelete(id);
 
   if (!category)

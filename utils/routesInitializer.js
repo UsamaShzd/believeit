@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const _ = require("lodash");
+
 const ROUTES_PATH = path.join(__dirname, "../routes");
 const ROUTE_FILE_EXTENSION = ".js";
 
@@ -20,7 +22,7 @@ const routeInitializer = (app, routePath = ROUTES_PATH, baseRoute = "/") => {
       if (typeof router == "function") {
         const fileName =
           item === "index.js" ? "" : item.split(".").slice(0, -1).join(".");
-        app.use(path.join(baseRoute, fileName), router);
+        app.use(path.join(baseRoute, _.snakeCase(fileName)), router);
       }
     } else {
       subDirs.push(item);
