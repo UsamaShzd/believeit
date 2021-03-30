@@ -70,7 +70,7 @@ describe("/api/auth", () => {
 
       expect(result.status).toBe(200);
       expect(result.body.user).toMatchObject(body);
-      expect(result.body.token).not.toBeNull();
+      expect(result.body.token).toBeTruthy();
     });
 
     it("should create a new session of the user when signup.", async () => {
@@ -135,7 +135,7 @@ describe("/api/auth", () => {
       expect(result.status).toBe(200);
       // expect(result.body.user._id).toMatchObject(user._id.toHexString());
 
-      expect(result.body.token).not.toBeNull();
+      expect(result.body.token).toBeTruthy();
     });
 
     it("should return 404 response with error if user does not exist.", async () => {
@@ -198,7 +198,6 @@ describe("/api/auth", () => {
       const updatedUser = await User.findById(user._id);
       expect(updatedUser.passwordResetCode.length).toBe(6);
       expect(result.status).toBe(200);
-      expect(result.body.token).not.toBeNull();
     });
 
     it("should return 404 response with error if user does not exist.", async () => {
@@ -214,6 +213,119 @@ describe("/api/auth", () => {
     it("should return 400 response with error if request body is not valid", async () => {
       const body = {};
       const result = await request(server).post(route).send(body);
+      delete body.password;
+
+      expect(result.status).toBe(400);
+      expect(result.body.error).not.toBeNull();
+    });
+  });
+
+  describe("POST /password_reset_code_verification", () => {
+    const route = "/api/auth/password_reset_code_verification";
+
+    it("should send a 200 OK response if password reset code is valid", async () => {
+      const user = new User({
+        firstname: "firstname",
+        lastname: "lastname",
+        email: "test@gmail.com",
+        password: "password",
+        passwordResetCode: "123456",
+      });
+      user.password = await user.hashPassword(user.password);
+      await user.save();
+
+      const result = await request(server)
+        .post(route)
+        .send({ email: user.email, resetCode: user.passwordResetCode });
+
+      expect(result.status).toBe(200);
+    });
+
+    it("should return 404 response with error if user does not exist.", async () => {
+      const result = await request(server).post(route).send({
+        email: "test@gmail.com",
+        resetCode: "123456",
+      });
+
+      expect(result.status).toBe(404);
+      expect(result.body.error).not.toBeNull();
+      expect(result.body.error.message).not.toBeNull();
+    });
+
+    it("should return 400 response with error if request body is not valid", async () => {
+      const body = {};
+      const result = await request(server).post(route).send(body);
+      delete body.password;
+
+      expect(result.status).toBe(400);
+      expect(result.body.error).not.toBeNull();
+    });
+  });
+
+  describe("PUT /reset_password", () => {
+    const route = "/api/auth/reset_password";
+
+    it("should reset the password if reset code is valid", async () => {
+      const user = new User({
+        firstname: "firstname",
+        lastname: "lastname",
+        email: "test@gmail.com",
+        password: "password",
+        passwordResetCode: "123456",
+      });
+      user.password = await user.hashPassword(user.password);
+      await user.save();
+
+      const newPassword = "abcdef";
+      const result = await request(server).put(route).send({
+        email: user.email,
+        resetCode: user.passwordResetCode,
+        password: newPassword,
+      });
+
+      const updatedUser = await User.findById(user._id);
+
+      const isCorrect = await updatedUser.comparePassword(newPassword);
+      expect(isCorrect).toBe(true);
+      expect(result.status).toBe(200);
+    });
+
+    it("should return 400 response if invalid reset code is passed.", async () => {
+      const user = new User({
+        firstname: "firstname",
+        lastname: "lastname",
+        email: "test@gmail.com",
+        password: "password",
+        passwordResetCode: "123456",
+      });
+      user.password = await user.hashPassword(user.password);
+      await user.save();
+
+      const result = await request(server).put(route).send({
+        email: user.email,
+        resetCode: "wrong_code",
+        password: "abcdefgh",
+      });
+
+      expect(result.status).toBe(400);
+      expect(result.body.error).not.toBeNull();
+    });
+
+    it("should return 404 response with error if user does not exist.", async () => {
+      const result = await request(server).put(route).send({
+        email: "test@gmail.com",
+        resetCode: "123456",
+        password: "123456",
+      });
+
+      expect(result.status).toBe(404);
+      expect(result.body.error).not.toBeNull();
+      expect(result.body.error.message).not.toBeNull();
+    });
+
+    it("should return 400 response with error if request body is not valid", async () => {
+      const body = {};
+      const result = await request(server).put(route).send(body);
       delete body.password;
 
       expect(result.status).toBe(400);

@@ -102,7 +102,7 @@ router.post(
     const body = _.pick(req.body, ["email", "resetCode"]);
     const { email, resetCode } = body;
     const user = await User.findOne({ email });
-    if (!user) res.status(400).send({ error: { message: "Invalid Code" } });
+    if (!user) res.status(404).send({ error: { message: "User not found!" } });
 
     if (user.passwordResetCode !== resetCode)
       return res.status(400).send({ error: { message: "Invalid Code" } });
@@ -148,9 +148,9 @@ router.put(
     const user = await User.findOne({ email });
 
     if (!user)
-      return res.status(400).send({
+      return res.status(404).send({
         error: {
-          message: "Invalid reset code.",
+          message: "User not found!",
         },
       });
 
