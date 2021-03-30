@@ -2,10 +2,6 @@ const request = require("supertest");
 const mongoose = require("mongoose");
 
 const GoalCategory = require("../../../../models/GoalCategory");
-const User = require("../../../../models/User");
-const AuthSession = require("../../../../models/AuthSession");
-
-const jwt = require("../../../../services/jwt");
 
 const {
   generateUserSession,

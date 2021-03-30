@@ -177,4 +177,47 @@ describe("/api/auth", () => {
       expect(result.body.error).not.toBeNull();
     });
   });
+
+  describe("POST /request_password_reset", () => {
+    const route = "/api/auth/request_password_reset";
+
+    it("should send a password reset code to user's email.", async () => {
+      const user = new User({
+        firstname: "firstname",
+        lastname: "lastname",
+        email: "test@gmail.com",
+        password: "password",
+      });
+      user.password = await user.hashPassword(user.password);
+      await user.save();
+
+      const result = await request(server)
+        .post(route)
+        .send({ email: user.email });
+
+      const updatedUser = await User.findById(user._id);
+      expect(updatedUser.passwordResetCode.length).toBe(6);
+      expect(result.status).toBe(200);
+      expect(result.body.token).not.toBeNull();
+    });
+
+    it("should return 404 response with error if user does not exist.", async () => {
+      const body = {
+        email: "test@gmail.com",
+      };
+      const result = await request(server).post(route).send(body);
+      expect(result.status).toBe(404);
+      expect(result.body.error).not.toBeNull();
+      expect(result.body.error.message).not.toBeNull();
+    });
+
+    it("should return 400 response with error if request body is not valid", async () => {
+      const body = {};
+      const result = await request(server).post(route).send(body);
+      delete body.password;
+
+      expect(result.status).toBe(400);
+      expect(result.body.error).not.toBeNull();
+    });
+  });
 });
