@@ -9,6 +9,7 @@ const {
   generateUserSession,
   cleanUserSession,
 } = require("../../test_helpers/userSessionHelper");
+const { USER } = require("../../../../enums/roles");
 
 let server;
 describe("/api/auth", () => {
@@ -178,6 +179,128 @@ describe("/api/auth", () => {
     });
   });
 
+  ////////////Change Password Workflow/////////////
+  ////////////////////////////////////////////////
+
+  describe("PUT /change_password", () => {
+    const route = "/api/auth/change_password";
+    let authToken = "";
+    let user;
+    beforeEach(async () => {
+      const session = await generateUserSession(USER);
+      authToken = session.token;
+      user = session.user;
+    });
+
+    afterEach(cleanUserSession);
+
+    it("should change the password, if previous password is valid", async () => {
+      const previousPassword = "123456";
+      const newPassword = "abcdef";
+      user.password = await user.hashPassword(previousPassword);
+      await user.save();
+
+      const result = await request(server)
+        .put(route)
+        .set("x-auth-token", authToken)
+        .send({
+          previousPassword,
+          password: newPassword,
+        });
+
+      const updatedUser = await User.findById(user._id);
+      const isCorrect = await updatedUser.comparePassword(newPassword);
+
+      expect(result.status).toBe(200);
+      expect(isCorrect).toBe(true);
+    });
+
+    it("should return 400 response if invalid previous password is passed.", async () => {
+      const previousPassword = "123456";
+      const newPassword = "abcdef";
+      user.password = await user.hashPassword(previousPassword);
+      await user.save();
+
+      const result = await request(server)
+        .put(route)
+        .set("x-auth-token", authToken)
+        .send({
+          previousPassword: "wrong_password",
+          password: newPassword,
+        });
+      expect(result.status).toBe(400);
+      expect(result.body.error).toBeTruthy();
+    });
+
+    it("should return 400 response with error if request body is not valid", async () => {
+      const body = {};
+      const result = await request(server).put(route).send(body);
+      delete body.password;
+
+      expect(result.status).toBe(400);
+      expect(result.body.error).not.toBeNull();
+    });
+  });
+
+  ////////////Verify Email Workflow/////////////
+  ////////////////////////////////////////////////
+
+  describe("PUT /verify_email", () => {
+    const route = "/api/auth/verify_email";
+    let authToken = "";
+    let user;
+    beforeEach(async () => {
+      const session = await generateUserSession(USER, false);
+      authToken = session.token;
+      user = session.user;
+    });
+
+    afterEach(cleanUserSession);
+
+    it("should verify the email, if Verification Code is valid", async () => {
+      user.emailVerificationCode = "123456";
+      await user.save();
+
+      const result = await request(server)
+        .put(route)
+        .set("x-auth-token", authToken)
+        .send({
+          verificationCode: user.emailVerificationCode,
+        });
+
+      const updatedUser = await User.findById(user._id);
+
+      expect(result.status).toBe(200);
+      expect(updatedUser.emailVerified).toBe(true);
+    });
+
+    it("should return 400 response if invalid reset code is passed.", async () => {
+      user.emailVerificationCode = "123456";
+      await user.save();
+
+      const result = await request(server)
+        .put(route)
+        .set("x-auth-token", authToken)
+        .send({
+          verificationCode: "WRONG_CODE",
+        });
+
+      expect(result.status).toBe(400);
+      expect(result.body.error).toBeTruthy();
+    });
+
+    it("should return 400 response with error if request body is not valid", async () => {
+      const body = {};
+      const result = await request(server).put(route).send(body);
+      delete body.password;
+
+      expect(result.status).toBe(400);
+      expect(result.body.error).not.toBeNull();
+    });
+  });
+
+  ////////////Password Reset Workflow/////////////
+  ////////////////////////////////////////////////
   describe("POST /request_password_reset", () => {
     const route = "/api/auth/request_password_reset";
 

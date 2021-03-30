@@ -8,6 +8,7 @@ const authSessionSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
+    default: Date.now,
   },
   isExpired: {
     type: Boolean,

@@ -22,10 +22,12 @@ const { response } = require("express");
 
 const router = express.Router();
 
+// @route /me
 router.get("/me", authorize("", { emailVerifid: false }), (req, res) => {
   res.send(sanitizeUser(req.authSession.user));
 });
 
+// @route /signup
 router.post("/signup", requestValidator(signupSchema), async (req, res) => {
   const body = _.pick(req.body, ["firstname", "lastname", "email", "password"]);
 
@@ -47,6 +49,7 @@ router.post("/signup", requestValidator(signupSchema), async (req, res) => {
   createUserSessionAndSendResponse(res, user);
 });
 
+// @route /signin
 router.post("/signin", requestValidator(loginSchema), async (req, res) => {
   const { email, password } = _.pick(req.body, ["email", "password"]);
 
@@ -71,6 +74,7 @@ router.post("/signin", requestValidator(loginSchema), async (req, res) => {
   createUserSessionAndSendResponse(res, user);
 });
 
+// @route /request_password_reset
 router.post(
   "/request_password_reset",
   requestValidator(requestPasswordResetSchema),
@@ -94,7 +98,7 @@ router.post(
     });
   }
 );
-
+// @route /password_reset_code_verification
 router.post(
   "/password_reset_code_verification",
   requestValidator(passwordResetVerifiationSchema),
@@ -111,10 +115,11 @@ router.post(
   }
 );
 
+// @route /change_password
 router.put(
   "/change_password",
   requestValidator(changePasswordSchema),
-  authorize(),
+  authorize("", { emailVerified: false }),
   async (req, res) => {
     const body = _.pick(req.body, ["password", "previousPassword"]);
     const { previousPassword, password } = body;
@@ -136,6 +141,7 @@ router.put(
   }
 );
 
+// @route /reset_password
 router.put(
   "/reset_password",
   requestValidator(resetPasswordSchema),
@@ -170,6 +176,7 @@ router.put(
   }
 );
 
+// @route /verify_email
 router.put(
   "/verify_email",
   requestValidator(verifyEmailSchema),
