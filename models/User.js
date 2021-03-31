@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const roles = require("../enums/roles");
+const subscription_plans = require("../enums/subscription_plans");
 
 const userSchema = new mongoose.Schema({
   firstname: {
@@ -48,6 +49,38 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: roles.USER,
     enum: Object.entries(roles).map((role) => role[1]),
+  },
+
+  subscription: {
+    type: {
+      type: String,
+      enum: Object.entries(subscription_plans).map((plan) => plan.name),
+      required: true,
+    },
+
+    subscriptionStart: {
+      type: Date,
+      default: Date.now,
+    },
+
+    subscriptionEnd: {
+      type: Date,
+    },
+
+    activeGoals: {
+      type: Number,
+      required: true,
+    },
+
+    isUnlimited: {
+      type: Boolean,
+      default: false,
+    },
+
+    isTrial: {
+      type: Boolean,
+      required: true,
+    },
   },
 });
 
