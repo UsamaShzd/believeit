@@ -81,6 +81,13 @@ router.post(
   async (req, res) => {
     const { user } = req.authSession;
 
+    if (user.emailVerified)
+      return res.status(400).send({
+        error: {
+          message: "Email is already verified.",
+        },
+      });
+
     const emailVerificationCode = user.generateEmailVerificationCode();
 
     await user.save();

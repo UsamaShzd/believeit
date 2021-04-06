@@ -4,12 +4,12 @@ const User = require("../../../../models/User");
 const AuthSession = require("../../../../models/AuthSession");
 
 const jwt = require("../../../../services/jwt");
+const { USER } = require("../../../../enums/roles");
 
 const {
   generateUserSession,
   cleanUserSession,
 } = require("../../test_helpers/userSessionHelper");
-const { USER } = require("../../../../enums/roles");
 
 let server;
 describe("/api/auth", () => {
@@ -244,6 +244,35 @@ describe("/api/auth", () => {
 
   ////////////Verify Email Workflow/////////////
   ////////////////////////////////////////////////
+  describe("POST /resend_verification_email", () => {
+    const route = "/api/auth/resend_verification_email";
+
+    afterEach(async () => {
+      await cleanUserSession();
+    });
+    it("should send a verification email if email is not verified", async () => {
+      const { user, token } = await generateUserSession(USER, false);
+      const result = await request(server)
+        .post(route)
+        .set("x-auth-token", token);
+
+      const updatedUser = await User.findById(user._id);
+
+      expect(result.status).toBe(200);
+      expect(updatedUser.emailVerificationCode.length).toBe(6);
+    });
+
+    it("should return 400 response with error if email is already verified", async () => {
+      const { token } = await generateUserSession(USER, true);
+      const result = await request(server)
+        .post(route)
+        .set("x-auth-token", token);
+
+      expect(result.status).toBe(400);
+      expect(result.body.error).not.toBeNull();
+      expect(result.body.error.message).not.toBeNull();
+    });
+  });
 
   describe("PUT /verify_email", () => {
     const route = "/api/auth/verify_email";
