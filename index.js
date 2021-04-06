@@ -1,4 +1,5 @@
 const http = require("http");
+const path = require("path");
 const express = require("express");
 require("express-async-errors");
 
@@ -35,6 +36,12 @@ app.use(express.json());
 //using urlencoded body middleware
 app.use(express.urlencoded({ extended: true }));
 
+// serve static files
+app.use(express.static(path.join(__dirname, "public")));
+//configuring handlebars view engine
+require("./utils/handlebars").configureHbs(app);
+
+//initializing routes.
 require("./utils/routesInitializer")(app);
 
 //configuring globalRouteExceptionHandler

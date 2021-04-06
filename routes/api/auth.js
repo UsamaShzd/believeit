@@ -17,8 +17,10 @@ const {
 } = require("../../validators/auth");
 const jwt = require("../../services/jwt");
 
+const sendEmailVerificationEmail = require("../../helpers/sendEmailVerificationEmail");
+const sendPasswordResetEmail = require("../../helpers/sendPasswordResetEmail");
+
 const sanitizeUser = require("../../sanitizers/user");
-const { response } = require("express");
 
 const router = express.Router();
 
@@ -42,10 +44,8 @@ router.post("/signup", requestValidator(signupSchema), async (req, res) => {
 
   const user = new User({ ...body, createdAt: new Date() });
   user.password = await user.hashPassword(body.password);
-
-  const emailVerificationCode = user.generateEmailVerificationCode();
-
   await user.save();
+  sendEmailVerificationEmail(user);
   createUserSessionAndSendResponse(res, user);
 });
 
@@ -87,10 +87,7 @@ router.post(
           message: "Email is already verified.",
         },
       });
-
-    const emailVerificationCode = user.generateEmailVerificationCode();
-
-    await user.save();
+    sendEmailVerificationEmail(user);
 
     res.send({ message: "Email Sent" });
   }
@@ -112,8 +109,7 @@ router.post(
         },
       });
 
-    const passwordResetCode = user.generatePasswordResetCode();
-    await user.save();
+    sendPasswordResetEmail(user);
 
     res.send({
       message: "Password reset code has been sent to your email.",
