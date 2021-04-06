@@ -1,9 +1,5 @@
 const authorize = require("../../../middlewares/authorize");
 
-const AuthSession = require("../../../models/AuthSession");
-
-const jwt = require("../../../services/jwt");
-
 describe("authorize", () => {
   beforeEach(() => {
     process.env.JWT_SECRET_KEY = "123456";

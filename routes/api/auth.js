@@ -74,6 +74,21 @@ router.post("/signin", requestValidator(loginSchema), async (req, res) => {
   createUserSessionAndSendResponse(res, user);
 });
 
+// @route /resend_verification_email
+router.post(
+  "/resend_verification_email",
+  authorize("", { emailVerified: false }),
+  async (req, res) => {
+    const { user } = req.authSession;
+
+    const emailVerificationCode = user.generateEmailVerificationCode();
+
+    await user.save();
+
+    res.send({ message: "Email Sent" });
+  }
+);
+
 // @route /request_password_reset
 router.post(
   "/request_password_reset",

@@ -1,10 +1,10 @@
 const AuthSession = require("../models/AuthSession");
 const jwt = require("../services/jwt");
 
-module.exports = (
-  allowed = "",
-  options = { emailVerified: true, authentication: true }
-) => async (req, res, next) => {
+const defaultOpts = { emailVerified: true, authentication: true };
+
+module.exports = (allowed = "", options) => async (req, res, next) => {
+  options = { ...defaultOpts, ...options };
   const token = req.header("x-auth-token");
 
   const { authentication } = options;
