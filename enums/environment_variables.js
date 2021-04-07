@@ -4,4 +4,7 @@ module.exports = Object.freeze([
   "JWT_SECRET_KEY",
   "SMTP_EMAIL",
   "SMTP_PASS",
+  "AWS_ACCESS_KEY_ID",
+  "AWS_SECRET_ACCESS_KEY",
+  "AWS_S3_BUCKET_NAME",
 ]);

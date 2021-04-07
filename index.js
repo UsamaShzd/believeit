@@ -20,6 +20,9 @@ require("./utils/environmentVariables")(
 //connect to DB
 require("./utils/db")(process.env.MONGO_DB_CONNECTION_URL);
 
+//configure aws
+require("./utils/aws")();
+
 const app = express();
 
 //applying cors middleware
