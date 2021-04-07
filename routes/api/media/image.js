@@ -12,7 +12,7 @@ const router = express.Router();
 const imageUpload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 1024 * 1024 * 5,
+    fileSize: 1024 * 1024 * 3,
   },
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\.(jpg|jpeg|png|)$/)) {
@@ -22,6 +22,18 @@ const imageUpload = multer({
   },
 });
 
+/* eslint-disable no-unused-vars */
+function imageUploadErrorHandler(err, req, res, next) {
+  let message = "Failed to upload image.";
+
+  switch (err.message) {
+    case "File too large":
+      message = "Image size too large. please upload an image less than 3mb";
+  }
+  const responseObject = { error: { message } };
+
+  res.status(400).send(responseObject);
+}
 router.post(
   "/",
   authorize("", { authentication: false }),
@@ -66,7 +78,8 @@ router.post(
     await imageMedia.save();
 
     res.send(imageMedia);
-  }
+  },
+  imageUploadErrorHandler
 );
 
 async function resizeToSmallImage(imageBuffer) {
