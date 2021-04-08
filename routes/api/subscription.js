@@ -12,9 +12,9 @@ router.post("/subscribe_free_plan", authorize(), async (req, res) => {
 
   const plan = {
     type: FREE.name,
-    activeGoals: FREE.activeGoals,
     isTrial: false,
-    isUnlimited: Free.isUnlimited,
+    isUnlimited: FREE.isUnlimited,
+    subscriptionStart: Date.now(),
   };
 
   user.subscription = plan;

@@ -7,5 +7,6 @@ module.exports = (user) => {
     "image",
     "email",
     "emailVerified",
+    "subscription",
   ]);
 };

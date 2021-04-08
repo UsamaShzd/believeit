@@ -39,7 +39,7 @@ module.exports = (allowed = "", options) => async (req, res, next) => {
     //email not verified
     if (emailVerified && user.emailVerified !== true)
       return res.status(401).send({
-        error: { message: "Your email is not varified." },
+        error: { message: "Your email is not verified." },
       });
 
     if (

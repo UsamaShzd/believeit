@@ -51,37 +51,34 @@ const userSchema = new mongoose.Schema({
     enum: Object.entries(roles).map((role) => role[1]),
   },
 
-  // subscription: {
-  //   type: {
-  //     type: String,
-  //     enum: Object.entries(subscription_plans).map((plan) => plan.name),
-  //     required: true,
-  //   },
+  activeGoals: {
+    type: Number,
+    default: 0,
+  },
 
-  //   subscriptionStart: {
-  //     type: Date,
-  //     default: Date.now,
-  //   },
+  subscription: {
+    type: {
+      type: String,
+      enum: Object.entries(subscription_plans).map((plan) => plan.name),
+    },
 
-  //   subscriptionEnd: {
-  //     type: Date,
-  //   },
+    subscriptionStart: {
+      type: Date,
+    },
 
-  //   activeGoals: {
-  //     type: Number,
-  //     required: true,
-  //   },
+    subscriptionEnd: {
+      type: Date,
+    },
 
-  //   isUnlimited: {
-  //     type: Boolean,
-  //     default: false,
-  //   },
+    isUnlimited: {
+      type: Boolean,
+      default: false,
+    },
 
-  //   isTrial: {
-  //     type: Boolean,
-  //     required: true,
-  //   },
-  // },
+    isTrial: {
+      type: Boolean,
+    },
+  },
 });
 
 userSchema.methods.hashPassword = async function (password) {
