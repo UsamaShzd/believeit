@@ -24,9 +24,13 @@ const imageUpload = multer({
 
 /* eslint-disable no-unused-vars */
 function imageUploadErrorHandler(err, req, res, next) {
-  let message = "Failed to upload image.";
+  let message = err.message;
 
   switch (err.message) {
+    case "Unexpected field":
+      message = "Please upload an image file.";
+      break;
+
     case "File too large":
       message = "Image size too large. please upload an image less than 3mb";
   }
