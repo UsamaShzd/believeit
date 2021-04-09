@@ -8,5 +8,6 @@ module.exports = (user) => {
     "email",
     "emailVerified",
     "subscription",
+    "role",
   ]);
 };

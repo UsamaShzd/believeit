@@ -11,8 +11,10 @@ require("./utils/globalExceptionHandler")();
 //global promise rejection handler
 require("./utils/globalPromiseRejectionHandler")();
 
-//configuring environment variables
+//adding objectId method to yup
+require("./utils/registerObjectIDValidator")();
 
+//configuring environment variables
 require("./utils/environmentVariables")(
   require("./enums/environment_variables")
 );

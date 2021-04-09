@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+const ImageMedia = require("./media/ImageMedia");
+
 const roles = require("../enums/roles");
 const subscription_plans = require("../enums/subscription_plans");
 
@@ -18,9 +20,7 @@ const userSchema = new mongoose.Schema({
     index: true,
   },
 
-  image: {
-    type: String,
-  },
+  image: ImageMedia.schema,
 
   password: {
     type: String,
