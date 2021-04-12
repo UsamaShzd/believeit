@@ -2,6 +2,7 @@ const request = require("supertest");
 const mongoose = require("mongoose");
 
 const QouteCategory = require("../../../../models/QouteCategory");
+const Qoutation = require("../../../../models/Qoutation");
 
 const {
   generateUserSession,
@@ -17,6 +18,7 @@ describe("/api/qoute_categories/", () => {
   afterEach(async () => {
     server.close();
     await QouteCategory.deleteMany({});
+    await Qoutation.deleteMany({});
   });
 
   describe("GET /api/qoute_categories/:id", () => {
@@ -155,15 +157,20 @@ describe("/api/qoute_categories/", () => {
       expect(result.body.error).not.toBeNull();
     });
 
-    it("should update the category of given id", async () => {
+    it("should update the category of given id an also the qoutaions of that id", async () => {
       const category = await new QouteCategory({
         name: "category",
         isFree: true,
       }).save();
 
+      const qoutation = await new Qoutation({
+        qoutation: "this is a test qoutation.",
+        category,
+      }).save();
+
       const body = {
         name: "updated name",
-        isFree: true,
+        isFree: false,
       };
 
       await request(server)
@@ -173,10 +180,15 @@ describe("/api/qoute_categories/", () => {
 
       const updatedCategory = await QouteCategory.findById(category._id);
 
+      const updatedQoutation = await Qoutation.findById(qoutation._id);
+
       expect(updatedCategory).toMatchObject(body);
       expect(category._id.toHexString()).toEqual(
         updatedCategory._id.toHexString()
       );
+
+      expect(updatedQoutation.category.name).toBe(body.name);
+      expect(updatedQoutation.category.isFree).toBe(body.isFree);
     });
 
     it("should return 200 status code with updated category", async () => {

@@ -2,6 +2,7 @@ const express = require("express");
 const _ = require("lodash");
 
 const QouteCategory = require("../../models/QouteCategory");
+const Qoutation = require("../../models/Qoutation");
 
 const authorize = require("../../middlewares/authorize");
 const requestValidator = require("../../middlewares/requestValidator");
@@ -70,6 +71,8 @@ router.put(
       return res
         .status(404)
         .send({ error: { message: "Qoute Category not found!" } });
+
+    await Qoutation.updateMany({ "category._id": id }, { $set: { category } });
 
     res.send(category);
   }
