@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.get("/random_qoutation/:id", async (req, res) => {
   const { id } = req.params;
-  //60744429c4fb47f72c95e7ac
+
   if (!validateObjectId(id))
     return res.status(404).send({ error: { message: "Qoute not found!" } });
 

@@ -15,10 +15,41 @@ describe("/api/qoutations/", () => {
   beforeEach(() => {
     server = require("../../../../index");
   });
+
   afterEach(async () => {
     server.close();
     await Qoutation.deleteMany({});
     await QouteCategory.deleteMany({});
+  });
+
+  describe("GET /api/qoutations/random_qoutation/:id", () => {
+    const route = "/api/qoutations/random_qoutation/";
+    it("should return 404 status response if no qoutation is found", async () => {
+      const result = await request(server).get(
+        route + mongoose.Types.ObjectId().toHexString()
+      );
+
+      expect(result.status).toBe(404);
+      expect(result.body.error).not.toBeNull();
+    });
+
+    it("should return 200 status response with a random qoutation", async () => {
+      const category = await new QouteCategory({
+        name: "test",
+        isFree: true,
+      }).save();
+      const qoute = await new Qoutation({
+        qoutation: "this is a test qoutation",
+        category,
+      }).save();
+
+      const categoryId = category._id.toHexString();
+      const result = await request(server).get(route + categoryId);
+
+      expect(result.status).toBe(200);
+      expect(result.body.qoutation).toBe(qoute.qoutation);
+      expect(result.body._id).toBe(qoute._id.toHexString());
+    });
   });
 
   describe("GET /api/qoutations/:id", () => {
