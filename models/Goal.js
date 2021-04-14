@@ -6,16 +6,19 @@ const AudioMedia = require("./media/AudioMedia");
 const goalSchema = new mongoose.Schema({
   title: {
     type: String,
+    trim: true,
   },
 
   goalCategory: GoalCategory.schema,
 
   iAm: {
     type: String,
+    trim: true,
   },
 
   afterAccomplishment: {
     type: String,
+    trim: true,
   },
 
   image: ImageMedia.schema,

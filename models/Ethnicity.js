@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const ethnicitySchema = new mongoose.Schema({
   name: {
     type: String,
+    trim: true,
   },
 });
 

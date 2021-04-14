@@ -9,14 +9,17 @@ const subscription_plans = require("../enums/subscription_plans");
 const userSchema = new mongoose.Schema({
   firstname: {
     type: String,
+    trim: true,
   },
 
   lastname: {
     type: String,
+    trim: true,
   },
 
   email: {
     type: String,
+    trim: true,
     index: true,
   },
 
@@ -34,6 +37,7 @@ const userSchema = new mongoose.Schema({
 
   emailVerificationCode: {
     type: String,
+    trim: true,
   },
 
   createdAt: {
@@ -43,10 +47,12 @@ const userSchema = new mongoose.Schema({
 
   passwordResetCode: {
     type: String,
+    trim: true,
   },
 
   role: {
     type: String,
+    trim: true,
     default: roles.USER,
     enum: Object.entries(roles).map((role) => role[1]),
   },
@@ -59,6 +65,7 @@ const userSchema = new mongoose.Schema({
   subscription: {
     type: {
       type: String,
+      trim: true,
       enum: Object.entries(subscription_plans).map((plan) => plan.name),
     },
 
