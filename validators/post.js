@@ -8,9 +8,19 @@ const createPostSchema = yup.object().shape({
     then: yup.string().required(),
   }),
 
+  image: yup.string().when("type", {
+    is: "blog",
+    then: yup.string().objectId(),
+  }),
+
+  description: yup.string().when("type", {
+    is: "blog",
+    then: yup.string().min(5).max(500).required(),
+  }),
+
   htmlContent: yup.string().when("type", {
     is: "blog",
-    then: yup.string().required(),
+    then: yup.string().trim().min().max(5000).required(),
   }),
 });
 

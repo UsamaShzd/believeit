@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const ImageMedia = require("./media/ImageMedia");
+
 const postSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -14,6 +16,13 @@ const postSchema = new mongoose.Schema({
   },
 
   youtubeVideo: {
+    type: String,
+    trim: true,
+  },
+
+  image: ImageMedia.schema,
+
+  description: {
     type: String,
     trim: true,
   },

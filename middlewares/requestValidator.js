@@ -1,6 +1,6 @@
 module.exports = (schema) => async (req, res, next) => {
   try {
-    await schema.validate(req.body, { strict: true });
+    await schema.validate(req.body);
     return next();
   } catch (validationError) {
     const { path, errors } = validationError;
