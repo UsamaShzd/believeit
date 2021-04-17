@@ -26,7 +26,7 @@ router.get("/my_chat_rooms", authorize(), async (req, res) => {
   const orClause = [
     {
       roomType: "direct",
-      lastMessege: { $ne: null },
+      lastMessage: { $ne: null },
     },
     {
       roomType: "group",

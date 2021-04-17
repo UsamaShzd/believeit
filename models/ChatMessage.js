@@ -5,21 +5,23 @@ const chatMessageSchema = new Schema({
   sender: {
     type: Schema.ObjectId,
     ref: "user",
+    required: true,
   },
-  isDirectMessage: Boolean,
-  chatRoomRef: {
+
+  chatRoom: {
     type: Schema.ObjectId,
     ref: "chatrooms",
     required: true,
-  },
-  recipient: {
-    type: Schema.ObjectId,
-    ref: "user",
-    required: true,
     index: true,
   },
+
+  messageType: {
+    type: String,
+    default: "message",
+  },
+
   content: {
-    message: String,
+    message: { type: String, default: "", trim: true },
     tags: [
       {
         startIndex: Number,
@@ -32,7 +34,21 @@ const chatMessageSchema = new Schema({
     ],
   },
 
-  customIdentifier: String,
+  delivered: {
+    type: Boolean,
+    default: false,
+  },
+
+  seen: {
+    type: Boolean,
+    default: false,
+  },
+
+  customIdentifier: {
+    type: String,
+    trim: true,
+    required: true,
+  },
 
   createdAt: {
     type: Date,

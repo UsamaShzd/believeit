@@ -40,7 +40,7 @@ const chatRoomSchema = new Schema({
     }),
   ],
 
-  lastMessege: {
+  lastMessage: {
     type: ChatMessage.schema,
     default: null,
   },

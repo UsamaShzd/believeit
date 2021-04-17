@@ -53,6 +53,9 @@ require("./utils/routesInitializer")(app);
 app.use(require("./middlewares/globalRouteExceptionHandler"));
 
 const server = http.createServer(app);
+//configuring socket io
+const socketIO = require("./services/socketIO");
+require("./socket.io/configure")(socketIO.initialize(server));
 
 if (process.env.NODE_ENV !== "test") {
   const port = process.env.PORT || 8080;
