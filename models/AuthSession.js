@@ -5,6 +5,17 @@ const authSessionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "user",
+    index: true,
+  },
+
+  pushNotificationToken: {
+    type: String,
+    trim: true,
+  },
+
+  lastActivity: {
+    type: Date,
+    default: Date.now,
   },
   createdAt: {
     type: Date,

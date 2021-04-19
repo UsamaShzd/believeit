@@ -2,13 +2,13 @@ const express = require("express");
 const _ = require("lodash");
 const authorize = require("../../../middlewares/authorize");
 const requestValidator = require("../../../middlewares/requestValidator");
-const { createChatMessageSchema } = require("../../../validators/chat/message");
+const { sendChatMessageSchema } = require("../../../validators/chat/message");
 
 const router = express.Router();
 
 router.post(
   "/send_message",
-  requestValidator(createChatMessageSchema),
+  requestValidator(sendChatMessageSchema),
   authorize(),
   async (req, res) => {
     const {} = _.pick(req.body, [""]);

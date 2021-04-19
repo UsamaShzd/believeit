@@ -14,6 +14,7 @@ const {
   passwordResetVerifiationSchema,
   resetPasswordSchema,
   changePasswordSchema,
+  updatePushNotificationSchema,
 } = require("../../validators/auth");
 const jwt = require("../../services/jwt");
 
@@ -218,6 +219,27 @@ router.put(
   }
 );
 
+router.put(
+  "/register_push_notification_token",
+  requestValidator(updatePushNotificationSchema),
+  authorize("", { emailVerified: false }),
+  async (req, res) => {
+    const { pushNotificationToken } = _.pick(req.body, [
+      "pushNotificationToken",
+    ]);
+    const { authSession } = req;
+    authSession.pushNotificationToken = pushNotificationToken;
+    await authSession.save();
+    res.send({ message: "Push notification token updated." });
+  }
+);
+
+router.delete("/signout", authorize(), async (req, res) => {
+  const { authSession } = req;
+  authSession.isExpired = true;
+  await authSession.save();
+  res.send({ message: "Signout successfull." });
+});
 const createUserSessionAndSendResponse = async (res, user) => {
   const session = await new AuthSession({
     user: user._id,

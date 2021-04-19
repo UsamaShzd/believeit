@@ -20,26 +20,37 @@ const chatMessageSchema = new Schema({
     default: "message",
   },
 
-  content: {
-    message: { type: String, default: "", trim: true },
-    tags: [
-      {
-        startIndex: Number,
-        endIndex: Number,
-        user: {
-          type: Schema.ObjectId,
-          ref: "user",
-        },
+  message: { type: String, default: "", trim: true },
+
+  tags: [
+    {
+      startIndex: Number,
+      endIndex: Number,
+      user: {
+        type: Schema.ObjectId,
+        ref: "user",
       },
-    ],
-  },
+    },
+  ],
 
   delivered: {
     type: Boolean,
     default: false,
   },
 
-  seen: {
+  seen: [
+    {
+      type: Schema.ObjectId,
+      ref: "user",
+    },
+  ],
+
+  isMessageModified: {
+    type: Boolean,
+    default: false,
+  },
+
+  isDeleted: {
     type: Boolean,
     default: false,
   },
@@ -56,5 +67,5 @@ const chatMessageSchema = new Schema({
   },
 });
 
-const ChatMessage = mongoose.model("chatmessages", chatMessageSchema);
+const ChatMessage = mongoose.model("chatmessage", chatMessageSchema);
 module.exports = ChatMessage;

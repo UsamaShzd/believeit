@@ -35,6 +35,7 @@ router.get("/my_chat_rooms", authorize(), async (req, res) => {
 
   const rooms = await ChatRoom.find(query)
     .or(orClause)
+    .populate("lastMessage")
     .populate("members.memberId", USER_PUBLIC_FIELDS);
 
   res.send(rooms);
@@ -63,10 +64,17 @@ router.get(
     };
 
     let room = await ChatRoom.findOne({
+      roomType: "direct",
       "members.memberId": { $all: [memberId, user._id] },
     }).populate("members.memberId", USER_PUBLIC_FIELDS);
 
-    if (!room) room = await new ChatRoom(data).save();
+    if (!room) {
+      await new ChatRoom(data).save();
+      room = await ChatRoom.findOne({
+        roomType: "direct",
+        "members.memberId": { $all: [memberId, user._id] },
+      }).populate("members.memberId", USER_PUBLIC_FIELDS);
+    }
 
     res.send(room);
   }

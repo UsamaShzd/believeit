@@ -19,8 +19,8 @@ module.exports = (allowed = "", options) => async (req, res, next) => {
 
   try {
     const decoded = jwt.decrypt(token);
-    const authSession = await AuthSession.findOne({
-      _id: decoded._id,
+    const authSession = await AuthSession.findByIdAndUpdate(decoded._id, {
+      lastActivity: new Date(),
     }).populate("user");
 
     if (

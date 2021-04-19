@@ -38,3 +38,7 @@ exports.changePasswordSchema = yup.object().shape({
   previousPassword: password,
   password,
 });
+
+exports.updatePushNotificationSchema = yup.object().shape({
+  pushNotificationToken: yup.string().trim().required(),
+});
