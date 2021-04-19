@@ -6,6 +6,9 @@ const requestValidator = require("../../../middlewares/requestValidator");
 const ChatMessage = require("../../../models/ChatMessage");
 const ChatRoom = require("../../../models/ChatRoom");
 
+const USER_PUBLIC_FIELDS =
+  "firstname lastname image.thumbnailUrl image.imageUrl image.aspectRatio";
+
 const router = express.Router();
 
 router.get("/list/:chatRoom", authorize(), async (req, res) => {
@@ -48,7 +51,8 @@ router.get("/list/:chatRoom", authorize(), async (req, res) => {
 
   const messages = await ChatMessage.find(query)
     .limit(pageSize)
-    .sort("-createdAt");
+    .sort("-createdAt")
+    .populate("sender", USER_PUBLIC_FIELDS);
 
   res.send(messages);
 });

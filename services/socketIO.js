@@ -18,4 +18,4 @@ exports.initialize = function (server) {
   return io;
 };
 
-exports.getSocket = () => io;
+exports.getIO = () => io;

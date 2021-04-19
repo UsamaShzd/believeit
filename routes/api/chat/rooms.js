@@ -1,11 +1,15 @@
 const express = require("express");
 const _ = require("lodash");
+const uuid = require("uuid");
 const authorize = require("../../../middlewares/authorize");
 
 const requestValidator = require("../../../middlewares/requestValidator");
 const ChatRoom = require("../../../models/ChatRoom");
 const validateObjectId = require("../../../helpers/validateObjectId");
 const { createGroupChatSchema } = require("../../../validators/chat/room");
+
+const socketIO = require("../../../services/socketIO");
+const ChatMessage = require("../../../models/ChatMessage");
 
 const router = express.Router();
 
@@ -115,4 +119,72 @@ router.post(
   }
 );
 
+router.delete(
+  "/leave_group/:chatRoom",
+  authorize("", { emailVerified: false }),
+  async (req, res) => {
+    const { chatRoom } = req.params;
+
+    if (!validateObjectId(chatRoom))
+      return res.status(400).send({
+        error: {
+          message: "Invalid group Id",
+        },
+      });
+
+    const { user } = req.authSession;
+    const room = await ChatRoom.findOneAndUpdate(
+      {
+        _id: chatRoom,
+        roomType: "group",
+        "members.memberId": { $in: user._id },
+      },
+      {
+        $pull: {
+          members: { memberId: user._id },
+        },
+      },
+      { new: true }
+    );
+
+    if (!room)
+      return res.status(400).send({
+        error: {
+          message: "Invalid group Id",
+        },
+      });
+
+    const leavingMessage = await new ChatMessage({
+      sender: user._id,
+      chatRoom,
+      messageType: "info",
+      customIdentifier: uuid.v4(),
+      message: `${user.firstname} ${user.lastname} left the group`,
+    }).save();
+
+    const responseObj = {
+      sender: _.pick(user, USER_PUBLIC_FIELDS.split(" ")),
+      ..._.pick(leavingMessage, [
+        "chatRoom",
+        "messageType",
+        "customIdentifier",
+        "message",
+        "createdAt",
+        "seen",
+        "delivered",
+      ]),
+    };
+    const io = socketIO.getIO();
+    if (io) {
+      room.members.forEach((member) => {
+        io.to(member.memberId.toHexString()).emit(
+          "member_left_chat_group",
+          responseObj
+        );
+      });
+    }
+
+    res.send(responseObj);
+  }
+);
 module.exports = router;

@@ -18,6 +18,7 @@ const chatMessageSchema = new Schema({
   messageType: {
     type: String,
     default: "message",
+    enum: ["message", "info"],
   },
 
   message: { type: String, default: "", trim: true },
