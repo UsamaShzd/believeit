@@ -22,12 +22,11 @@ const sendChatMessageSchema = yup.object().shape({
   ),
 });
 
+const messageSeenSchema = yup.object().shape({
+  messageId: yup.string().objectId().required(),
+});
+
 module.exports = {
   sendChatMessageSchema,
-};
-
-const d = {
-  chatRoom: "607c135aeb50e30b4647606d",
-  customIdentifier: "customIdentifier",
-  content: "",
+  messageSeenSchema,
 };
