@@ -94,6 +94,7 @@ module.exports = (socket) => {
           : `${user.firstname} ${user.lastname}`,
 
       body: chatMessage.message,
+      sound: "default",
     };
 
     sendPushNotifications(push_notification);

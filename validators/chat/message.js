@@ -26,7 +26,12 @@ const messageSeenSchema = yup.object().shape({
   messageId: yup.string().objectId().required(),
 });
 
+const messageDeliveredSchema = yup.object().shape({
+  messageId: yup.string().objectId().required(),
+});
+
 module.exports = {
   sendChatMessageSchema,
   messageSeenSchema,
+  messageDeliveredSchema,
 };

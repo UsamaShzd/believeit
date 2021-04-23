@@ -6,6 +6,12 @@ const createGroupChatSchema = yup.object().shape({
   members: yup.array().of(yup.string().objectId()).min(1).required(),
 });
 
+const indicateTypingSchema = yup.object().shape({
+  chatRoom: yup.string().objectId().required(),
+  typing: yup.boolean().required(),
+});
+
 module.exports = {
   createGroupChatSchema,
+  indicateTypingSchema,
 };

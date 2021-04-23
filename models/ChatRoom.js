@@ -32,6 +32,7 @@ const chatRoomSchema = new Schema({
       memberId: {
         type: Schema.ObjectId,
         ref: "user",
+        index: true,
       },
       role: {
         type: String,

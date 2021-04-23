@@ -1,12 +1,12 @@
 const ChatMessage = require("../../../models/ChatMessage");
 
-const { messageSeenSchema } = require("../../../validators/chat/message");
+const { messageDeliveredSchema } = require("../../../validators/chat/message");
 
 module.exports = (socket) => {
-  socket.on("mark_chat_message_as_seen", async (payload, acknowledge) => {
+  socket.on("mark_chat_message_as_delivered", async (payload, acknowledge) => {
     //validation
     try {
-      await messageSeenSchema.validate(payload);
+      await messageDeliveredSchema.validate(payload);
     } catch (validationError) {
       const { path, errors } = validationError;
 
@@ -24,7 +24,7 @@ module.exports = (socket) => {
     const chatMessage = await ChatMessage.findByIdAndUpdate(
       messageId,
       {
-        $addToSet: { seen: user._id },
+        delivered: true,
       },
       { populate: { path: "chatRoom" } }
     );
@@ -39,13 +39,14 @@ module.exports = (socket) => {
 
     acknowledge({
       type: "success",
-      mesasge: "message seened",
+      mesasge: "message delivered",
     });
 
     chatMessage.chatRoom.members.forEach(async (member) => {
-      socket
-        .to(member.memberId.toHexString())
-        .emit("chat_message_seened", { messageId });
+      if (user._id.tohexString() !== chatMessage.sender.toHexString())
+        socket
+          .to(member.memberId.toHexString())
+          .emit("chat_message_delivered", { messageId });
     });
   });
 };
