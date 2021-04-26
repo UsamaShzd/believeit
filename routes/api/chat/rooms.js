@@ -6,7 +6,10 @@ const authorize = require("../../../middlewares/authorize");
 const requestValidator = require("../../../middlewares/requestValidator");
 const ChatRoom = require("../../../models/ChatRoom");
 const validateObjectId = require("../../../helpers/validateObjectId");
-const { createGroupChatSchema } = require("../../../validators/chat/room");
+const {
+  createGroupChatSchema,
+  removeMemberSchema,
+} = require("../../../validators/chat/room");
 
 const socketIO = require("../../../services/socketIO");
 const ChatMessage = require("../../../models/ChatMessage");
@@ -120,6 +123,60 @@ router.post(
 );
 
 router.delete(
+  "/remove_member_from_group/:chatRoom",
+  requestValidator(removeMemberSchema),
+  authorize("", { emailVerified: false }),
+  async (req, res) => {
+    const { chatRoom } = req.params;
+    const { memberId } = _.pick(req.body, ["memberId"]);
+    if (!validateObjectId(chatRoom))
+      return res.status(400).send({
+        error: {
+          message: "Invalid group Id",
+        },
+      });
+
+    const { user } = req.authSession;
+
+    const room = await ChatRoom.findOne({
+      _id: chatRoom,
+      roomType: "group",
+      "members.memberId": { $in: user._id },
+      "member.role": "admin",
+    });
+
+    if (!room)
+      return res.status(400).send({
+        error: {
+          message: "Invalid group Id",
+        },
+      });
+
+    const updatedRoom = await ChatRoom.findByIdAndUpdate(
+      chatRoom,
+      {
+        $pull: {
+          "members.memberId": memberId,
+        },
+      },
+      { new: true }
+    );
+
+    res.send(updatedRoom);
+
+    // const io = socketIO.getIO();
+    // if (io) {
+    //   room.members.forEach((member) => {
+    //     io.to(member.memberId.toHexString()).emit(
+    //       "member_left_chat_group",
+    //       responseObj
+    //     );
+    //   });
+    // }
+  }
+);
+
+router.delete(
   "/leave_group/:chatRoom",
   authorize("", { emailVerified: false }),
   async (req, res) => {
@@ -174,6 +231,7 @@ router.delete(
         "delivered",
       ]),
     };
+
     const io = socketIO.getIO();
     if (io) {
       room.members.forEach((member) => {

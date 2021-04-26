@@ -49,6 +49,9 @@ require("./utils/handlebars").configureHbs(app);
 //initializing routes.
 require("./utils/routesInitializer")(app);
 
+app.get("/admin/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "admin", "index.html"));
+});
 //configuring globalRouteExceptionHandler
 app.use(require("./middlewares/globalRouteExceptionHandler"));
 

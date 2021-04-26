@@ -11,6 +11,10 @@ const indicateTypingSchema = yup.object().shape({
   typing: yup.boolean().required(),
 });
 
+const removeMemberSchema = yup.object().shape({
+  memberId: yup.string().objectId().required(),
+});
+
 module.exports = {
   createGroupChatSchema,
   indicateTypingSchema,
