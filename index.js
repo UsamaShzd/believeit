@@ -31,9 +31,19 @@ const app = express();
 app.use(require("cors")());
 
 //applying helmet middleware for security
-if (["production"].includes(NODE_ENV)) {
-  app.use(require("helmet")());
-}
+// const helmet = require("helmet");
+// if (["production"].includes(NODE_ENV)) {
+//   app.use(
+//     helmet({
+//       contentSecurityPolicy: {
+//         directives: {
+//           ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+//           "script-src": ["'self'", "'unsafe-inline'"],
+//         },
+//       },
+//     })
+//   );
+// }
 
 //using json body middleware
 app.use(express.json());
