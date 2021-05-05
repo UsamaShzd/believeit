@@ -6,6 +6,23 @@ const mileStoneSchema = new mongoose.Schema({
     trim: true,
   },
 
+  preDefinedMilestone: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    index: true,
+    ref: "predefinedmilestone",
+  },
+
+  isActive: {
+    type: Boolean,
+    default: false,
+  },
+
+  sortOrder: {
+    type: Number,
+    default: 0,
+  },
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -18,6 +35,9 @@ const mileStoneSchema = new mongoose.Schema({
   },
 });
 
-const SubMileStone = mongoose.model("predefinedsubmilestone", mileStoneSchema);
+const PreDefinedSubMilestone = mongoose.model(
+  "predefinedsubmilestone",
+  mileStoneSchema
+);
 
-module.exports = SubMileStone;
+module.exports = PreDefinedSubMilestone;
