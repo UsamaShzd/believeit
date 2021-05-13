@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const mileStoneSchema = new mongoose.Schema({
+const subMilestoneSchema = new mongoose.Schema({
   title: {
     type: String,
     trim: true,
@@ -13,21 +13,7 @@ const mileStoneSchema = new mongoose.Schema({
     ref: "milestone",
   },
 
-  goal: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    index: true,
-    ref: "goal",
-  },
-
-  startDate: {
-    type: Date,
-  },
-
-  endDate: {
-    type: Date,
-  },
-  isActive: {
+  isCompleted: {
     type: Boolean,
     default: false,
   },
@@ -49,6 +35,6 @@ const mileStoneSchema = new mongoose.Schema({
   },
 });
 
-const SubMilestone = mongoose.model("submilestone", mileStoneSchema);
+const SubMilestone = mongoose.model("submilestone", subMilestoneSchema);
 
 module.exports = SubMilestone;
