@@ -9,18 +9,36 @@ const PreDefinedGoal = require("../../models/PreDefinedGoal");
 const PreDefinedMilestone = require("../../models/PreDefinedMilestone");
 const PreDefinedSubMilestone = require("../../models/PreDefinedSubMilestone");
 
+const validateObjectId = require("../../helpers/validateObjectId");
+
 const authorize = require("../../middlewares/authorize");
 const requestValidator = require("../../middlewares/requestValidator");
 
-const { createGoalSchema } = require("../../validators/goal");
+const {
+  createGoalSchema,
+  editGoalSchema,
+  changeGoalStatusSchema,
+} = require("../../validators/goal");
 
 const router = express.Router();
 
 router.get("/get_my_goals", authorize(), async (req, res) => {
+  const { isCompleted = "1" } = req.query;
   const { user } = req.authSession;
-  const goals = await Goal.find({ createdBy: user._id });
+
+  const query = { createdBy: user._id };
+
+  if (isCompleted === "1") {
+    query.isCompleted = true;
+  }
+
+  const goals = await Goal.find(query);
+
   res.send(goals);
 });
+
+router.get("/", async (req, res) => {});
+
 router.post(
   "/create_goal",
   requestValidator(createGoalSchema),
@@ -97,6 +115,65 @@ router.post(
         });
       });
     }
+    res.send(goal);
+  }
+);
+
+router.put(
+  "/change_status/:id",
+  requestValidator(changeGoalStatusSchema),
+  authorize(),
+  async (req, res) => {
+    const { id } = req.params;
+
+    if (!validateObjectId(id))
+      return res.status(404).send({ error: { message: "Goal not found!" } });
+
+    const body = _.pick(req.body, ["isCompleted"]);
+
+    const goal = await Goal.findByIdAndUpdate(id, body, {
+      new: true,
+    });
+
+    if (!goal)
+      return res.status(404).send({ error: { message: "Goal not found!" } });
+
+    res.send(goal);
+  }
+);
+
+router.put(
+  "/edit_goal/:id",
+  requestValidator(editGoalSchema),
+  authorize(),
+  async (req, res) => {
+    const { id } = req.params;
+    if (!validateObjectId(id))
+      return res.status(404).send({ error: { message: "Goal not found!" } });
+
+    const body = _.pick(req.body, [
+      "title",
+      "goalCategory",
+      "preDefinedGoalRef",
+      "iAm",
+      "accomplishingDate",
+      "afterAccomplishment",
+      "importanceOfGoal",
+      "image",
+      "audio",
+    ]);
+
+    const { user } = req.authSession;
+
+    const goal = await Goal.findOneAndUpdate(
+      { _id: id, createdBy: user._id },
+      body,
+      { new: true }
+    );
+
+    if (!goal)
+      return res.status(404).send({ error: { message: "Goal not found!" } });
+
     res.send(goal);
   }
 );

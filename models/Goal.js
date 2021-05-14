@@ -40,7 +40,7 @@ const goalSchema = new mongoose.Schema({
 
   audio: AudioMedia.schema,
 
-  completed: {
+  isCompleted: {
     type: Boolean,
     default: false,
   },

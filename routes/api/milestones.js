@@ -125,7 +125,7 @@ router.put(
     if (!validateObjectId(id))
       return res
         .status(404)
-        .send({ error: { message: "Pre Defined Sub Milestone not found!" } });
+        .send({ error: { message: "Milestone not found!" } });
 
     const body = _.pick(req.body, ["isCompleted"]);
 
@@ -136,7 +136,7 @@ router.put(
     if (!milestone)
       return res
         .status(404)
-        .send({ error: { message: "Pre Defined Sub Milestone not found!" } });
+        .send({ error: { message: "Milestone not found!" } });
 
     res.send(milestone);
   }
