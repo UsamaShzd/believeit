@@ -6,6 +6,7 @@ const validateObjectId = require("../../helpers/validateObjectId");
 
 const User = require("../../models/User");
 const Connection = require("../../models/Connection");
+const Notification = require("../../models/Notification");
 
 const requestValidator = require("../../middlewares/requestValidator");
 const {
@@ -13,6 +14,13 @@ const {
   requestConnectionSchema,
 } = require("../../validators/connection");
 
+const {
+  sendPushNotifications,
+} = require("../../services/expo/pushNotification");
+
+const getPushTokens = require("../../helpers/getPushTokens");
+
+//////
 const USER_PUBLIC_FIELDS =
   "firstname lastname image.thumbnailUrl image.imageUrl image.aspectRatio";
 
@@ -113,7 +121,30 @@ router.post(
       members: [{ user: user._id }, { user: requestedUser }],
       status: "requested",
     }).save();
+
     res.send(connection);
+
+    //sending notification
+    const notification = await new Notification({
+      sender: user._id,
+      reciever: requestedUser,
+      type: "connection_request",
+      connection: connection._id,
+    }).save();
+
+    const pushTokens = await getPushTokens(requestedUser);
+
+    const push_notification = {
+      to: pushTokens,
+      title: `${user.firstname} ${user.lastname}`,
+      body: `${user.firstname} ${user.lastname} sent you a connection request.`,
+      data: {
+        ..._.pick(notification, ["_id", "type", "connection", "createdAt"]),
+        sender: _.pick(user, USER_PUBLIC_FIELDS.split(" ")),
+      },
+      sound: "default",
+    };
+    sendPushNotifications(push_notification);
   }
 );
 

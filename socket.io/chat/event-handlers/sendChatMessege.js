@@ -3,6 +3,8 @@ const ChatRoom = require("../../../models/ChatRoom");
 const ChatMessage = require("../../../models/ChatMessage");
 const AuthSession = require("../../../models/AuthSession");
 
+const getPushTokens = require("../../../helpers/getPushTokens");
+
 const {
   sendPushNotifications,
 } = require("../../../services/expo/pushNotification");
@@ -79,21 +81,24 @@ module.exports = (socket) => {
     }
     if (offlineUsers.length === 0) return;
 
-    const sessions = await AuthSession.find({
-      user: { $in: offlineUsers },
-      isExpired: false,
-      pushNotificationToken: { $exists: true },
-    }).select("pushNotificationToken");
+    const pushtokens = await getPushTokens(offlineUsers);
 
     //construct push notification
     const push_notification = {
-      to: sessions.map((session) => session.pushNotificationToken),
+      to: pushtokens,
       title:
         chatRoom.roomType === "group" && chatRoom.name
           ? chatRoom.name
           : `${user.firstname} ${user.lastname}`,
 
       body: chatMessage.message,
+      data: _.pick(chatMessage, [
+        "_id",
+        "chatRoom",
+        "messageType",
+        "customIdentifier",
+        "createdAt",
+      ]),
       sound: "default",
     };
 
