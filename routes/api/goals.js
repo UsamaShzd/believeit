@@ -37,8 +37,6 @@ router.get("/get_my_goals", authorize(), async (req, res) => {
   res.send(goals);
 });
 
-router.get("/", async (req, res) => {});
-
 router.post(
   "/create_goal",
   requestValidator(createGoalSchema),
@@ -86,7 +84,6 @@ router.post(
         const date = new Date(da);
         return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
       });
-      console.log("Date Intervals", intervals);
 
       const preDefinedMilestones = await PreDefinedMilestone.find({
         preDefinedGoal: preDefinedGoalRef,
