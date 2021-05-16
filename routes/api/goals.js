@@ -23,14 +23,16 @@ const {
 const router = express.Router();
 
 router.get("/get_my_goals", authorize(), async (req, res) => {
-  const { isCompleted = "1" } = req.query;
+  const { is_completed } = req.query;
   const { user } = req.authSession;
 
   const query = { createdBy: user._id };
 
-  if (isCompleted === "1") {
-    query.isCompleted = true;
+  if (is_completed) {
+    query.isCompleted = is_completed === "1" ? true : false;
   }
+
+  console.log("Query => ", query);
 
   const goals = await Goal.find(query);
 
