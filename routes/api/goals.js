@@ -32,8 +32,6 @@ router.get("/get_my_goals", authorize(), async (req, res) => {
     query.isCompleted = is_completed === "1" ? true : false;
   }
 
-  console.log("Query => ", query);
-
   const goals = await Goal.find(query);
 
   res.send(goals);
