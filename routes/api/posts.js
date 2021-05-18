@@ -3,6 +3,7 @@ const _ = require("lodash");
 
 const Post = require("../../models/Post");
 const SavedItem = require("../../models/SavedItem");
+const ImageMedia = require("../../models/media/ImageMedia");
 
 const authorize = require("../../middlewares/authorize");
 const requestValidator = require("../../middlewares/requestValidator");
@@ -142,8 +143,27 @@ router.post(
       "type",
       "title",
       "youtubeVideo",
+      "description",
       "htmlContent",
+      "image",
     ]);
+
+    if (body.type === "blog") {
+      const imageMedia = await ImageMedia.findOneAndUpdate(
+        { _id: body.image },
+        { isUsed: true },
+        { new: true }
+      );
+
+      if (!imageMedia)
+        return res.status(400).send({
+          error: {
+            message: "Invalid image id.",
+          },
+        });
+
+      body.image = imageMedia;
+    }
 
     const post = await new Post(body).save();
     res.send(post);
@@ -164,8 +184,27 @@ router.put(
       "type",
       "title",
       "youtubeVideo",
+      "description",
       "htmlContent",
+      "image",
     ]);
+
+    if (body.image) {
+      const imageMedia = await ImageMedia.findOneAndUpdate(
+        { _id: body.image },
+        { isUsed: true },
+        { new: true }
+      );
+
+      if (!imageMedia)
+        return res.status(400).send({
+          error: {
+            message: "Invalid image id.",
+          },
+        });
+
+      body.image = imageMedia;
+    }
 
     const post = await Post.findByIdAndUpdate(id, body, {
       new: true,
