@@ -20,7 +20,7 @@ const createPostSchema = yup.object().shape({
 
   htmlContent: yup.string().when("type", {
     is: "blog",
-    then: yup.string().trim().min().max(5000).required(),
+    then: yup.string().trim().min(1).max(5000).required(),
   }),
 });
 
