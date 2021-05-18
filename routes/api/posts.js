@@ -55,7 +55,7 @@ router.get("/saved_posts", authorize(), async (req, res) => {
     },
   ]);
 
-  const result = savedPost.map((p) => {
+  const result = savedPosts.map((p) => {
     return { ..._.pick(p.post, postFields), saved: true };
   });
   res.send(result);
