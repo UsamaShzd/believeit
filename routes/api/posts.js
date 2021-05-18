@@ -55,7 +55,10 @@ router.get("/saved_posts", authorize(), async (req, res) => {
     },
   ]);
 
-  res.send(savedPosts);
+  const result = savedPost.map((p) => {
+    return { ..._.pick(p.post, postFields), saved: true };
+  });
+  res.send(result);
 });
 
 router.get(
@@ -91,10 +94,13 @@ router.get(
 );
 
 router.get("/", authorize("", { authentication: false }), async (req, res) => {
-  const { last_post_id = "", pageSize = 20 } = req.query;
+  const { last_post_id = "", pageSize = 20, search = "" } = req.query;
 
   const query = {};
 
+  if (search) {
+    query.title = new RegExp(search, "i");
+  }
   if (last_post_id) {
     if (!validateObjectId(last_post_id))
       return res.status(400).send({
