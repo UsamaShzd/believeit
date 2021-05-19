@@ -42,33 +42,28 @@ router.post(
   }
 );
 
-router.delete(
-  "/unsave_content/:content",
-  requestValidator(unsaveItemSchema),
-  authorize(),
-  async (req, res) => {
-    const { content } = req.params;
+router.delete("/unsave_content/:content", authorize(), async (req, res) => {
+  const { content } = req.params;
 
-    if (!validateObjectId(content))
-      return res
-        .status(404)
-        .send({ error: { message: "Saved Content not found!" } });
+  if (!validateObjectId(content))
+    return res
+      .status(404)
+      .send({ error: { message: "Saved Content not found!" } });
 
-    const { user } = req.authSession;
-    const savedItem = await SavedItem.findOneAndRemove({
-      content,
-      savedBy: user._id,
+  const { user } = req.authSession;
+  const savedItem = await SavedItem.findOneAndRemove({
+    content,
+    savedBy: user._id,
+  });
+
+  if (!savedItem)
+    return res.status(400).send({
+      error: {
+        message: "Alredy Unsaved",
+      },
     });
 
-    if (!savedItem)
-      return res.status(400).send({
-        error: {
-          message: "Alredy Unsaved",
-        },
-      });
-
-    res.send(savedItem);
-  }
-);
+  res.send(savedItem);
+});
 
 module.exports = router;
