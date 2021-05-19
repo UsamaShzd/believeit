@@ -93,7 +93,16 @@ router.post(
       "latitude",
     ]);
     //
-    const users = await User.find();
+    const users = await User.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+        },
+      },
+    });
     res.send(users);
   }
 );

@@ -84,7 +84,11 @@ router.get("/saved_qoutations", authorize(), async (req, res) => {
     },
   ]);
 
-  res.send(savedQoutations);
+  const result = savedQoutations.map((q) => {
+    return { ..._.pick(q.qoutation[0], qouteFiellds), saved: true };
+  });
+
+  res.send(result);
 });
 router.get(
   "/:id",
