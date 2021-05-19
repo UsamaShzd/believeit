@@ -6,6 +6,18 @@ const ImageMedia = require("./media/ImageMedia");
 const roles = require("../enums/roles");
 const subscription_plans = require("../enums/subscription_plans");
 
+const pointSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["Point"],
+    required: true,
+  },
+  coordinates: {
+    type: [Number],
+    required: true,
+  },
+});
+
 const userSchema = new mongoose.Schema({
   firstname: {
     type: String,
@@ -60,6 +72,11 @@ const userSchema = new mongoose.Schema({
   activeGoals: {
     type: Number,
     default: 0,
+  },
+
+  location: {
+    type: pointSchema,
+    index: "2dsphere",
   },
 
   subscription: {

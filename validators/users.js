@@ -1,8 +1,18 @@
 const yup = require("yup");
 
-exports.updateProfilePicSchema = yup.object().shape({
+const updateProfilePicSchema = yup.object().shape({
   image: yup
     .string()
     .required("Image is required")
     .objectId("Invalid Image Id."),
 });
+
+const updateLocationSchema = yup.object().shape({
+  longitude: yup.number().required(),
+  latitude: yup.number().required(),
+});
+
+module.exports = {
+  updateProfilePicSchema,
+  updateLocationSchema,
+};

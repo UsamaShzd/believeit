@@ -5,7 +5,10 @@ const _ = require("lodash");
 const ImageMedia = require("../../models/media/ImageMedia");
 
 const requestValidator = require("../../middlewares/requestValidator");
-const { updateProfilePicSchema } = require("../../validators/users");
+const {
+  updateProfilePicSchema,
+  updateLocationSchema,
+} = require("../../validators/users");
 const sanitizeUser = require("../../sanitizers/user");
 
 const router = express.Router();
@@ -46,6 +49,28 @@ router.put(
     await user.save();
 
     res.send(sanitizeUser(user));
+  }
+);
+
+router.put(
+  "/update_location",
+  requestValidator(updateLocationSchema),
+  authorize(),
+  async (req, res) => {
+    const { latitude, longitude } = _.pick(req.body, ["latitude", "longitude"]);
+
+    const { user } = req.authSession;
+
+    user.location = {
+      type: "Point",
+      coordinates: [longitude, latitude],
+    };
+
+    await user.save();
+
+    res.send({
+      message: "Location Updated!",
+    });
   }
 );
 module.exports = router;

@@ -87,7 +87,11 @@ router.post(
   requestValidator(searchConnectionSchema),
   authorize(),
   async (req, res) => {
-    const { name } = _.pick(req.body, ["name"]);
+    const { name, longitude, latitude } = _.pick(req.body, [
+      "name",
+      "longitude",
+      "latitude",
+    ]);
     //
     const users = await User.find();
     res.send(users);
