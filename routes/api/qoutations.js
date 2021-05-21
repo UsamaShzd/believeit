@@ -57,7 +57,8 @@ router.get(
 router.get("/saved_qoutations", authorize(), async (req, res) => {
   const { last_save_id = "", pageSize = 20 } = req.query;
 
-  const query = { type: "qoutation" };
+  const { user } = req.authSession;
+  const query = { type: "qoutation", savedBy: user._id };
 
   if (last_save_id) {
     if (!validateObjectId(last_save_id))
@@ -73,6 +74,7 @@ router.get("/saved_qoutations", authorize(), async (req, res) => {
 
   const savedQoutations = await SavedItem.aggregate([
     { $match: query },
+    { $sort: { createdAt: -1 } },
     { $limit: pageSize },
     {
       $lookup: {

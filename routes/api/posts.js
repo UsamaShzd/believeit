@@ -28,7 +28,8 @@ const router = express.Router();
 router.get("/saved_posts", authorize(), async (req, res) => {
   const { last_save_id = "", pageSize = 20 } = req.query;
 
-  const query = { type: "post" };
+  const { user } = req.authSession;
+  const query = { type: "post", savedBy: user._id };
 
   if (last_save_id) {
     if (!validateObjectId(last_save_id))
@@ -44,6 +45,7 @@ router.get("/saved_posts", authorize(), async (req, res) => {
 
   const savedPosts = await SavedItem.aggregate([
     { $match: query },
+    { $sort: { createdAt: -1 } },
     { $limit: pageSize },
     {
       $lookup: {
