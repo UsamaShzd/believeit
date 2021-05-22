@@ -103,6 +103,11 @@ const userSchema = new mongoose.Schema({
       type: Boolean,
     },
   },
+
+  wellnessScore: {
+    type: Number,
+    default: 0,
+  },
 });
 
 userSchema.methods.hashPassword = async function (password) {
