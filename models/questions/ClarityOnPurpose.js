@@ -1,42 +1,38 @@
 const mongoose = require("mongoose");
 
-const wellnessSchema = new mongoose.Schema({
+const clarityOnPurposeSchema = new mongoose.Schema({
   //1
-  satisfiedWithSleep: {
+  foundLifePurpose: {
     type: Number,
     default: 0,
   },
   //2
-  regularExerciseParticipation: {
+  frequentlyThinkingAboutLifePurpose: {
     type: Number,
     default: 0,
   },
   //3
-  lastTwoWeeksSubstanceUsage: {
+  reflectOnLifePurpose: {
     type: Number,
     default: 0,
   },
   //4
-  lastMonthMood: {
+  goalAlignWithLifePurpose: {
     type: Number,
     default: 0,
   },
   //5
-  tolarantTowardsChange: {
+  stuckInPastOrFuture: {
     type: Number,
     default: 0,
-  },
-  //6
-  gratefullFor: {
-    type: Number,
-    default: 0,
-  },
-  questionsCount: {
-    type: Number,
-    default: 6,
   },
 
-  totalWellnessScore: {
+  questionsCount: {
+    type: Number,
+    default: 5,
+  },
+
+  totalClarityScore: {
     type: Number,
     default: 0,
   },
@@ -48,6 +44,9 @@ const wellnessSchema = new mongoose.Schema({
   },
 });
 
-const Wellness = mongoose.model("wellness", wellnessSchema);
+const ClarityOnPurpose = mongoose.model(
+  "clarityonpurpose",
+  clarityOnPurposeSchema
+);
 
-module.exports = Wellness;
+module.exports = ClarityOnPurpose;

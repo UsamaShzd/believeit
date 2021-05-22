@@ -1,5 +1,5 @@
 const express = require("express");
-const Wellness = require("../../../models/questions/Wellness");
+const ClarityOnPurpose = require("../../../models/questions/ClarityOnPurpose");
 
 const authorize = require("../../../middlewares/authorize");
 const requestValidator = require("../../../middlewares/requestValidator");
@@ -11,20 +11,24 @@ const calculateQuestionGroupScore = require("../../../methods/calculateQuestionG
 const router = express.Router();
 
 const scoreFields = [
-  "satisfiedWithSleep",
-  "regularExerciseParticipation",
-  "lastTwoWeeksSubstanceUsage",
-  "lastMonthMood",
-  "tolarantTowardsChange",
-  "gratefullFor",
+  "foundLifePurpose",
+  "frequentlyThinkingAboutLifePurpose",
+  "reflectOnLifePurpose",
+  "goalAlignWithLifePurpose",
+  "stuckInPastOrFuture",
 ];
 
 router.get("/", authorize(), async (req, res) => {
   const { user } = req.authSession;
-  let wellness = await Wellness.findOne({ answeredBy: user._id });
-  if (!wellness) wellness = await new Wellness({ answeredBy: user._id }).save();
+  let clarityOnPurpose = await ClarityOnPurpose.findOne({
+    answeredBy: user._id,
+  });
+  if (!clarityOnPurpose)
+    clarityOnPurpose = await new ClarityOnPurpose({
+      answeredBy: user._id,
+    }).save();
 
-  res.send(wellness);
+  res.send(clarityOnPurpose);
 });
 
 const apis = [{ route: "/update_all", fieldName: scoreFields }];
@@ -43,24 +47,28 @@ apis.forEach(({ route, fieldName }) => {
     authorize(),
     async (req, res) => {
       const { user } = req.authSession;
-      let wellness = await Wellness.findOne({ answeredBy: user._id });
-      if (!wellness)
-        wellness = await new Wellness({ answeredBy: user._id }).save();
+      let clarityOnPurpose = await ClarityOnPurpose.findOne({
+        answeredBy: user._id,
+      });
+      if (!clarityOnPurpose)
+        clarityOnPurpose = await new ClarityOnPurpose({
+          answeredBy: user._id,
+        }).save();
 
       if (!Array.isArray(fieldName)) fieldName = [fieldName];
 
       fieldName.forEach((field) => {
-        wellness[field] = req.body[field];
+        clarityOnPurpose[field] = req.body[field];
       });
-      wellness.totalWellnessScore = calculateQuestionGroupScore(
-        wellness,
+      clarityOnPurpose.totalClarityScore = calculateQuestionGroupScore(
+        clarityOnPurpose,
         scoreFields
       );
 
-      await wellness.save();
-      user.wellnessScore = wellness.totalWellnessScore;
+      await clarityOnPurpose.save();
+      user.clarityOnPurposeScore = clarityOnPurpose.totalClarityScore;
       await user.save();
-      res.send(wellness);
+      res.send(clarityOnPurpose);
     }
   );
 });

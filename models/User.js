@@ -108,6 +108,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  clarityOnPurposeScore: {
+    type: Number,
+    default: 0,
+  },
 });
 
 userSchema.methods.hashPassword = async function (password) {
