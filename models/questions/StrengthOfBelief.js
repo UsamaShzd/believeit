@@ -1,42 +1,47 @@
 const mongoose = require("mongoose");
 
-const definedGoalSchema = new mongoose.Schema({
+const goalPlanSchema = new mongoose.Schema({
   //1
-  isDefiniteGoal: {
+  affirmationCount: {
     type: Number,
     default: 0,
   },
   //2
-  presistentlyWorkOnGoal: {
+  concentrateAndVisualize: {
     type: Number,
     default: 0,
   },
   //3
-  goalImportance: {
+  howConfident: {
     type: Number,
     default: 0,
   },
   //4
-  oftenThingAboutGoal: {
+  thinkAboutPastSuccess: {
     type: Number,
     default: 0,
   },
   //5
-  clearIdea: {
+  recentCriticism: {
     type: Number,
     default: 0,
   },
   //6
-  dedicatingEnough: {
+  thinkPositivelyToday: {
+    type: Number,
+    default: 0,
+  },
+  //7
+  thinkNegativelyToday: {
     type: Number,
     default: 0,
   },
   questionsCount: {
     type: Number,
-    default: 6,
+    default: 7,
   },
 
-  totalDefinedGoalScore: {
+  totalStrengthScore: {
     type: Number,
     default: 0,
   },
@@ -53,6 +58,6 @@ const definedGoalSchema = new mongoose.Schema({
   },
 });
 
-const DefinedGoal = mongoose.model("definedgoal", definedGoalSchema);
+const StrengthOfBelief = mongoose.model("strengthofbelief", goalPlanSchema);
 
-module.exports = DefinedGoal;
+module.exports = StrengthOfBelief;

@@ -1,5 +1,5 @@
 const express = require("express");
-const DefinedGoal = require("../../../models/questions/DefinedGoal");
+const StrengthOfBelief = require("../../../models/questions/StrengthOfBelief");
 
 const authorize = require("../../../middlewares/authorize");
 const requestValidator = require("../../../middlewares/requestValidator");
@@ -12,12 +12,13 @@ const calculateQuestionGroupScore = require("../../../methods/calculateQuestionG
 const router = express.Router();
 
 const scoreFields = [
-  "isDefiniteGoal",
-  "presistentlyWorkOnGoal",
-  "goalImportance",
-  "oftenThingAboutGoal",
-  "clearIdea",
-  "dedicatingEnough",
+  "affirmationCount",
+  "concentrateAndVisualize",
+  "howConfident",
+  "thinkAboutPastSuccess",
+  "recentCriticism",
+  "thinkPositivelyToday",
+  "thinkNegativelyToday",
 ];
 
 router.get("/:id", authorize(), async (req, res) => {
@@ -27,17 +28,17 @@ router.get("/:id", authorize(), async (req, res) => {
   if (!validateObjectId(id))
     return res.status(404).send({ error: { message: "Goal not found!" } });
 
-  let definedGoal = await DefinedGoal.findOne({
+  let strength = await StrengthOfBelief.findOne({
     answeredBy: user._id,
     goal: id,
   });
-  if (!definedGoal)
-    definedGoal = await new DefinedGoal({
+  if (!strength)
+    strength = await new StrengthOfBelief({
       answeredBy: user._id,
       goal: id,
     }).save();
 
-  res.send(definedGoal);
+  res.send(strength);
 });
 
 const apis = [{ route: "/update_all/:id", fieldName: scoreFields }];
@@ -62,12 +63,12 @@ apis.forEach(({ route, fieldName }) => {
       if (!validateObjectId(id))
         return res.status(404).send({ error: { message: "Goal not found!" } });
 
-      let definedGoal = await DefinedGoal.findOne({
+      let strength = await StrengthOfBelief.findOne({
         answeredBy: user._id,
         goal: id,
       });
-      if (!definedGoal)
-        definedGoal = await new DefinedGoal({
+      if (!strength)
+        strength = await new StrengthOfBelief({
           answeredBy: user._id,
           goal: id,
         }).save();
@@ -75,17 +76,17 @@ apis.forEach(({ route, fieldName }) => {
       if (!Array.isArray(fieldName)) fieldName = [fieldName];
 
       fieldName.forEach((field) => {
-        definedGoal[field] = req.body[field];
+        strength[field] = req.body[field];
       });
-      definedGoal.totalDefinedGoalScore = calculateQuestionGroupScore(
-        definedGoal,
+      strength.totalStrengthScore = calculateQuestionGroupScore(
+        strength,
         scoreFields
       );
 
-      await definedGoal.save();
-      user.clarityOnPurposeScore = definedGoal.totalDefinedGoalScore;
+      await strength.save();
+      user.clarityOnPurposeScore = strength.totalStrengthScore;
       await user.save();
-      res.send(definedGoal);
+      res.send(strength);
     }
   );
 });
