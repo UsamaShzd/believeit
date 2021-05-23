@@ -1,12 +1,14 @@
 const express = require("express");
 const ClarityOnPurpose = require("../../../models/questions/ClarityOnPurpose");
-
+const Goal = require("../../../models/Goal");
 const authorize = require("../../../middlewares/authorize");
 const requestValidator = require("../../../middlewares/requestValidator");
 
 const dynamicSchema = require("../../../validators/questions/dynamicSchema");
 
 const calculateQuestionGroupScore = require("../../../methods/calculateQuestionGroupScore");
+const calculateGoalScore = require("../../../methods/calculateGoalScore");
+const claculateCategoryAverageScore = require("../../../methods/claculateCategoryAverageScore");
 
 const router = express.Router();
 
@@ -68,9 +70,21 @@ apis.forEach(({ route, fieldName }) => {
       await clarityOnPurpose.save();
       user.clarityOnPurposeScore = clarityOnPurpose.totalClarityScore;
       await user.save();
+      updateScores(user._id);
       res.send(clarityOnPurpose);
     }
   );
 });
+
+const updateScores = async (id) => {
+  const goals = await Goal.find({ createdBy: id, isCompleted: false });
+
+  for (let i = 0; i < goals.length; ++i) {
+    const goal = goals[i];
+    await calculateGoalScore(goal._id, false);
+  }
+
+  await claculateCategoryAverageScore(id);
+};
 
 module.exports = router;

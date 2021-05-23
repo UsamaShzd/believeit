@@ -104,6 +104,10 @@ const userSchema = new mongoose.Schema({
     },
   },
 
+  categoryScore: {
+    type: Object,
+  },
+
   wellnessScore: {
     type: Number,
     default: 0,

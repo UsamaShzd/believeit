@@ -8,6 +8,7 @@ const validateObjectId = require("../../../helpers/validateObjectId");
 const dynamicSchema = require("../../../validators/questions/dynamicSchema");
 
 const calculateQuestionGroupScore = require("../../../methods/calculateQuestionGroupScore");
+const calculateGoalScore = require("../../../methods/calculateGoalScore");
 
 const router = express.Router();
 
@@ -87,6 +88,7 @@ apis.forEach(({ route, fieldName }) => {
       user.clarityOnPurposeScore =
         knowledgeAndCollab.totalKnowledgeAndCollabScore;
       await user.save();
+      calculateGoalScore(id);
       res.send(knowledgeAndCollab);
     }
   );

@@ -36,6 +36,11 @@ const goalSchema = new mongoose.Schema({
     trim: true,
   },
 
+  totalScore: {
+    type: Number,
+    default: 0,
+  },
+
   image: ImageMedia.schema,
 
   audio: AudioMedia.schema,
