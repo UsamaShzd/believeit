@@ -53,6 +53,7 @@ router.post(
       "importanceOfGoal",
       "image",
       "audio",
+      "isPublic",
     ]);
 
     const { preDefinedGoalRef, accomplishingDate } = body;

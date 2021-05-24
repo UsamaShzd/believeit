@@ -50,6 +50,11 @@ const goalSchema = new mongoose.Schema({
     default: false,
   },
 
+  isPublic: {
+    type: Boolean,
+    default: true,
+  },
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,

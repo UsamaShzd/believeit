@@ -5,14 +5,12 @@ const createGoalSchema = yup.object().shape({
   goalCategory: yup.string().objectId().required(),
   preDefinedGoalRef: yup.string().optional(),
   iAm: yup.string().min(1).max(200).required(),
-  accomplishingDate: yup
-    .date()
-    // .matches(/^\d{2}[./-]\d{2}[./-]\d{4}$/, "Invalid Date")
-    .required(),
+  accomplishingDate: yup.date().required(),
   afterAccomplishment: yup.string().min(1).max(200).required(),
   importanceOfGoal: yup.string().min(1).max(200).required(),
-  // image: yup.string().objectId().required(),
-  // audio: yup.string().objectId().required(),
+  image: yup.string().objectId().required(),
+  audio: yup.string().objectId().required(),
+  isPublic: yup.boolean().required(),
 });
 
 const editGoalSchema = yup.object().shape({
@@ -23,8 +21,8 @@ const editGoalSchema = yup.object().shape({
   accomplishingDate: yup.date().required(),
   afterAccomplishment: yup.string().min(1).max(200).required(),
   importanceOfGoal: yup.string().min(1).max(200).required(),
-  // image: yup.string().objectId().required(),
-  // audio: yup.string().objectId().required(),
+  image: yup.string().objectId().required(),
+  audio: yup.string().objectId().required(),
 });
 
 const changeGoalStatusSchema = yup.object().shape({
