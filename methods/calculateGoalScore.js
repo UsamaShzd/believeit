@@ -20,18 +20,18 @@ module.exports = async (id, calculateCategoryScore = true) => {
   let totalScore = 0;
 
   //wellness
-  let wellness = await Wellness.findOne({ answeredBy: goal.createdBy });
-  if (wellness) {
-    totalScore += wellness.totalWellnessScore;
-  }
+  // let wellness = await Wellness.findOne({ answeredBy: goal.createdBy });
+  // if (wellness) {
+  //   totalScore += wellness.totalWellnessScore;
+  // }
 
-  //clarityOnPurpose
-  let clarityOnPurpose = await ClarityOnPurpose.findOne({
-    answeredBy: goal.createdBy,
-  });
-  if (clarityOnPurpose) {
-    totalScore += clarityOnPurpose.totalClarityScore;
-  }
+  // //clarityOnPurpose
+  // let clarityOnPurpose = await ClarityOnPurpose.findOne({
+  //   answeredBy: goal.createdBy,
+  // });
+  // if (clarityOnPurpose) {
+  //   totalScore += clarityOnPurpose.totalClarityScore;
+  // }
 
   //definedGoal
   let definedGoal = await DefinedGoal.findOne({

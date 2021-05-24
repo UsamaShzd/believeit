@@ -8,8 +8,6 @@ const requestValidator = require("../../../middlewares/requestValidator");
 const dynamicSchema = require("../../../validators/questions/dynamicSchema");
 
 const calculateQuestionGroupScore = require("../../../methods/calculateQuestionGroupScore");
-const calculateGoalScore = require("../../../methods/calculateGoalScore");
-const claculateCategoryAverageScore = require("../../../methods/claculateCategoryAverageScore");
 
 const router = express.Router();
 
@@ -63,21 +61,10 @@ apis.forEach(({ route, fieldName }) => {
       await wellness.save();
       user.wellnessScore = wellness.totalWellnessScore;
       await user.save();
-      updateScores(user._id);
+
       res.send(wellness);
     }
   );
 });
-
-const updateScores = async (id) => {
-  const goals = await Goal.find({ createdBy: id, isCompleted: false });
-
-  for (let i = 0; i < goals.length; ++i) {
-    const goal = goals[i];
-    await calculateGoalScore(goal._id, false);
-  }
-
-  await claculateCategoryAverageScore(id);
-};
 
 module.exports = router;
