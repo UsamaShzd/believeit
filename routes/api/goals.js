@@ -9,6 +9,9 @@ const PreDefinedGoal = require("../../models/PreDefinedGoal");
 const PreDefinedMilestone = require("../../models/PreDefinedMilestone");
 const PreDefinedSubMilestone = require("../../models/PreDefinedSubMilestone");
 
+const ImageMedia = require("../../models/media/ImageMedia");
+const AudioMedia = require("../../models/media/AudioMedia");
+
 const validateObjectId = require("../../helpers/validateObjectId");
 
 const authorize = require("../../middlewares/authorize");
@@ -65,6 +68,41 @@ router.post(
         .status(400)
         .send({ error: { goalCategory: "Invalid Goal Category" } });
 
+    //setting goal image
+    if (body.image) {
+      const imageMedia = await ImageMedia.findOneAndUpdate(
+        { _id: body.image },
+        { isUsed: true },
+        { new: true }
+      );
+
+      if (!imageMedia)
+        return res.status(400).send({
+          error: {
+            message: "Invalid image id.",
+          },
+        });
+
+      body.image = imageMedia;
+    }
+
+    //setting goal Audio
+    if (body.audio) {
+      const audioMedia = await AudioMedia.findOneAndUpdate(
+        { _id: body.audio },
+        { isUsed: true },
+        { new: true }
+      );
+
+      if (!audioMedia)
+        return res.status(400).send({
+          error: {
+            message: "Invalid audio id.",
+          },
+        });
+
+      body.audio = audioMedia;
+    }
     const goal = await new Goal({
       ...body,
       goalCategory,
