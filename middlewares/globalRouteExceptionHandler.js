@@ -6,5 +6,7 @@ module.exports = function (err, req, res, next) {
     responseObject.error = err.toString();
   }
 
+  console.log("Request Error =>", err);
+
   res.status(500).send(responseObject);
 };
