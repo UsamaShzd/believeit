@@ -21,6 +21,7 @@ const {
   createGoalSchema,
   editGoalSchema,
   changeGoalStatusSchema,
+  changeCompletionSchema,
 } = require("../../validators/goal");
 
 const router = express.Router();
@@ -155,6 +156,28 @@ router.post(
   }
 );
 
+router.put(
+  "/update_completion/:id",
+  requestValidator(changeCompletionSchema),
+  authorize(),
+  async (req, res) => {
+    const { id } = req.params;
+
+    if (!validateObjectId(id))
+      return res.status(404).send({ error: { message: "Goal not found!" } });
+
+    const body = _.pick(req.body, ["completion"]);
+    const { user } = req.authSession;
+
+    const goal = await Goal.findOneAndUpdate(
+      { _id: id, createdBy: user._id },
+      body,
+      { new: true }
+    );
+
+    res.send(goal);
+  }
+);
 router.put(
   "/change_status/:id",
   requestValidator(changeGoalStatusSchema),

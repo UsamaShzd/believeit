@@ -29,8 +29,14 @@ const changeGoalStatusSchema = yup.object().shape({
   isCompleted: yup.boolean().required(),
 });
 
+//completion
+const changeCompletionSchema = yup.object().shape({
+  completion: yup.number().min(0).max(100).required(),
+});
+
 module.exports = {
   createGoalSchema,
   editGoalSchema,
   changeGoalStatusSchema,
+  changeCompletionSchema,
 };

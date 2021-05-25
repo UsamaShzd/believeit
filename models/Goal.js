@@ -36,6 +36,13 @@ const goalSchema = new mongoose.Schema({
     trim: true,
   },
 
+  completion: {
+    type: Number,
+    min: 0,
+    max: 100,
+    default: 0,
+  },
+
   totalScore: {
     type: Number,
     default: 0,
