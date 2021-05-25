@@ -32,6 +32,16 @@ router.get("/:id", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
+  let { search = "" } = req.query;
+
+  const query = { isActive: true };
+  search = search.trim();
+  if (search) {
+    search = search.split(" ");
+    query.$or = search.map((s) => {
+      return { title: new RegExp(s, "i") };
+    });
+  }
   const goals = await PreDefinedGoal.find();
   res.send(goals);
 });

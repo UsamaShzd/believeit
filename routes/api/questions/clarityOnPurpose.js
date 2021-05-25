@@ -1,6 +1,6 @@
 const express = require("express");
 const ClarityOnPurpose = require("../../../models/questions/ClarityOnPurpose");
-const Goal = require("../../../models/Goal");
+
 const authorize = require("../../../middlewares/authorize");
 const requestValidator = require("../../../middlewares/requestValidator");
 

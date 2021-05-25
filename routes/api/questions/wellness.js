@@ -1,6 +1,5 @@
 const express = require("express");
 const Wellness = require("../../../models/questions/Wellness");
-const Goal = require("../../../models/Goal");
 
 const authorize = require("../../../middlewares/authorize");
 const requestValidator = require("../../../middlewares/requestValidator");
