@@ -8,10 +8,13 @@ const User = require("../../models/User");
 const Connection = require("../../models/Connection");
 const Notification = require("../../models/Notification");
 
+const Goal = require("../../models/Goal");
+
 const requestValidator = require("../../middlewares/requestValidator");
 const {
   searchConnectionSchema,
   requestConnectionSchema,
+  goalMembershipSchema,
 } = require("../../validators/connection");
 
 const {
@@ -161,6 +164,47 @@ router.post(
   }
 );
 
+router.post(
+  "/send_goal_membership_request",
+  requestValidator(goalMembershipSchema),
+  authorize(),
+  async (req, res) => {
+    const { requestedUser, goalRef } = _.pick(req.body, [
+      "requestedUser",
+      "goalRef",
+    ]);
+    const { user } = req.authSession;
+
+    const goal = await Goal.findOneAndUpdate(
+      {
+        _id: goalRef,
+        createdBy: user._id,
+        "members.memberId": { $ne: requestedUser },
+      },
+      {
+        $addToSet: {
+          members: { memberId: requestedUser, status: "requested" },
+        },
+      },
+      { new: true }
+    );
+
+    if (!goal)
+      return res.status(400).send({
+        error: { message: "It seems you have alredy requested this user." },
+      });
+
+    //save notification
+    const notification = await new Notification({
+      sender: user._id,
+      reciever: requestedUser,
+      goalMembeship: goal._id,
+    }).save();
+
+    res.send({ message: "Membership request sent." });
+  }
+);
+
 router.put("/accept_connection_request/:id", authorize(), async (req, res) => {
   const { id } = req.params;
 
@@ -181,6 +225,78 @@ router.put("/accept_connection_request/:id", authorize(), async (req, res) => {
       .send({ error: { message: "Connection not found!" } });
 
   res.send(connection);
+});
+
+router.put("/accept_goal_membership/:id", authorize(), async (req, res) => {
+  const { id } = req.params;
+
+  if (!validateObjectId(id))
+    return res
+      .status(404)
+      .send({ error: { message: "Connection not found!" } });
+
+  const { user } = req.authSession;
+  const goal = await Goal.findById(id);
+
+  if (!goal)
+    return res.status(404).send({
+      error: {
+        message: "Goal not found",
+      },
+    });
+
+  let includes = false;
+  goal.members = goal.members.map((m) => {
+    if (`${m.memberId}` === `${user._id}`) {
+      m.status = "accepted";
+      includes = true;
+    }
+    return m;
+  });
+
+  if (!includes)
+    return res.status(404).send({
+      error: {
+        message: "You are not requested to join this goal's membership.",
+      },
+    });
+  //
+  await goal.save();
+
+  //remove notification
+
+  const notification = await Notification.deleteMany({
+    sender: goal.createdBy,
+    reciever: user._id,
+    goalMembeship: goal._id,
+  });
+
+  //if not connected then connect
+  const previousConneciton = await Connection.findOne({
+    $and: [
+      {
+        "members.user": user._id,
+      },
+      {
+        "members.user": goal.createdBy,
+      },
+    ],
+  });
+
+  if (!previousConneciton) {
+    const connection = await new Connection({
+      initiator_id: goal.createdBy,
+      members: [{ user: user._id }, { user: goal.createdBy }],
+      status: "accepted",
+      acceptedAt: Date.now(),
+    }).save();
+  }
+
+  if (previousConneciton && previousConneciton.status === "requested") {
+    previousConneciton.status = "accepted";
+    await previousConneciton.save();
+  }
+  res.send({ message: "Membership request accepted." });
 });
 
 router.delete("/cancel_connection/:id", authorize(), async (req, res) => {
@@ -204,6 +320,47 @@ router.delete("/cancel_connection/:id", authorize(), async (req, res) => {
       .send({ error: { message: "Connection not found!" } });
 
   res.send(connection);
+});
+
+router.delete("/decline_goal_membership/:id", authorize(), async (req, res) => {
+  const { id } = req.params;
+
+  if (!validateObjectId(id))
+    return res
+      .status(404)
+      .send({ error: { message: "Connection not found!" } });
+
+  const { user } = req.authSession;
+  const goal = await Goal.findOneAndUpdate(
+    {
+      _id: id,
+      // members: {
+      //   memberId: user._id,
+      // },
+    },
+    {
+      $pull: {
+        members: { memberId: user._id },
+      },
+    }
+  );
+
+  if (!goal)
+    return res.status(404).send({
+      error: {
+        message: "Goal not found",
+      },
+    });
+
+  //remove notification
+
+  const notification = await Notification.deleteMany({
+    sender: goal.createdBy,
+    reciever: user._id,
+    goalMembeship: goal._id,
+  });
+
+  res.send({ message: "Membership request declined." });
 });
 
 module.exports = router;

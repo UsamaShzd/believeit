@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const notificationSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ["connection_request"],
+    enum: ["goal_membership_request"],
   },
 
   seen: {
@@ -29,9 +29,14 @@ const notificationSchema = new mongoose.Schema({
     ref: "user",
   },
 
-  connection: {
+  goalMembeship: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref: "goal",
+  },
+
+  connection: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: "connection",
   },
 

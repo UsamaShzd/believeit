@@ -36,6 +36,19 @@ const goalSchema = new mongoose.Schema({
     trim: true,
   },
 
+  members: [
+    new mongoose.Schema({
+      memberId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+      },
+      status: {
+        type: String,
+        enum: ["accepted", "requested"],
+      },
+    }),
+  ],
+
   completion: {
     type: Number,
     min: 0,
