@@ -15,6 +15,27 @@ const { ADMIN } = require("../../enums/roles");
 const validateObjectId = require("../../helpers/validateObjectId");
 const router = express.Router();
 
+router.get("/list", async (req, res) => {
+  let { pageSize = 20, pageNum = 1, search = "" } = req.query;
+  pageSize = parseInt(pageSize);
+  pageNum = parseInt(pageNum);
+  const offset = pageSize * (pageNum - 1);
+
+  const query = {};
+
+  if (search) {
+    query.name = new RegExp(search, "i");
+  }
+  const categories = await QouteCategory.find(query)
+    .sort("-_id")
+    .skip(offset)
+    .limit(pageSize);
+
+  const totalCount = await QouteCategory.find(query).count();
+  const hasMore = offset + pageSize < totalCount;
+  res.send({ hasMore, pageSize, pageNum, list: categories });
+});
+
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
 
