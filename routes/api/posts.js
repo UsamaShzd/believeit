@@ -26,10 +26,13 @@ const postFields = [
 const router = express.Router();
 
 router.get("/saved_posts", authorize(), async (req, res) => {
-  const { last_save_id = "", pageSize = 20 } = req.query;
+  const { last_save_id = "", pageSize = 20, search = "" } = req.query;
 
   const { user } = req.authSession;
   const query = { type: "post", savedBy: user._id };
+
+  if (search) {
+  }
 
   if (last_save_id) {
     if (!validateObjectId(last_save_id))
@@ -43,22 +46,34 @@ router.get("/saved_posts", authorize(), async (req, res) => {
     };
   }
 
-  const savedPosts = await SavedItem.aggregate([
-    { $match: query },
-    { $sort: { createdAt: -1 } },
-    { $limit: pageSize },
-    {
-      $lookup: {
-        from: "posts",
-        localField: "content",
-        foreignField: "_id",
-        as: "post",
-      },
+  const pipeline = [{ $match: query }, { $sort: { createdAt: -1 } }];
+
+  if (!search) {
+    pipeline.push({ $limit: pageSize });
+  }
+
+  pipeline.push({
+    $lookup: {
+      from: "posts",
+      localField: "content",
+      foreignField: "_id",
+      as: "post",
     },
-  ]);
+  });
+
+  if (search) {
+    pipeline.push({ $match: { "post.title": new RegExp(search, "i") } });
+
+    pipeline.push({ $limit: pageSize });
+  }
+  const savedPosts = await SavedItem.aggregate(pipeline);
 
   const result = savedPosts.map((p) => {
-    return { ..._.pick(p.post[0], postFields), saved: true };
+    return {
+      ..._.pick(p.post[0], postFields),
+      saved: true,
+      saved_item_id: p._id,
+    };
   });
   res.send(result);
 });
