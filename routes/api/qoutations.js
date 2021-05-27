@@ -55,7 +55,7 @@ router.get(
 );
 
 router.get("/saved_qoutations", authorize(), async (req, res) => {
-  const { last_save_id = "", pageSize = 20 } = req.query;
+  const { last_save_id = "", pageSize = 20, search = "" } = req.query;
 
   const { user } = req.authSession;
   const query = { type: "qoutation", savedBy: user._id };
@@ -72,26 +72,40 @@ router.get("/saved_qoutations", authorize(), async (req, res) => {
     };
   }
 
-  const savedQoutations = await SavedItem.aggregate([
-    { $match: query },
-    { $sort: { createdAt: -1 } },
-    { $limit: pageSize },
-    {
-      $lookup: {
-        from: "qoutations",
-        localField: "content",
-        foreignField: "_id",
-        as: "qoutation",
-      },
+  const pipeline = [{ $match: query }, { $sort: { createdAt: -1 } }];
+
+  if (!search) {
+    pipeline.push({ $limit: pageSize });
+  }
+
+  pipeline.push({
+    $lookup: {
+      from: "qoutations",
+      localField: "content",
+      foreignField: "_id",
+      as: "qoutation",
     },
-  ]);
+  });
+
+  if (search) {
+    pipeline.push({
+      $match: { "qoutation.qoutation": new RegExp(search, "i") },
+    });
+    pipeline.push({ $limit: pageSize });
+  }
+  const savedQoutations = await SavedItem.aggregate(pipeline);
 
   const result = savedQoutations.map((q) => {
-    return { ..._.pick(q.qoutation[0], qouteFiellds), saved: true };
+    return {
+      ..._.pick(q.qoutation[0], qouteFiellds),
+      saved: true,
+      saved_item_id: q._id,
+    };
   });
 
   res.send(result);
 });
+
 router.get(
   "/:id",
   authorize("", { authentication: false }),
