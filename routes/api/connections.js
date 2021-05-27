@@ -90,23 +90,76 @@ router.post(
   requestValidator(searchConnectionSchema),
   authorize(),
   async (req, res) => {
-    const { name, longitude, latitude } = _.pick(req.body, [
-      "name",
+    let { pageNum = 1, pageSize = 20 } = req.query;
+
+    pageSize = parseInt(pageSize);
+    pageNum = parseInt(pageNum);
+
+    const offset = pageSize * (pageNum - 1);
+
+    let {
+      search = "",
+      longitude,
+      latitude,
+      distance,
+      category,
+    } = _.pick(req.body, [
+      "search",
       "longitude",
       "latitude",
+      "distance",
+      "category",
     ]);
     //
-    const users = await User.find({
+    const { user } = req.authSession;
+
+    const query = {
+      _id: { $ne: user._id },
+
       location: {
         $near: {
           $geometry: {
             type: "Point",
             coordinates: [longitude, latitude],
           },
+          $maxDistance: distance,
         },
       },
-    });
-    res.send(users);
+    };
+
+    if (search) {
+      search = search
+        .trim()
+        .split(" ")
+        .map((s) => new RegExp(s, "i"));
+      query.$or = [
+        {
+          firstname: {
+            $in: search,
+          },
+        },
+        {
+          lastname: {
+            $in: search,
+          },
+        },
+        {
+          email: {
+            $in: search,
+          },
+        },
+      ];
+    }
+
+    const users = await User.find(query)
+      .sort(`-categoryScore.${category}`)
+      .select(USER_PUBLIC_FIELDS + " categoryScore")
+      .skip(offset)
+      .limit(pageSize);
+
+    const totalCount = await User.find(query).count();
+    const hasMore = offset + pageSize < totalCount;
+    res.send({ hasMore, pageSize, pageNum, list: users });
   }
 );
 
