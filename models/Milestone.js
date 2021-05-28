@@ -19,6 +19,28 @@ const mileStoneSchema = new mongoose.Schema({
     type: Date,
   },
 
+  frequency: { type: Number, default: 1 },
+
+  repeatingDays: {
+    type: [String],
+    default: [],
+    enum: [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
+    ],
+  },
+
+  customIdentifier: {
+    type: String,
+  },
+  timeOfDay: {
+    type: String,
+  },
   isCompleted: {
     type: Boolean,
     default: false,

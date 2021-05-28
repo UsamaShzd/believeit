@@ -12,7 +12,8 @@ const USER_PUBLIC_FIELDS =
 const router = express.Router();
 
 router.get("/list/:chatRoom", authorize(), async (req, res) => {
-  const { last_message_id = "", pageSize = 20 } = req.query;
+  let { last_message_id = "", pageSize = 10 } = req.query;
+  pageSize = parseInt(pageSize);
   const { chatRoom } = req.params;
 
   if (!validateObjectId(chatRoom))

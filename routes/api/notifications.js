@@ -12,7 +12,8 @@ const USER_PUBLIC_FIELDS =
 const router = express.Router();
 
 router.get("/my_notifications", authorize(), async (req, res) => {
-  const { last_notification_id = "", pageSize = 20 } = req.query;
+  let { last_notification_id = "", pageSize = 10 } = req.query;
+  pageSize = parseInt(pageSize);
   const { user } = req.authSession;
 
   const query = {

@@ -55,7 +55,8 @@ router.get(
 );
 
 router.get("/saved_qoutations", authorize(), async (req, res) => {
-  const { last_save_id = "", pageSize = 20, search = "" } = req.query;
+  let { last_save_id = "", pageSize = 10, search = "" } = req.query;
+  pageSize = parseInt(pageSize);
 
   const { user } = req.authSession;
   const query = { type: "qoutation", savedBy: user._id };

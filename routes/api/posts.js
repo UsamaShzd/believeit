@@ -26,8 +26,8 @@ const postFields = [
 const router = express.Router();
 
 router.get("/saved_posts", authorize(), async (req, res) => {
-  const { last_save_id = "", pageSize = 20, search = "" } = req.query;
-
+  let { last_save_id = "", pageSize = 10, search = "" } = req.query;
+  pageSize = parseInt(pageSize);
   const { user } = req.authSession;
   const query = { type: "post", savedBy: user._id };
 
@@ -111,8 +111,8 @@ router.get(
 );
 
 router.get("/", authorize("", { authentication: false }), async (req, res) => {
-  const { last_post_id = "", pageSize = 20, search = "" } = req.query;
-
+  let { last_post_id = "", pageSize = 10, search = "" } = req.query;
+  pageSize = parseInt(pageSize);
   const query = {};
 
   if (search) {

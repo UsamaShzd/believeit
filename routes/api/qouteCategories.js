@@ -16,7 +16,7 @@ const validateObjectId = require("../../helpers/validateObjectId");
 const router = express.Router();
 
 router.get("/list", async (req, res) => {
-  let { pageSize = 20, pageNum = 1, search = "" } = req.query;
+  let { pageSize = 10, pageNum = 1, search = "" } = req.query;
   pageSize = parseInt(pageSize);
   pageNum = parseInt(pageNum);
   const offset = pageSize * (pageNum - 1);

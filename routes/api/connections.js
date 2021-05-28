@@ -30,7 +30,9 @@ const USER_PUBLIC_FIELDS =
 const router = express.Router();
 
 router.get("/my_connections", authorize(), async (req, res) => {
-  const { last_connection_id = "", pageSize = 20 } = req.query;
+  let { last_connection_id = "", pageSize = 10 } = req.query;
+  pageSize = parseInt(pageSize);
+
   const { user } = req.authSession;
 
   const query = {
@@ -58,7 +60,8 @@ router.get("/my_connections", authorize(), async (req, res) => {
 });
 
 router.get("/my_connection_requests", authorize(), async (req, res) => {
-  const { last_connection_id = "", pageSize = 20 } = req.query;
+  let { last_connection_id = "", pageSize = 10 } = req.query;
+  pageSize = parseInt(pageSize);
   const { user } = req.authSession;
 
   const query = {
@@ -90,7 +93,7 @@ router.post(
   requestValidator(searchConnectionSchema),
   authorize(),
   async (req, res) => {
-    let { pageNum = 1, pageSize = 20 } = req.query;
+    let { pageNum = 1, pageSize = 10 } = req.query;
 
     pageSize = parseInt(pageSize);
     pageNum = parseInt(pageNum);
