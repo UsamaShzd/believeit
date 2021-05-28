@@ -65,6 +65,13 @@ const goalSchema = new mongoose.Schema({
 
   audio: AudioMedia.schema,
 
+  song: AudioMedia.schema,
+
+  toPlay: {
+    type: String,
+    enum: ["song", "audio", "both"],
+  },
+
   isCompleted: {
     type: Boolean,
     default: false,

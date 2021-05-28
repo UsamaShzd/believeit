@@ -57,6 +57,8 @@ router.post(
       "importanceOfGoal",
       "image",
       "audio",
+      "song",
+      "toPlay",
       "isPublic",
     ]);
 
@@ -104,11 +106,31 @@ router.post(
 
       body.audio = audioMedia;
     }
+
+    //setting goal Audio
+    if (body.song) {
+      const audioMedia = await AudioMedia.findOneAndUpdate(
+        { _id: body.song },
+        { isUsed: true },
+        { new: true }
+      );
+
+      if (!audioMedia)
+        return res.status(400).send({
+          error: {
+            message: "Invalid song id.",
+          },
+        });
+
+      body.song = audioMedia;
+    }
+
     const goal = await new Goal({
       ...body,
       goalCategory,
       createdBy: user._id,
     }).save();
+
     if (preDefinedGoalRef) {
       const preDefinedGoal = await PreDefinedGoal.findById(preDefinedGoalRef);
 

@@ -10,6 +10,8 @@ const createGoalSchema = yup.object().shape({
   importanceOfGoal: yup.string().min(1).max(200).required(),
   image: yup.string().objectId().required(),
   audio: yup.string().objectId().required(),
+  song: yup.string().objectId().required(),
+  toPlay: yup.string().min(5).max(200).required(),
   isPublic: yup.boolean().required(),
 });
 
