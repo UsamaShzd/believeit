@@ -1,5 +1,6 @@
 const express = require("express");
 const _ = require("lodash");
+const uuid = require("uuid");
 
 const Milestone = require("../../models/Milestone");
 
@@ -58,6 +59,8 @@ router.post(
       "endDate",
       "repeatingDays",
     ]);
+
+    body.customIdentifier = uuid.v4();
 
     body.startDate = new Date(body.startDate);
     body.endDate = new Date(body.endDate);

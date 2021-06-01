@@ -7,7 +7,7 @@ const savedItemSchema = new mongoose.Schema({
   type: {
     type: String,
     trim: true,
-    enum: ["qoutation", "post"],
+    enum: ["qoutation", "post", "affirmation"],
   },
   savedBy: {
     type: mongoose.Schema.Types.ObjectId,
