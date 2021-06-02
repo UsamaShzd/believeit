@@ -79,10 +79,20 @@ const userSchema = new mongoose.Schema({
     index: "2dsphere",
   },
 
+  stripeCustomerId: {
+    type: String,
+    default: "",
+  },
+
+  trialAvailed: {
+    type: Boolean,
+    default: false,
+  },
   subscription: {
     type: {
       type: String,
       trim: true,
+      default: "FREE",
       enum: Object.entries(subscription_plans).map((plan) => plan.name),
     },
 
@@ -94,9 +104,14 @@ const userSchema = new mongoose.Schema({
       type: Date,
     },
 
+    maxActiveGoals: {
+      type: Number,
+      default: 1,
+    },
+
     isUnlimited: {
       type: Boolean,
-      default: false,
+      default: true,
     },
 
     isTrial: {

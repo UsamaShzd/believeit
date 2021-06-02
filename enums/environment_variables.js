@@ -8,4 +8,5 @@ module.exports = Object.freeze([
   "AWS_SECRET_ACCESS_KEY",
   "AWS_S3_BUCKET_NAME",
   "REDIS_CONNECTION_URL",
+  "STRIPE_SECRET_KEY",
 ]);

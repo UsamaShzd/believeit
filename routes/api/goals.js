@@ -47,6 +47,22 @@ router.post(
   authorize(),
   async (req, res) => {
     const { user } = req.authSession;
+
+    let subscription = user.subscription || {};
+    if (!subscription.maxActiveGoals) subscription.maxActiveGoals = 1;
+
+    const acitveGoalsCount = await Goal.find({
+      createdBy: user._id,
+      isCompleted: true,
+    }).count();
+
+    if (acitveGoalsCount >= subscription.maxActiveGoals)
+      return res.send({
+        error: {
+          message: `You cannot have more than ${subscription.maxActiveGoals} incomplete goals.`,
+        },
+      });
+
     const body = _.pick(req.body, [
       "title",
       "goalCategory",
