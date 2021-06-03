@@ -13,13 +13,18 @@ const mileStoneSchema = new mongoose.Schema({
     ref: "goal",
   },
 
-  startDate: { type: Date },
+  startDate: {
+    type: Date,
+  },
 
   endDate: {
     type: Date,
   },
 
-  frequency: { type: Number, default: 1 },
+  frequency: {
+    type: Number,
+    default: 1,
+  },
 
   repeatingDays: {
     type: [String],
@@ -38,6 +43,7 @@ const mileStoneSchema = new mongoose.Schema({
   customIdentifier: {
     type: String,
   },
+
   timeOfDay: {
     type: String,
   },

@@ -26,6 +26,9 @@ const {
 
 const router = express.Router();
 
+const USER_PUBLIC_FIELDS =
+  "firstname lastname image.thumbnailUrl image.imageUrl image.aspectRatio";
+
 router.get("/get_my_goals", authorize(), async (req, res) => {
   const { is_completed } = req.query;
   const { user } = req.authSession;
@@ -36,7 +39,10 @@ router.get("/get_my_goals", authorize(), async (req, res) => {
     query.isCompleted = is_completed === "1" ? true : false;
   }
 
-  const goals = await Goal.find(query);
+  const goals = await Goal.find(query).populate(
+    "members.memberId",
+    USER_PUBLIC_FIELDS
+  );
 
   res.send(goals);
 });
