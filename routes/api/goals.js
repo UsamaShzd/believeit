@@ -53,7 +53,7 @@ router.post(
 
     const acitveGoalsCount = await Goal.find({
       createdBy: user._id,
-      isCompleted: true,
+      isCompleted: false,
     }).count();
 
     if (acitveGoalsCount >= subscription.maxActiveGoals)
