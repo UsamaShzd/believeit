@@ -15,7 +15,7 @@ const audioUpload = multer({
     fileSize: 1024 * 1024 * 20,
   },
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(mp3|wav|)$/))
+    if (!file.originalname.match(/\.(mp3|wav|m4a)$/))
       return cb(new Error("Please upload an audio file."));
     cb(undefined, true);
   },
