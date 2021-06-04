@@ -1,6 +1,7 @@
 const express = require("express");
 const _ = require("lodash");
 const uuid = require("uuid");
+const moment = require("moment");
 
 const Milestone = require("../../models/Milestone");
 
@@ -11,6 +12,7 @@ const {
   createMilestoneSchema,
   editMilestoneSchema,
   changeMilestoneStatusSchema,
+  markDayAsCompletedSchema,
 } = require("../../validators/milestone");
 
 const { ADMIN } = require("../../enums/roles");
@@ -58,49 +60,35 @@ router.post(
       "startDate",
       "endDate",
       "repeatingDays",
+      "timeOfDay",
     ]);
 
-    body.customIdentifier = uuid.v4();
+    const customIdentifier = uuid.v4();
+    body.customIdentifier = customIdentifier;
 
-    body.startDate = new Date(body.startDate);
-    body.endDate = new Date(body.endDate);
+    const { repeatingDays, startDate, endDate } = body;
+
+    body.startDate = new Date(startDate);
+    body.endDate = new Date(endDate);
 
     const { user } = req.authSession;
 
-    const { frequency, repeatingDays, startDate, endDate } = body;
-
-    if (frequency > 1) {
+    if (repeatingDays.length > 0) {
       const repeatingDates = getDatesOfRepeatingDays(
         startDate,
         endDate,
         repeatingDays
       );
-
-      if (frequency < repeatingDates.length)
-        return res.status(400).send({
-          error: {
-            message: "Frequency cannot be greater than repeating days",
-          },
-        });
-
-      const result = [];
-      for (let i = 0; i < repeatingDates.length; ++i) {
-        const milestone = await new Milestone({
-          ...body,
-          startDate: repeatingDates[i],
-          endDate: repeatingDates[i],
-          createdBy: user._id,
-        }).save();
-        result.push(milestone);
-      }
-      res.send(result);
-    } else {
-      const milestone = await new Milestone({
-        ...body,
-        createdBy: user._id,
-      }).save();
-      res.send(milestone);
+      body.repeatingDates = repeatingDates.map((d) =>
+        moment(d).format("MM/DD/YYYY")
+      );
     }
+
+    const milestone = await new Milestone({
+      ...body,
+      createdBy: user._id,
+    }).save();
+    res.send(milestone);
   }
 );
 
@@ -118,6 +106,32 @@ router.post(
 //   }
 // );
 
+router.put(
+  "/mark_day_as_completed/:id",
+  requestValidator(markDayAsCompletedSchema),
+  authorize(),
+  async (req, res) => {
+    const { id } = req.params;
+
+    if (!validateObjectId(id))
+      return res
+        .status(404)
+        .send({ error: { message: "Milestone not found!" } });
+
+    const { completionDate } = _.pick(req.body, ["completionDate"]);
+    const milestone = await Milestone.findByIdAndUpdate(
+      id,
+      {
+        $addToSet: {
+          completedDates: completionDate,
+        },
+      },
+      { new: true }
+    );
+
+    res.send(milestone);
+  }
+);
 router.put(
   "/change_status/:id",
   requestValidator(changeMilestoneStatusSchema),

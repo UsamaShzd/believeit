@@ -1,8 +1,8 @@
 const moment = require("moment");
 
 exports.getDatesOfRepeatingDays = (startDate, endDate, repeatingDays = []) => {
-  startDate = moment(startDate);
-
+  startDate = moment(startDate, "MM/DD/YYYY");
+  endDate = moment(endDate, "MM/DD/YYYY").toDate();
   const result = [];
   while (startDate.toDate() <= endDate) {
     const dayName = startDate.format("dddd").toLowerCase();

@@ -40,13 +40,24 @@ const mileStoneSchema = new mongoose.Schema({
     ],
   },
 
+  repeatingDates: {
+    type: [String],
+    default: [],
+  },
+
   customIdentifier: {
     type: String,
   },
 
   timeOfDay: {
-    type: String,
+    type: [String],
   },
+
+  completedDates: {
+    type: [String],
+    default: [],
+  },
+
   isCompleted: {
     type: Boolean,
     default: false,
