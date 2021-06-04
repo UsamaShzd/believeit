@@ -255,6 +255,7 @@ router.post(
       sender: user._id,
       reciever: requestedUser,
       goalMembeship: goal._id,
+      type: "goal_membership_request",
     }).save();
 
     res.send({ message: "Membership request sent." });
@@ -325,6 +326,7 @@ router.put("/accept_goal_membership/:id", authorize(), async (req, res) => {
     sender: goal.createdBy,
     reciever: user._id,
     goalMembeship: goal._id,
+    type: "goal_membership_request",
   });
 
   //if not connected then connect
@@ -414,6 +416,7 @@ router.delete("/decline_goal_membership/:id", authorize(), async (req, res) => {
     sender: goal.createdBy,
     reciever: user._id,
     goalMembeship: goal._id,
+    type: "goal_membership_request",
   });
 
   res.send({ message: "Membership request declined." });
