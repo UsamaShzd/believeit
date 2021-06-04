@@ -258,6 +258,26 @@ router.post(
       type: "goal_membership_request",
     }).save();
 
+    const pushTokens = await getPushTokens(requestedUser);
+
+    const push_notification = {
+      to: pushTokens,
+      title: `${user.firstname} ${user.lastname}`,
+      body: `${user.firstname} ${user.lastname} sent you a connection request.`,
+      data: {
+        ..._.pick(notification, [
+          "_id",
+          "type",
+          "connection",
+          "goalMembeship",
+          "createdAt",
+        ]),
+        sender: _.pick(user, USER_PUBLIC_FIELDS.split(" ")),
+      },
+      sound: "default",
+    };
+    sendPushNotifications(push_notification);
+
     res.send({ message: "Membership request sent." });
   }
 );
