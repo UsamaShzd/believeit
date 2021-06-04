@@ -35,7 +35,8 @@ router.get("/my_notifications", authorize(), async (req, res) => {
   const notifications = await Notification.find(query)
     .limit(pageSize)
     .sort("-createdAt")
-    .populate("sender", USER_PUBLIC_FIELDS);
+    .populate("sender", USER_PUBLIC_FIELDS)
+    .populate("goalMembeship", "title");
 
   res.send(notifications);
 });
