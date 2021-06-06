@@ -45,10 +45,6 @@ const mileStoneSchema = new mongoose.Schema({
     default: [],
   },
 
-  customIdentifier: {
-    type: String,
-  },
-
   timeOfDay: {
     type: [String],
   },

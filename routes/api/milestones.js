@@ -32,7 +32,19 @@ router.get("/goal_milestones/:id", async (req, res) => {
     goal: id,
   }).sort("startDate");
 
-  res.send(milestones);
+  const result = [];
+
+  milestones.forEach((ms) => {
+    const calculatedMilestone = makeMilestone(ms);
+    if (!Array.isArray(calculatedMilestone))
+      return result.push(calculatedMilestone);
+
+    calculatedMilestone.forEach((cMs) => {
+      result.push(cMs);
+    });
+  });
+
+  res.send(result);
 });
 
 router.get("/:id", async (req, res) => {
@@ -63,8 +75,7 @@ router.post(
       "timeOfDay",
     ]);
 
-    const customIdentifier = uuid.v4();
-    body.customIdentifier = customIdentifier;
+    body.customIdentifier = uuid.v4();
 
     const { repeatingDays, startDate, endDate } = body;
 
@@ -88,7 +99,8 @@ router.post(
       ...body,
       createdBy: user._id,
     }).save();
-    res.send(milestone);
+
+    res.send(makeMilestone(milestone));
   }
 );
 
@@ -132,32 +144,33 @@ router.put(
     res.send(milestone);
   }
 );
-router.put(
-  "/change_status/:id",
-  requestValidator(changeMilestoneStatusSchema),
-  authorize(),
-  async (req, res) => {
-    const { id } = req.params;
 
-    if (!validateObjectId(id))
-      return res
-        .status(404)
-        .send({ error: { message: "Milestone not found!" } });
+// router.put(
+//   "/change_status/:id",
+//   requestValidator(changeMilestoneStatusSchema),
+//   authorize(),
+//   async (req, res) => {
+//     const { id } = req.params;
 
-    const body = _.pick(req.body, ["isCompleted"]);
+//     if (!validateObjectId(id))
+//       return res
+//         .status(404)
+//         .send({ error: { message: "Milestone not found!" } });
 
-    const milestone = await Milestone.findByIdAndUpdate(id, body, {
-      new: true,
-    });
+//     const body = _.pick(req.body, ["isCompleted"]);
 
-    if (!milestone)
-      return res
-        .status(404)
-        .send({ error: { message: "Milestone not found!" } });
+//     const milestone = await Milestone.findByIdAndUpdate(id, body, {
+//       new: true,
+//     });
 
-    res.send(milestone);
-  }
-);
+//     if (!milestone)
+//       return res
+//         .status(404)
+//         .send({ error: { message: "Milestone not found!" } });
+
+//     res.send(milestone);
+//   }
+// );
 
 router.put(
   "/:id",
@@ -202,5 +215,52 @@ router.delete("/:id", authorize(), async (req, res) => {
 
   res.send(milestone);
 });
+
+const makeMilestone = (ms) => {
+  //if repeating
+  if (ms.repeatingDays.length === 0)
+    return {
+      ..._.pick(ms, [
+        "_id",
+        "title",
+        "goal",
+        "startDate",
+        "endDate",
+        "repeatingDays",
+        "timeOfDay",
+        "frequency",
+      ]),
+      occuringDate: moment(ms.startingDate).format("MM/DD/YYYY"),
+      isCompleted: ms.completedDates.includes(
+        moment(ms.startingDate).format("MM/DD/YYYY")
+      ),
+      isRepeating: false,
+    };
+
+  //if occuring on multiple days.
+
+  const result = [];
+  ms.repeatingDates.forEach((repeatingDate) => {
+    let isCompleted = ms.completedDates.includes(repeatingDate);
+
+    result.push({
+      ..._.pick(ms, [
+        "_id",
+        "title",
+        "goal",
+        "startDate",
+        "endDate",
+        "repeatingDays",
+        "timeOfDay",
+        "frequency",
+      ]),
+      occuringDate: repeatingDate,
+      isCompleted,
+      isRepeating: true,
+    });
+  });
+
+  return result;
+};
 
 module.exports = router;
