@@ -2,12 +2,14 @@ const express = require("express");
 const authorize = require("../../middlewares/authorize");
 
 const _ = require("lodash");
+const User = require("../../models/User");
 const ImageMedia = require("../../models/media/ImageMedia");
 
 const requestValidator = require("../../middlewares/requestValidator");
 const {
   updateProfilePicSchema,
   updateLocationSchema,
+  updateUserDetails,
 } = require("../../validators/users");
 const sanitizeUser = require("../../sanitizers/user");
 
@@ -53,6 +55,22 @@ router.put(
 );
 
 router.put(
+  "/update_profile_details",
+  requestValidator(updateUserDetails),
+  authorize(),
+  async (req, res) => {
+    const body = _.pick(req.body, ["firstname", "lastname"]);
+
+    const { user } = req.authSession;
+
+    const updatedUser = await User.findByIdAndUpdate(user._id, body, {
+      new: true,
+    });
+
+    res.send(sanitizeUser(updatedUser));
+  }
+);
+router.put(
   "/update_location",
   requestValidator(updateLocationSchema),
   authorize(),
@@ -73,4 +91,5 @@ router.put(
     });
   }
 );
+
 module.exports = router;

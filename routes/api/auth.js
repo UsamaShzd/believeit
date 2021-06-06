@@ -240,6 +240,7 @@ router.delete("/signout", authorize(), async (req, res) => {
   await authSession.save();
   res.send({ message: "Signout successfull." });
 });
+
 const createUserSessionAndSendResponse = async (res, user) => {
   const session = await new AuthSession({
     user: user._id,
