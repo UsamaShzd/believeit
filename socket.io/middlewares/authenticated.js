@@ -20,7 +20,6 @@ const authenticated = async (socket, next) => {
   } catch (ex) {
     return next(ex);
   }
-  next();
 };
 
 module.exports = authenticated;
