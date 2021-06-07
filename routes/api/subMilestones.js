@@ -33,7 +33,7 @@ router.post(
     const { occuringDate } = _.pick(req.body, ["occuringDate"]);
     const milestones = await SubMilestone.find({
       milestone: id,
-    });
+    }).sort("sortOrder");
 
     res.send(milestones.map((ms) => makeSubMilestone(ms, occuringDate)));
   }
