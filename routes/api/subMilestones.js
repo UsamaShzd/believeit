@@ -11,29 +11,33 @@ const {
   editSubMilestoneSchema,
   changeSubMilestoneStatusSchema,
   rearrangeSubMilestonesSchema,
+  markDayAsCompletedSchema,
+  milestonesListSchema,
 } = require("../../validators/subMilestone");
 
 const { ADMIN } = require("../../enums/roles");
 const validateObjectId = require("../../helpers/validateObjectId");
 
-const { getDatesOfRepeatingDays } = require("../../methods/milestone");
-
 const router = express.Router();
 
-router.get("/list/:id", async (req, res) => {
-  const { id } = req.params;
+router.post(
+  "/list/:id",
+  requestValidator(milestonesListSchema),
+  async (req, res) => {
+    const { id } = req.params;
+    if (!validateObjectId(id))
+      return res
+        .status(404)
+        .send({ error: { message: "Invalid Milestone Id." } });
 
-  if (!validateObjectId(id))
-    return res
-      .status(404)
-      .send({ error: { message: "Invalid Milestone Id." } });
+    const { occuringDate } = _.pick(req.body, ["occuringDate"]);
+    const milestones = await SubMilestone.find({
+      milestone: id,
+    });
 
-  const milestones = await SubMilestone.find({
-    milestone: id,
-  });
-
-  res.send(milestones);
-});
+    res.send(milestones.map((ms) => makeSubMilestone(ms, occuringDate)));
+  }
+);
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
@@ -54,7 +58,7 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post(
-  "/",
+  "/create_sub_milestone",
   requestValidator(createSubMilestoneSchema),
   authorize(),
   async (req, res) => {
@@ -84,35 +88,35 @@ router.put(
   }
 );
 
+// router.put(
+//   "/change_status/:id",
+//   requestValidator(changeSubMilestoneStatusSchema),
+//   authorize(),
+//   async (req, res) => {
+//     const { id } = req.params;
+
+//     if (!validateObjectId(id))
+//       return res.status(404).send({
+//         error: { message: "Sub Milestone not found!" },
+//       });
+
+//     const body = _.pick(req.body, ["isCompleted"]);
+
+//     const milestone = await SubMilestone.findByIdAndUpdate(id, body, {
+//       new: true,
+//     });
+
+//     if (!milestone)
+//       return res.status(404).send({
+//         error: { message: "Sub Milestone not found!" },
+//       });
+
+//     res.send(milestone);
+//   }
+// );
+
 router.put(
-  "/change_status/:id",
-  requestValidator(changeSubMilestoneStatusSchema),
-  authorize(),
-  async (req, res) => {
-    const { id } = req.params;
-
-    if (!validateObjectId(id))
-      return res.status(404).send({
-        error: { message: "Sub Milestone not found!" },
-      });
-
-    const body = _.pick(req.body, ["isCompleted"]);
-
-    const milestone = await SubMilestone.findByIdAndUpdate(id, body, {
-      new: true,
-    });
-
-    if (!milestone)
-      return res.status(404).send({
-        error: { message: "Sub Milestone not found!" },
-      });
-
-    res.send(milestone);
-  }
-);
-
-router.put(
-  "/:id",
+  "/edit_sub_milestone/:id",
   authorize(ADMIN),
   requestValidator(editSubMilestoneSchema),
   async (req, res) => {
@@ -138,7 +142,34 @@ router.put(
   }
 );
 
-router.delete("/:id", authorize(), async (req, res) => {
+router.put(
+  "/mark_as_completed/:id",
+  requestValidator(markDayAsCompletedSchema),
+  authorize(),
+  async (req, res) => {
+    const { id } = req.params;
+
+    if (!validateObjectId(id))
+      return res
+        .status(404)
+        .send({ error: { message: "Sub Milestone not found!" } });
+
+    const { completionDate } = _.pick(req.body, ["completionDate"]);
+    const milestone = await SubMilestone.findByIdAndUpdate(
+      id,
+      {
+        $addToSet: {
+          completedDates: completionDate,
+        },
+      },
+      { new: true }
+    );
+
+    res.send(milestone);
+  }
+);
+
+router.delete("/delete_sub_milestone/:id", authorize(), async (req, res) => {
   const { id } = req.params;
 
   if (!validateObjectId(id))
@@ -155,5 +186,12 @@ router.delete("/:id", authorize(), async (req, res) => {
 
   res.send(milestone);
 });
+
+const makeSubMilestone = (sMs, occuringDate) => {
+  return {
+    ..._.pick(sMs, ["_id", "title", "milestone", "createdBy", "createdAt"]),
+    isCompleted: sMs.completedDates.includes(occuringDate),
+  };
+};
 
 module.exports = router;

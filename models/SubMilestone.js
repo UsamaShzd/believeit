@@ -13,9 +13,9 @@ const subMilestoneSchema = new mongoose.Schema({
     ref: "milestone",
   },
 
-  isCompleted: {
-    type: Boolean,
-    default: false,
+  completedDates: {
+    type: [String],
+    default: [],
   },
 
   sortOrder: {
