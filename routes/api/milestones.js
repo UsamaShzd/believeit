@@ -75,8 +75,6 @@ router.post(
       "timeOfDay",
     ]);
 
-    body.customIdentifier = uuid.v4();
-
     const { repeatingDays, startDate, endDate } = body;
 
     body.startDate = new Date(startDate);
@@ -173,8 +171,8 @@ router.put(
 // );
 
 router.put(
-  "/:id",
-  authorize(ADMIN),
+  "/edit_milestone/:id",
+  authorize(),
   requestValidator(editMilestoneSchema),
   async (req, res) => {
     const { id } = req.params;
@@ -184,21 +182,43 @@ router.put(
         .status(404)
         .send({ error: { message: "Milestone not found!" } });
 
-    const body = _.pick(req.body, ["title", "startDate", "endDate"]);
+    const body = _.pick(req.body, [
+      "title",
+      "frequency",
+      "startDate",
+      "endDate",
+      "repeatingDays",
+      "timeOfDay",
+    ]);
 
-    body.startDate = new Date(body.startDate);
-    body.endDate = new Date(body.endDate);
+    const { repeatingDays, startDate, endDate } = body;
 
-    const milestone = await Milestone.findByIdAndUpdate(id, body, {
-      new: true,
-    });
+    body.startDate = new Date(startDate);
+    body.endDate = new Date(endDate);
 
-    if (!milestone)
-      return res
-        .status(404)
-        .send({ error: { message: "Milestone not found!" } });
+    const { user } = req.authSession;
 
-    res.send(milestone);
+    if (repeatingDays.length > 0) {
+      const repeatingDates = getDatesOfRepeatingDays(
+        startDate,
+        endDate,
+        repeatingDays
+      );
+      body.repeatingDates = repeatingDates.map((d) =>
+        moment(d).format("MM/DD/YYYY")
+      );
+    }
+
+    const milestone = await Milestone.findOneAndUpdate(
+      {
+        _id: id,
+        createdBy: user._id,
+      },
+      body,
+      { new: true }
+    );
+
+    res.send(makeMilestone(milestone));
   }
 );
 
