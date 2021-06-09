@@ -42,7 +42,7 @@ module.exports = (socket) => {
     });
 
     const populatedChatMessage = {
-      sender: _.pick(user, USER_PUBLIC_FIELDS.split(" ")),
+      sender: _.pick(user, [...USER_PUBLIC_FIELDS.split(" "), "_id"]),
       ..._.pick(chatMessage, [
         "chatRoom",
         "messageType",
