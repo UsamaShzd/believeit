@@ -18,6 +18,8 @@ const {
 const { ADMIN } = require("../../enums/roles");
 const validateObjectId = require("../../helpers/validateObjectId");
 
+const { makeSubMilestone } = require("../../methods/subMilestone");
+
 const router = express.Router();
 
 router.post(
@@ -186,12 +188,5 @@ router.delete("/delete_sub_milestone/:id", authorize(), async (req, res) => {
 
   res.send(milestone);
 });
-
-const makeSubMilestone = (sMs, occuringDate) => {
-  return {
-    ..._.pick(sMs, ["_id", "title", "milestone", "createdBy", "createdAt"]),
-    isCompleted: sMs.completedDates.includes(occuringDate),
-  };
-};
 
 module.exports = router;

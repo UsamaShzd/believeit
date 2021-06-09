@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const moment = require("moment");
 
 exports.getDatesOfRepeatingDays = (startDate, endDate, repeatingDays = []) => {
@@ -11,5 +12,52 @@ exports.getDatesOfRepeatingDays = (startDate, endDate, repeatingDays = []) => {
     }
     startDate.add(1, "days");
   }
+  return result;
+};
+
+exports.makeMilestone = (ms) => {
+  //if repeating
+  if (ms.repeatingDays.length === 0)
+    return {
+      ..._.pick(ms, [
+        "_id",
+        "title",
+        "goal",
+        "startDate",
+        "endDate",
+        "repeatingDays",
+        "timeOfDay",
+        "frequency",
+      ]),
+      occuringDate: moment(ms.startingDate).format("MM/DD/YYYY"),
+      isCompleted: ms.completedDates.includes(
+        moment(ms.startingDate).format("MM/DD/YYYY")
+      ),
+      isRepeating: false,
+    };
+
+  //if occuring on multiple days.
+
+  const result = [];
+  ms.repeatingDates.forEach((repeatingDate) => {
+    let isCompleted = ms.completedDates.includes(repeatingDate);
+
+    result.push({
+      ..._.pick(ms, [
+        "_id",
+        "title",
+        "goal",
+        "startDate",
+        "endDate",
+        "repeatingDays",
+        "timeOfDay",
+        "frequency",
+      ]),
+      occuringDate: repeatingDate,
+      isCompleted,
+      isRepeating: true,
+    });
+  });
+
   return result;
 };

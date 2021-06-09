@@ -4,6 +4,7 @@ const uuid = require("uuid");
 const moment = require("moment");
 
 const Milestone = require("../../models/Milestone");
+const SubMilestone = require("../../models/SubMilestone");
 
 const authorize = require("../../middlewares/authorize");
 const requestValidator = require("../../middlewares/requestValidator");
@@ -18,7 +19,12 @@ const {
 const { ADMIN } = require("../../enums/roles");
 const validateObjectId = require("../../helpers/validateObjectId");
 
-const { getDatesOfRepeatingDays } = require("../../methods/milestone");
+const {
+  getDatesOfRepeatingDays,
+  makeMilestone,
+} = require("../../methods/milestone");
+
+const { makeSubMilestone } = require("../../methods/subMilestone");
 
 const router = express.Router();
 
@@ -32,7 +38,11 @@ router.get("/goal_milestones/:id", async (req, res) => {
     goal: id,
   }).sort("startDate");
 
-  const result = [];
+  const subMilestones = await SubMilestone.find({
+    milestone: milestones.map((m) => m._id),
+  });
+
+  let result = [];
 
   milestones.forEach((ms) => {
     const calculatedMilestone = makeMilestone(ms);
@@ -42,6 +52,20 @@ router.get("/goal_milestones/:id", async (req, res) => {
     calculatedMilestone.forEach((cMs) => {
       result.push(cMs);
     });
+  });
+
+  result = result.map((ms) => {
+    ms.subMilestones = [];
+
+    const subMs = subMilestones.filter((sMs) => {
+      return `${ms._id}` === `${sMs.milestone}`;
+    });
+
+    ms.subMilestones = subMs.map((sMs) =>
+      makeSubMilestone(sMs, ms.occuringDate)
+    );
+
+    return ms;
   });
 
   res.send(result);
@@ -235,52 +259,5 @@ router.delete("/:id", authorize(), async (req, res) => {
 
   res.send(milestone);
 });
-
-const makeMilestone = (ms) => {
-  //if repeating
-  if (ms.repeatingDays.length === 0)
-    return {
-      ..._.pick(ms, [
-        "_id",
-        "title",
-        "goal",
-        "startDate",
-        "endDate",
-        "repeatingDays",
-        "timeOfDay",
-        "frequency",
-      ]),
-      occuringDate: moment(ms.startingDate).format("MM/DD/YYYY"),
-      isCompleted: ms.completedDates.includes(
-        moment(ms.startingDate).format("MM/DD/YYYY")
-      ),
-      isRepeating: false,
-    };
-
-  //if occuring on multiple days.
-
-  const result = [];
-  ms.repeatingDates.forEach((repeatingDate) => {
-    let isCompleted = ms.completedDates.includes(repeatingDate);
-
-    result.push({
-      ..._.pick(ms, [
-        "_id",
-        "title",
-        "goal",
-        "startDate",
-        "endDate",
-        "repeatingDays",
-        "timeOfDay",
-        "frequency",
-      ]),
-      occuringDate: repeatingDate,
-      isCompleted,
-      isRepeating: true,
-    });
-  });
-
-  return result;
-};
 
 module.exports = router;
