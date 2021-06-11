@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const prayerSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    trim: true,
+  },
+
   prayer: {
     type: String,
     trim: true,

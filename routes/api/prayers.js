@@ -38,6 +38,7 @@ router.post(
   requestValidator(createPrayerSchema),
   async (req, res) => {
     const body = _.pick(req.body, [
+      "name",
       "prayer",
       "translation",
       "type",
@@ -60,6 +61,7 @@ router.put(
       return res.status(404).send({ error: { message: "Prayer not found!" } });
 
     const body = _.pick(req.body, [
+      "name",
       "prayer",
       "translation",
       "type",
