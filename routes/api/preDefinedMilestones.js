@@ -55,6 +55,7 @@ router.post(
       "frequency",
       "preDefinedGoal",
       "repeatingDays",
+      "timeOfDay",
     ]);
 
     const { user } = req.authSession;
@@ -101,6 +102,7 @@ router.put("/change_status/:id", authorize(ADMIN), async (req, res) => {
 
   res.send(milestone);
 });
+
 router.put(
   "/:id",
   authorize(ADMIN),
@@ -118,6 +120,7 @@ router.put(
       "frequency",
       "preDefinedGoal",
       "repeatingDays",
+      "timeOfDay",
     ]);
 
     const milestone = await PreDefinedMilestone.findByIdAndUpdate(id, body, {

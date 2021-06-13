@@ -11,6 +11,10 @@ const mileStoneSchema = new mongoose.Schema({
     default: 1,
   },
 
+  timeOfDay: {
+    type: [String],
+  },
+
   preDefinedGoal: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -31,6 +35,7 @@ const mileStoneSchema = new mongoose.Schema({
       "sunday",
     ],
   },
+
   isActive: {
     type: Boolean,
     default: false,

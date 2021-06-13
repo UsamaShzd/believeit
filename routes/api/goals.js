@@ -1,5 +1,6 @@
 const express = require("express");
 const _ = require("lodash");
+const moment = require("moment");
 
 const GoalCategory = require("../../models/GoalCategory");
 const Goal = require("../../models/Goal");
@@ -23,6 +24,7 @@ const {
   changeGoalStatusSchema,
   changeCompletionSchema,
 } = require("../../validators/goal");
+const { getDatesOfRepeatingDays } = require("../../methods/milestone");
 
 const router = express.Router();
 
@@ -154,37 +156,67 @@ router.post(
     }).save();
 
     if (preDefinedGoalRef) {
-      const preDefinedGoal = await PreDefinedGoal.findById(preDefinedGoalRef);
-
+      // const preDefinedGoal = await PreDefinedGoal.findById(preDefinedGoalRef);
       const today = getToday();
-
-      let intervals = splitDateIntoEqualIntervals(
-        today,
-        new Date(accomplishingDate),
-        4
-      );
-
-      intervals = intervals.map((da) => {
-        const date = new Date(da);
-        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-      });
 
       const preDefinedMilestones = await PreDefinedMilestone.find({
         preDefinedGoal: preDefinedGoalRef,
         isActive: true,
+      }).sort("sortOrder");
+
+      const nonRepeatingMs = preDefinedMilestones.filter(
+        (ms) => ms.repeatingDays.length === 0
+      );
+
+      let intervals = splitDateIntoEqualIntervals(
+        today,
+        new Date(accomplishingDate),
+        nonRepeatingMs.length
+      );
+
+      intervals = intervals.map((da) => {
+        const date = new Date(da);
+        return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
       });
 
-      preDefinedMilestones.forEach(async (ms) => {
-        const mileStone = await new Milestone({
-          title: ms.title,
+      let index = 0;
+      preDefinedMilestones.forEach(async (predefniedMilestone) => {
+        const milestoneBody = {
+          title: predefniedMilestone.title,
           createdBy: user._id,
           goal: goal._id,
-        }).save();
+          frequency: predefniedMilestone.frequency,
+          timeOfDay: predefniedMilestone.timeOfDay,
+          repeatingDays: predefniedMilestone.repeatingDays,
+        };
+
+        if (predefniedMilestone.repeatingDays.length > 0) {
+          //repeating milestone
+
+          milestoneBody.startDate = intervals[index];
+          milestoneBody.endDate = intervals[index + 1];
+
+          const repeatingDates = getDatesOfRepeatingDays(
+            today,
+            body.accomplishingDate,
+            predefniedMilestone.repeatingDays
+          );
+          milestoneBody.repeatingDates = repeatingDates.map((d) =>
+            moment(d).format("MM/DD/YYYY")
+          );
+        } else {
+          //non repeating milestons
+          milestoneBody.startDate = intervals[index];
+          milestoneBody.endDate = intervals[index + 1];
+          index++;
+        }
+
+        const mileStone = await new Milestone(milestoneBody).save();
 
         const subMilestones = await PreDefinedSubMilestone.find({
-          preDefinedMilestone: ms._id,
+          preDefinedMilestone: predefniedMilestone._id,
           isActive: true,
-        });
+        }).sort("sortOrder");
 
         subMilestones.forEach(async (subMs) => {
           await new SubMilestone({
@@ -296,9 +328,6 @@ function getToday() {
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
 
-  console.log("Day => ", day);
-  console.log("Month => ", month);
-  console.log("Year => ", year);
   return new Date(`${month}/${day}/${year}`);
 }
 
