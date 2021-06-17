@@ -5,6 +5,7 @@ const authorize = require("../../../middlewares/authorize");
 
 const requestValidator = require("../../../middlewares/requestValidator");
 const ChatRoom = require("../../../models/ChatRoom");
+const ImageMedia = require("../../../models/media/ImageMedia");
 const validateObjectId = require("../../../helpers/validateObjectId");
 const {
   createGroupChatSchema,
@@ -92,11 +93,12 @@ router.post(
   requestValidator(createGroupChatSchema),
   authorize(),
   async (req, res) => {
-    const { name = "", description = "", members = [] } = _.pick(req.body, [
-      "name",
-      "description",
-      "members",
-    ]);
+    const {
+      name = "",
+      description = "",
+      members = [],
+      image,
+    } = _.pick(req.body, ["name", "description", "members", "image"]);
 
     const { user } = req.authSession;
     const chatRoomBuilder = {
@@ -111,6 +113,23 @@ router.post(
       roomType: "group",
       createdBy: user._id,
     };
+
+    if (image) {
+      const imageMedia = await ImageMedia.findOneAndUpdate(
+        { _id: body.image },
+        { isUsed: true },
+        { new: true }
+      );
+
+      if (!imageMedia)
+        return res.status(400).send({
+          error: {
+            message: "Invalid image id.",
+          },
+        });
+
+      chatRoomBuilder.image = imageMedia;
+    }
 
     const room = await new ChatRoom(chatRoomBuilder).save();
 
