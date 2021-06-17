@@ -59,7 +59,15 @@ router.put(
   requestValidator(updateUserDetails),
   authorize(),
   async (req, res) => {
-    const body = _.pick(req.body, ["firstname", "lastname"]);
+    const body = _.pick(req.body, [
+      "firstname",
+      "lastname",
+      "gender",
+      "relationshipStatus",
+      "employmentStatus",
+      "numberOfchildrens",
+      "topHobbies",
+    ]);
 
     const { user } = req.authSession;
 

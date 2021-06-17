@@ -42,6 +42,32 @@ const userSchema = new mongoose.Schema({
     default: "",
   },
 
+  ageRange: {
+    type: String,
+  },
+
+  gender: {
+    type: String,
+    enum: ["male", "female"],
+  },
+
+  relationshipStatus: {
+    type: String,
+  },
+
+  employmentStatus: {
+    type: String,
+    enum: ["employed", "unemployed"],
+  },
+
+  numberOfchildrens: {
+    type: Number,
+  },
+
+  topHobbies: {
+    type: [String],
+  },
+
   emailVerified: {
     type: Boolean,
     default: false,
@@ -88,6 +114,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+
   subscription: {
     type: {
       type: String,
@@ -127,6 +154,7 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+
   clarityOnPurposeScore: {
     type: Number,
     default: 0,
