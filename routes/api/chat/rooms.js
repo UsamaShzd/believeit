@@ -55,6 +55,7 @@ router.get("/my_chat_rooms", authorize(), async (req, res) => {
       "isPublic",
       "lastMessage",
       "name",
+      "image",
       "description",
       "roomType",
       "createdBy",

@@ -79,6 +79,7 @@ router.put(
     res.send(sanitizeUser(updatedUser));
   }
 );
+
 router.put(
   "/update_location",
   requestValidator(updateLocationSchema),
@@ -119,6 +120,10 @@ router.put("/reset_notification_count", authorize(), async (req, res) => {
   });
 
   res.send({ message: "Notification Count updated", count: 0 });
+});
+
+router.put("/update_notification_settings", authorize(), async (req, res) => {
+  //
 });
 
 module.exports = router;
