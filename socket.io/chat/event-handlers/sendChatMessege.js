@@ -120,9 +120,11 @@ module.exports = (socket) => {
     chatRoom.members = chatRoom.members.map((mem) => {
       if (offlineUsersMap[mem.memberId.toHexString()] === 1) {
         //user id offline
+        mem.chatCount = mem.chatCount + 1;
       }
 
       return mem;
     });
+    await chatRoom.save();
   });
 };

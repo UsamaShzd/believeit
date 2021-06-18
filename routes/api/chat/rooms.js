@@ -41,11 +41,34 @@ router.get("/my_chat_rooms", authorize(), async (req, res) => {
     },
   ];
 
-  const rooms = await ChatRoom.find(query)
+  let rooms = await ChatRoom.find(query)
     .or(orClause)
     .populate("lastMessage")
     .populate("members.memberId", USER_PUBLIC_FIELDS);
 
+  const userId = user._id.toHexString();
+  rooms = rooms.map((room) => {
+    room = _.pick(room, [
+      "_id",
+      "members",
+      "membersCanAdd",
+      "isPublic",
+      "lastMessage",
+      "name",
+      "description",
+      "roomType",
+      "createdBy",
+      "lastActive",
+      "createdAt",
+    ]);
+    for (let i = 0; i < room.members.length; ++i) {
+      if (room.members[i].memberId._id.toHexString() === userId) {
+        room.chatCount = room.members[i].chatCount;
+        break;
+      }
+    }
+    return room;
+  });
   res.send(rooms);
 });
 
@@ -149,6 +172,36 @@ router.post(
   }
 );
 
+router.put("/reset_my_chat_count/:id", authorize(), async (req, res) => {
+  const { id } = req.params;
+  if (!validateObjectId(id))
+    return res.status(400).send({
+      error: {
+        message: "Invalid group Id",
+      },
+    });
+
+  const { user } = req.authSession;
+
+  const chatRoom = await ChatRoom.findById(id);
+
+  if (!chatRoom)
+    return res.status(400).send({
+      error: {
+        message: "Invalid group Id",
+      },
+    });
+
+  chatRoom.members.map((mem) => {
+    if (mem.memberId.toHexString() === user._id.toHexString()) {
+      mem.chatCount = 0;
+    }
+    return mem;
+  });
+
+  await chatRoom.save();
+  res.send({ message: "Room Chat count updated", count: 0 });
+});
 router.delete(
   "/remove_member_from_group/:chatRoom",
   requestValidator(removeMemberSchema),
