@@ -124,7 +124,7 @@ router.post(
 
     if (image) {
       const imageMedia = await ImageMedia.findOneAndUpdate(
-        { _id: body.image },
+        { _id: image },
         { isUsed: true },
         { new: true }
       );

@@ -73,6 +73,16 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
 
+  chatCount: {
+    type: Number,
+    default: 0,
+  },
+
+  notificationCount: {
+    type: Number,
+    default: 0,
+  },
+
   emailVerificationCode: {
     type: String,
     trim: true,

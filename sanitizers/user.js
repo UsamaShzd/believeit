@@ -9,5 +9,7 @@ module.exports = (user) => {
     "emailVerified",
     "subscription",
     "role",
+    "chatCount",
+    "notificationCount",
   ]);
 };

@@ -38,6 +38,10 @@ const chatRoomSchema = new Schema({
         type: String,
         enum: ["admin", "member", "join_requester"],
       },
+      chatCount: {
+        type: Number,
+        default: 0,
+      },
     }),
   ],
 

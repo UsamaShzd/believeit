@@ -100,4 +100,24 @@ router.put(
   }
 );
 
+router.put("/reset_chat_count", authorize(), async (req, res) => {
+  const { user } = req.authSession;
+
+  await User.findByIdAndUpdate(user._id, {
+    chatCount: 0,
+  });
+
+  res.send({ message: "Chat Count updated", count: 0 });
+});
+
+router.put("/reset_notification_count", authorize(), async (req, res) => {
+  const { user } = req.authSession;
+
+  await User.findByIdAndUpdate(user._id, {
+    notificationCount: 0,
+  });
+
+  res.send({ message: "Notification Count updated", count: 0 });
+});
+
 module.exports = router;

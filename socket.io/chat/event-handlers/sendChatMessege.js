@@ -2,6 +2,7 @@ const _ = require("lodash");
 const ChatRoom = require("../../../models/ChatRoom");
 const ChatMessage = require("../../../models/ChatMessage");
 const AuthSession = require("../../../models/AuthSession");
+const User = require("../../../models/User");
 
 const getPushTokens = require("../../../helpers/getPushTokens");
 
@@ -72,12 +73,15 @@ module.exports = (socket) => {
     //send push notification to offline users
 
     const offlineUsers = [];
-
+    const offlineUsersMap = {};
     for (let i = 0; i < chatRoom.members.length; i++) {
       const memberId = chatRoom.members[i].memberId.toHexString();
       const clients = await socket.adapter.sockets(new Set([memberId]));
 
-      if (clients.size === 0) offlineUsers.push(memberId);
+      if (clients.size === 0) {
+        offlineUsers.push(memberId);
+        offlineUsersMap[memberId] = 1;
+      }
     }
     if (offlineUsers.length === 0) return;
 
@@ -103,5 +107,22 @@ module.exports = (socket) => {
     };
 
     sendPushNotifications(push_notification);
+
+    //update offline user's chat count
+
+    await User.updateMany(
+      { _id: { $in: offlineUsers } },
+      { $inc: { chatCount: 1 } }
+    );
+
+    //update the room chat count for users
+
+    chatRoom.members = chatRoom.members.map((mem) => {
+      if (offlineUsersMap[mem.memberId.toHexString()] === 1) {
+        //user id offline
+      }
+
+      return mem;
+    });
   });
 };
