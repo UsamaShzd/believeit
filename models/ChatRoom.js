@@ -41,6 +41,10 @@ const chatRoomSchema = new Schema({
     }),
   ],
 
+  isPublic: {
+    type: Boolean,
+    default: true,
+  },
   lastMessage: {
     type: Schema.ObjectId,
     ref: "chatmessage",

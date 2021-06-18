@@ -98,7 +98,14 @@ router.post(
       description = "",
       members = [],
       image,
-    } = _.pick(req.body, ["name", "description", "members", "image"]);
+      isPublic,
+    } = _.pick(req.body, [
+      "name",
+      "description",
+      "members",
+      "image",
+      "isPublic",
+    ]);
 
     const { user } = req.authSession;
     const chatRoomBuilder = {
@@ -110,6 +117,7 @@ router.post(
           return { memberId: mem, role: "member" };
         }),
       ],
+      isPublic,
       roomType: "group",
       createdBy: user._id,
     };
