@@ -67,6 +67,7 @@ router.put(
       "employmentStatus",
       "numberOfchildrens",
       "topHobbies",
+      "ethnicity",
     ]);
 
     const { user } = req.authSession;

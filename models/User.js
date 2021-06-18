@@ -68,6 +68,10 @@ const userSchema = new mongoose.Schema({
     type: [String],
   },
 
+  ethnicity: {
+    type: String,
+  },
+
   emailVerified: {
     type: Boolean,
     default: false,

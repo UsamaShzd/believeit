@@ -11,5 +11,11 @@ module.exports = (user) => {
     "role",
     "chatCount",
     "notificationCount",
+    "gender",
+    "relationshipStatus",
+    "employmentStatus",
+    "numberOfchildrens",
+    "topHobbies",
+    "ethnicity",
   ]);
 };

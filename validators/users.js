@@ -20,6 +20,7 @@ const updateUserDetails = yup.object().shape({
   employmentStatus: yup.string().optional(),
   numberOfchildrens: yup.number().optional(),
   topHobbies: yup.array().of(yup.string().optional()).optional(),
+  ethnicity: yup.string().optional(),
 });
 
 module.exports = {
