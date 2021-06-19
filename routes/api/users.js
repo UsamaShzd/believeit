@@ -12,6 +12,7 @@ const {
   updateUserDetails,
   updateUserNotificationsSchema,
 } = require("../../validators/users");
+
 const sanitizeUser = require("../../sanitizers/user");
 
 const router = express.Router();
