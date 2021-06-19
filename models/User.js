@@ -173,6 +173,39 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+
+  notificationSettings: {
+    emailChatNotifications: {
+      type: Boolean,
+      default: true,
+    },
+
+    eCoaching: {
+      numberOfNotifications: {
+        type: Number,
+        default: 7,
+      },
+      startTime: {
+        type: Number,
+      },
+      endTime: {
+        type: Number,
+      },
+    },
+
+    prayers: {
+      numberOfNotifications: {
+        type: Number,
+        default: 7,
+      },
+      startTime: {
+        type: Number,
+      },
+      endTime: {
+        type: Number,
+      },
+    },
+  },
 });
 
 userSchema.methods.hashPassword = async function (password) {

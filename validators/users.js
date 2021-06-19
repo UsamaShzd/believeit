@@ -23,8 +23,30 @@ const updateUserDetails = yup.object().shape({
   ethnicity: yup.string().optional(),
 });
 
+const updateUserNotificationsSchema = yup.object().shape({
+  emailChatNotifications: yup.boolean().required(),
+  eCoaching: yup
+    .object()
+    .shape({
+      numberOfNotifications: yup.number().min(0).max(7).required(),
+      startTime: yup.number().min(0).max(24).required(),
+      endTime: yup.number().min(0).max(24).required(),
+    })
+    .required(),
+
+  prayers: yup
+    .object()
+    .shape({
+      numberOfNotifications: yup.number().min(0).max(7).required(),
+      startTime: yup.number().min(0).max(24).required(),
+      endTime: yup.number().min(0).max(24).required(),
+    })
+    .required(),
+});
+
 module.exports = {
   updateProfilePicSchema,
   updateLocationSchema,
   updateUserDetails,
+  updateUserNotificationsSchema,
 };

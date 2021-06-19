@@ -10,6 +10,7 @@ const {
   updateProfilePicSchema,
   updateLocationSchema,
   updateUserDetails,
+  updateUserNotificationsSchema,
 } = require("../../validators/users");
 const sanitizeUser = require("../../sanitizers/user");
 
@@ -122,8 +123,23 @@ router.put("/reset_notification_count", authorize(), async (req, res) => {
   res.send({ message: "Notification Count updated", count: 0 });
 });
 
-router.put("/update_notification_settings", authorize(), async (req, res) => {
-  //
-});
+router.put(
+  "/update_notification_settings",
+  requestValidator(updateUserNotificationsSchema),
+  authorize(),
+  async (req, res) => {
+    const { user } = req.authSession;
+
+    const body = _.pick(req.body, [
+      "emailChatNotifications",
+      "eCoaching",
+      "prayers",
+    ]);
+
+    user.notificationSettings = body;
+    await user.save();
+    res.send(user.notificationSettings);
+  }
+);
 
 module.exports = router;

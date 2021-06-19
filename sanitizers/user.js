@@ -17,5 +17,6 @@ module.exports = (user) => {
     "numberOfchildrens",
     "topHobbies",
     "ethnicity",
+    "notificationSettings",
   ]);
 };
