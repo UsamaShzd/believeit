@@ -14,7 +14,7 @@ const router = express.Router();
 const scoreFields = [
   "isDefiniteGoal",
   "presistentlyWorkOnGoal",
-  "goalImportance",
+  // "goalImportance",
   "oftenThingAboutGoal",
   "clearIdea",
   "dedicatingEnough",

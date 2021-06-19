@@ -12,28 +12,28 @@ const definedGoalSchema = new mongoose.Schema({
     default: 0,
   },
   //3
-  goalImportance: {
-    type: Number,
-    default: 0,
-  },
-  //4
+  // goalImportance: {
+  //   type: Number,
+  //   default: 0,
+  // },
+  //3
   oftenThingAboutGoal: {
     type: Number,
     default: 0,
   },
-  //5
+  //4
   clearIdea: {
     type: Number,
     default: 0,
   },
-  //6
+  //5
   dedicatingEnough: {
     type: Number,
     default: 0,
   },
   questionsCount: {
     type: Number,
-    default: 6,
+    default: 5,
   },
 
   totalDefinedGoalScore: {

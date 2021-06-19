@@ -12,16 +12,16 @@ const clarityOnPurposeSchema = new mongoose.Schema({
     default: 0,
   },
   //3
-  reflectOnLifePurpose: {
-    type: Number,
-    default: 0,
-  },
-  //4
+  // reflectOnLifePurpose: {
+  //   type: Number,
+  //   default: 0,
+  // },
+  //3
   goalAlignWithLifePurpose: {
     type: Number,
     default: 0,
   },
-  //5
+  //4
   stuckInPastOrFuture: {
     type: Number,
     default: 0,
@@ -29,7 +29,7 @@ const clarityOnPurposeSchema = new mongoose.Schema({
 
   questionsCount: {
     type: Number,
-    default: 5,
+    default: 4,
   },
 
   totalClarityScore: {

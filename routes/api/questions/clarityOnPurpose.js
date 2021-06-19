@@ -13,7 +13,7 @@ const router = express.Router();
 const scoreFields = [
   "foundLifePurpose",
   "frequentlyThinkingAboutLifePurpose",
-  "reflectOnLifePurpose",
+  // "reflectOnLifePurpose",
   "goalAlignWithLifePurpose",
   "stuckInPastOrFuture",
 ];
