@@ -186,10 +186,10 @@ const userSchema = new mongoose.Schema({
         default: 7,
       },
       startTime: {
-        type: Number,
+        type: String,
       },
       endTime: {
-        type: Number,
+        type: String,
       },
     },
 
@@ -199,10 +199,10 @@ const userSchema = new mongoose.Schema({
         default: 7,
       },
       startTime: {
-        type: Number,
+        type: String,
       },
       endTime: {
-        type: Number,
+        type: String,
       },
     },
   },

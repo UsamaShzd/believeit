@@ -1,3 +1,4 @@
+const moment = require("moment");
 const yup = require("yup");
 
 const updateProfilePicSchema = yup.object().shape({
@@ -29,8 +30,17 @@ const updateUserNotificationsSchema = yup.object().shape({
     .object()
     .shape({
       numberOfNotifications: yup.number().min(0).max(7).required(),
-      startTime: yup.number().min(0).max(24).required(),
-      endTime: yup.number().min(0).max(24).required(),
+      startTime: yup.string().required("start time cannot be empty"),
+      endTime: yup
+        .string()
+        .required("end time cannot be empty")
+        .test("is-greater", "end time should be greater", function (value) {
+          const { startTime } = this.options.parent;
+
+          return moment(value, "HH:mm").isSameOrAfter(
+            moment(startTime, "HH:mm").toDate()
+          );
+        }),
     })
     .required(),
 
@@ -38,8 +48,17 @@ const updateUserNotificationsSchema = yup.object().shape({
     .object()
     .shape({
       numberOfNotifications: yup.number().min(0).max(7).required(),
-      startTime: yup.number().min(0).max(24).required(),
-      endTime: yup.number().min(0).max(24).required(),
+      startTime: yup.string().required("start time cannot be empty"),
+      endTime: yup
+        .string()
+        .required("end time cannot be empty")
+        .test("is-greater", "end time should be greater", function (value) {
+          const { startTime } = this.options.parent;
+
+          return moment(value, "HH:mm").isSameOrAfter(
+            moment(startTime, "HH:mm").toDate()
+          );
+        }),
     })
     .required(),
 });
