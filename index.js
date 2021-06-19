@@ -79,4 +79,7 @@ if (process.env.NODE_ENV !== "test") {
   });
 }
 
+// initiate cron jobs
+require("./cron")();
+
 module.exports = server;
