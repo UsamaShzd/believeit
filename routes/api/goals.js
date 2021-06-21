@@ -296,9 +296,73 @@ router.put(
       "importanceOfGoal",
       "image",
       "audio",
+      "song",
+      "toPlay",
+      "isPublic",
     ]);
 
-    const { user } = req.authSession;
+    const goalCategory = await GoalCategory.findById(body.goalCategory);
+
+    if (!goalCategory)
+      return res
+        .status(400)
+        .send({ error: { goalCategory: "Invalid Goal Category" } });
+
+    body.goalCategory = goalCategory;
+
+    //setting goal image
+    if (body.image) {
+      const imageMedia = await ImageMedia.findOneAndUpdate(
+        { _id: body.image },
+        { isUsed: true },
+        { new: true }
+      );
+
+      if (!imageMedia)
+        return res.status(400).send({
+          error: {
+            message: "Invalid image id.",
+          },
+        });
+
+      body.image = imageMedia;
+    }
+
+    //setting goal Audio
+    if (body.audio) {
+      const audioMedia = await AudioMedia.findOneAndUpdate(
+        { _id: body.audio },
+        { isUsed: true },
+        { new: true }
+      );
+
+      if (!audioMedia)
+        return res.status(400).send({
+          error: {
+            message: "Invalid audio id.",
+          },
+        });
+
+      body.audio = audioMedia;
+    }
+
+    //setting goal Audio
+    if (body.song) {
+      const audioMedia = await AudioMedia.findOneAndUpdate(
+        { _id: body.song },
+        { isUsed: true },
+        { new: true }
+      );
+
+      if (!audioMedia)
+        return res.status(400).send({
+          error: {
+            message: "Invalid song id.",
+          },
+        });
+
+      body.song = audioMedia;
+    }
 
     const goal = await Goal.findOneAndUpdate(
       { _id: id, createdBy: user._id },
