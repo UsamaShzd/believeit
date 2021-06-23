@@ -51,6 +51,7 @@ apis.forEach(({ route, fieldName }) => {
 
       fieldName.forEach((field) => {
         wellness[field] = req.body[field];
+        wellness[field + "Value"] = req.body[field + "Value"];
       });
       wellness.totalWellnessScore = calculateQuestionGroupScore(
         wellness,

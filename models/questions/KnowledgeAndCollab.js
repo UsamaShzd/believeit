@@ -1,41 +1,31 @@
 const mongoose = require("mongoose");
 
+const { Mixed } = mongoose.Schema.Types;
+
+const fields = [
+  "acquiringKnowledge",
+  "ownersPercent",
+  "necessaryDirections",
+  "frequentInteraction",
+  "workInHarmony",
+  "planApproved",
+  "everyoneWorking",
+];
+
+const schemaObject = {};
+
+fields.forEach((field) => {
+  schemaObject[field] = {
+    type: Number,
+    default: 0,
+  };
+  schemaObject[field + "Value"] = {
+    type: Mixed,
+  };
+});
+
 const knowledgeAndCollabSchema = new mongoose.Schema({
-  //1
-  acquiringKnowledge: {
-    type: Number,
-    default: 0,
-  },
-  //2
-  ownersPercent: {
-    type: Number,
-    default: 0,
-  },
-  //3
-  necessaryDirections: {
-    type: Number,
-    default: 0,
-  },
-  //4
-  frequentInteraction: {
-    type: Number,
-    default: 0,
-  },
-  //5
-  workInHarmony: {
-    type: Number,
-    default: 0,
-  },
-  //6
-  planApproved: {
-    type: Number,
-    default: 0,
-  },
-  //7
-  everyoneWorking: {
-    type: Number,
-    default: 0,
-  },
+  ...schemaObject,
 
   questionsCount: {
     type: Number,

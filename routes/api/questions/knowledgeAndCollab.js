@@ -79,6 +79,7 @@ apis.forEach(({ route, fieldName }) => {
 
       fieldName.forEach((field) => {
         knowledgeAndCollab[field] = req.body[field];
+        knowledgeAndCollab[field + "Value"] = req.body[field + "Value"];
       });
 
       knowledgeAndCollab.totalKnowledgeAndCollabScore =

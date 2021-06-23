@@ -78,6 +78,7 @@ apis.forEach(({ route, fieldName }) => {
 
       fieldName.forEach((field) => {
         strength[field] = req.body[field];
+        strength[field + "Value"] = req.body[field + "Value"];
       });
       strength.totalStrengthScore = calculateQuestionGroupScore(
         strength,

@@ -77,6 +77,7 @@ apis.forEach(({ route, fieldName }) => {
 
       fieldName.forEach((field) => {
         willPower[field] = req.body[field];
+        willPower[field + "Value"] = req.body[field + "Value"];
       });
 
       willPower.totalWillPowerScore = calculateQuestionGroupScore(

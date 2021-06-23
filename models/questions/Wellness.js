@@ -1,36 +1,31 @@
 const mongoose = require("mongoose");
 
+const { Mixed } = mongoose.Schema.Types;
+
+const fields = [
+  "satisfiedWithSleep",
+  "regularExerciseParticipation",
+  "lastTwoWeeksSubstanceUsage",
+  "lastMonthMood",
+  "tolarantTowardsChange",
+  "gratefullFor",
+];
+
+const schemaObject = {};
+
+fields.forEach((field) => {
+  schemaObject[field] = {
+    type: Number,
+    default: 0,
+  };
+  schemaObject[field + "Value"] = {
+    type: Mixed,
+  };
+});
+
 const wellnessSchema = new mongoose.Schema({
-  //1
-  satisfiedWithSleep: {
-    type: Number,
-    default: 0,
-  },
-  //2
-  regularExerciseParticipation: {
-    type: Number,
-    default: 0,
-  },
-  //3
-  lastTwoWeeksSubstanceUsage: {
-    type: Number,
-    default: 0,
-  },
-  //4
-  lastMonthMood: {
-    type: Number,
-    default: 0,
-  },
-  //5
-  tolarantTowardsChange: {
-    type: Number,
-    default: 0,
-  },
-  //6
-  gratefullFor: {
-    type: Number,
-    default: 0,
-  },
+  ...schemaObject,
+
   questionsCount: {
     type: Number,
     default: 6,

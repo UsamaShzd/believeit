@@ -59,6 +59,7 @@ apis.forEach(({ route, fieldName }) => {
 
       fieldName.forEach((field) => {
         clarityOnPurpose[field] = req.body[field];
+        clarityOnPurpose[field + "Value"] = req.body[field + "Value"];
       });
       clarityOnPurpose.totalClarityScore = calculateQuestionGroupScore(
         clarityOnPurpose,

@@ -1,31 +1,29 @@
 const mongoose = require("mongoose");
 
+const { Mixed } = mongoose.Schema.Types;
+
+const fields = [
+  "sayAffirmation",
+  "concentrateOnThoughts",
+  "pastDeadline",
+  "continueBuilding",
+  "acknowledgeMistake",
+];
+
+const schemaObject = {};
+
+fields.forEach((field) => {
+  schemaObject[field] = {
+    type: Number,
+    default: 0,
+  };
+  schemaObject[field + "Value"] = {
+    type: Mixed,
+  };
+});
+
 const willPowerSchema = new mongoose.Schema({
-  //1
-  sayAffirmation: {
-    type: Number,
-    default: 0,
-  },
-  //2
-  concentrateOnThoughts: {
-    type: Number,
-    default: 0,
-  },
-  //3
-  pastDeadline: {
-    type: Number,
-    default: 0,
-  },
-  //4
-  continueBuilding: {
-    type: Number,
-    default: 0,
-  },
-  //5
-  acknowledgeMistake: {
-    type: Number,
-    default: 0,
-  },
+  ...schemaObject,
 
   questionsCount: {
     type: Number,

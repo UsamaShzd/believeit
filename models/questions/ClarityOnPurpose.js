@@ -1,32 +1,28 @@
 const mongoose = require("mongoose");
 
-const clarityOnPurposeSchema = new mongoose.Schema({
-  //1
-  foundLifePurpose: {
-    type: Number,
-    default: 0,
-  },
-  //2
-  frequentlyThinkingAboutLifePurpose: {
-    type: Number,
-    default: 0,
-  },
-  //3
-  // reflectOnLifePurpose: {
-  //   type: Number,
-  //   default: 0,
-  // },
-  //3
-  goalAlignWithLifePurpose: {
-    type: Number,
-    default: 0,
-  },
-  //4
-  stuckInPastOrFuture: {
-    type: Number,
-    default: 0,
-  },
+const { Mixed } = mongoose.Schema.Types;
 
+const fields = [
+  "foundLifePurpose",
+  "frequentlyThinkingAboutLifePurpose",
+  "goalAlignWithLifePurpose",
+  "stuckInPastOrFuture",
+];
+
+const schemaObject = {};
+
+fields.forEach((field) => {
+  schemaObject[field] = {
+    type: Number,
+    default: 0,
+  };
+  schemaObject[field + "Value"] = {
+    type: Mixed,
+  };
+});
+
+const clarityOnPurposeSchema = new mongoose.Schema({
+  ...schemaObject,
   questionsCount: {
     type: Number,
     default: 4,

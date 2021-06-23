@@ -77,6 +77,7 @@ apis.forEach(({ route, fieldName }) => {
 
       fieldName.forEach((field) => {
         goalPlan[field] = req.body[field];
+        goalPlan[field + "Value"] = req.body[field + "Value"];
       });
       goalPlan.totalGoalPlanScore = calculateQuestionGroupScore(
         goalPlan,
