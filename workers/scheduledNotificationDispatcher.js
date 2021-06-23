@@ -9,13 +9,10 @@ const getPushTokens = require("../helpers/getPushTokens");
 const { sendPushNotifications } = require("../services/expo/pushNotification");
 
 module.exports = async () => {
-  const currentDate = new Date();
   const scheduledNotifications = await ScheduledNotification.find({
-    // dispatchAt: { $lte: currentDate },
+    dispatchAt: { $lte: new Date() },
   });
 
-  console.log("Current Date =>");
-  console.log("scheduled Notifications to dispatch =>", scheduledNotifications);
   scheduledNotifications.forEach(async (scheduledNotif) => {
     //creating notification in database
 
