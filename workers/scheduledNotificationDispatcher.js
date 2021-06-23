@@ -13,6 +13,7 @@ module.exports = async () => {
     dispatchAt: { $lte: new Date() },
   });
 
+  console.log("scheduled Notifications to dispatch =>", scheduledNotifications);
   scheduledNotifications.forEach(async (scheduledNotif) => {
     //creating notification in database
 
