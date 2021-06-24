@@ -301,6 +301,7 @@ router.put(
       "isPublic",
     ]);
 
+    const { user } = req.authSession;
     const goalCategory = await GoalCategory.findById(body.goalCategory);
 
     if (!goalCategory)
