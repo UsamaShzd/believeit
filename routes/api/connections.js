@@ -164,7 +164,10 @@ router.post(
       .limit(pageSize);
 
     users = users.map((u) => {
-      const usr = _.pick(u, (USER_PUBLIC_FIELDS + " categoryScore").split(" "));
+      const usr = _.pick(
+        u,
+        (USER_PUBLIC_FIELDS + " categoryScore _id").split(" ")
+      );
 
       if (usr.categoryScore) {
         const categoryScores = [];
