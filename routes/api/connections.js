@@ -7,6 +7,7 @@ const validateObjectId = require("../../helpers/validateObjectId");
 const User = require("../../models/User");
 const Connection = require("../../models/Connection");
 const Notification = require("../../models/Notification");
+const GoalCategory = require("../../models/GoalCategory");
 
 const Goal = require("../../models/Goal");
 
@@ -154,11 +155,38 @@ router.post(
       ];
     }
 
-    const users = await User.find(query)
+    const goalCategories = await GoalCategory.find({});
+
+    let users = await User.find(query)
       .sort(`-categoryScore.${category}`)
       .select(USER_PUBLIC_FIELDS + " categoryScore")
       .skip(offset)
       .limit(pageSize);
+
+    users = users.map((u) => {
+      const usr = _.pick(u, (USER_PUBLIC_FIELDS + " categoryScore").split(" "));
+
+      if (usr.categoryScore) {
+        const categoryScores = [];
+        for (let key in usr.categoryScore) {
+          const category = goalCategories.find((gc) => {
+            return gc._id.toHexString() === key;
+          });
+
+          if (!category) continue;
+          const { _id, name, color } = category;
+          categoryScores.push({
+            _id,
+            name,
+            color,
+            score: usr.categoryScore[key],
+          });
+        }
+        usr.categoryScore = categoryScores;
+      }
+
+      return usr;
+    });
 
     const totalCount = await User.find(query).count();
     const hasMore = offset + pageSize < totalCount;
