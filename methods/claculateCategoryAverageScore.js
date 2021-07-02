@@ -16,6 +16,7 @@ module.exports = async (id) => {
 
     const thisCategoryGoals = await Goal.find({
       createdBy: user._id,
+      "goalCategory._id": category._id,
       isCompleted: false,
     });
 
