@@ -86,9 +86,9 @@ apis.forEach(({ route, fieldName }) => {
         calculateQuestionGroupScore(knowledgeAndCollab, scoreFields);
 
       await knowledgeAndCollab.save();
-      user.clarityOnPurposeScore =
-        knowledgeAndCollab.totalKnowledgeAndCollabScore;
-      await user.save();
+      // user.clarityOnPurposeScore =
+      //   knowledgeAndCollab.totalKnowledgeAndCollabScore;
+      // await user.save();
       calculateGoalScore(id);
       res.send(knowledgeAndCollab);
     }

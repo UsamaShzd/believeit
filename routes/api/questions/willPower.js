@@ -86,8 +86,8 @@ apis.forEach(({ route, fieldName }) => {
       );
 
       await willPower.save();
-      user.clarityOnPurposeScore = willPower.totalWillPowerScore;
-      await user.save();
+      // user.clarityOnPurposeScore = willPower.totalWillPowerScore;
+      // await user.save();
       calculateGoalScore(id);
       res.send(willPower);
     }

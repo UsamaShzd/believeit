@@ -86,8 +86,8 @@ apis.forEach(({ route, fieldName }) => {
       );
 
       await strength.save();
-      user.clarityOnPurposeScore = strength.totalStrengthScore;
-      await user.save();
+      // user.clarityOnPurposeScore = strength.totalStrengthScore;
+      // await user.save();
       calculateGoalScore(id);
       res.send(strength);
     }

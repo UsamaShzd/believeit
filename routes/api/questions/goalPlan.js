@@ -85,8 +85,8 @@ apis.forEach(({ route, fieldName }) => {
       );
 
       await goalPlan.save();
-      user.clarityOnPurposeScore = goalPlan.totalGoalPlanScore;
-      await user.save();
+      // user.clarityOnPurposeScore = goalPlan.totalGoalPlanScore;
+      // await user.save();
       calculateGoalScore(id);
       res.send(goalPlan);
     }
