@@ -9,4 +9,5 @@ module.exports = Object.freeze([
   "AWS_S3_BUCKET_NAME",
   "REDIS_CONNECTION_URL",
   "STRIPE_SECRET_KEY",
+  "ZEN_SERP_API",
 ]);
