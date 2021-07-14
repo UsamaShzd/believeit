@@ -18,6 +18,8 @@ const validateObjectId = require("../../helpers/validateObjectId");
 const authorize = require("../../middlewares/authorize");
 const requestValidator = require("../../middlewares/requestValidator");
 
+const caclulateStars = require("../../methods/caclulateStars");
+
 const {
   createGoalSchema,
   editGoalSchema,
@@ -272,6 +274,8 @@ router.put(
 
     if (!goal)
       return res.status(404).send({ error: { message: "Goal not found!" } });
+
+    caclulateStars(goal.createdBy);
 
     res.send(goal);
   }
