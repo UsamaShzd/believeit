@@ -19,7 +19,7 @@ const postFields = [
   "youtubeVideo",
   "image",
   "description",
-  "htmlContent",
+  "link",
   "createdBy",
   "createdAt",
 ];
@@ -167,7 +167,7 @@ router.post(
       "title",
       "youtubeVideo",
       "description",
-      "htmlContent",
+      "link",
       "image",
     ]);
 
@@ -208,7 +208,7 @@ router.put(
       "title",
       "youtubeVideo",
       "description",
-      "htmlContent",
+      "link",
       "image",
     ]);
 

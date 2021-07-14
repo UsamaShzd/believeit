@@ -27,6 +27,11 @@ const postSchema = new mongoose.Schema({
     trim: true,
   },
 
+  link: {
+    type: String,
+    trim: true,
+  },
+
   htmlContent: {
     type: String,
     trim: true,

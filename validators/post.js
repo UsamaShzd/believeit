@@ -18,7 +18,7 @@ const createPostSchema = yup.object().shape({
     then: yup.string().min(5).max(500).required(),
   }),
 
-  htmlContent: yup.string().when("type", {
+  link: yup.string().when("type", {
     is: "blog",
     then: yup.string().trim().min(1).max(5000).required(),
   }),
@@ -42,7 +42,7 @@ const editPostSchema = yup.object().shape({
     then: yup.string().min(5).max(500).required(),
   }),
 
-  htmlContent: yup.string().when("type", {
+  link: yup.string().when("type", {
     is: "blog",
     then: yup.string().trim().min(1).max(5000).required(),
   }),
