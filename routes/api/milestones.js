@@ -26,6 +26,9 @@ const {
 
 const { makeSubMilestone } = require("../../methods/subMilestone");
 
+const USER_PUBLIC_FIELDS =
+  "firstname lastname image.thumbnailUrl image.imageUrl image.aspectRatio";
+
 const router = express.Router();
 
 router.get("/goal_milestones/:id", async (req, res) => {
@@ -36,7 +39,9 @@ router.get("/goal_milestones/:id", async (req, res) => {
 
   const milestones = await Milestone.find({
     goal: id,
-  }).sort("startDate");
+  })
+    .populate("members.memberId", USER_PUBLIC_FIELDS)
+    .sort("startDate");
 
   const subMilestones = await SubMilestone.find({
     milestone: milestones.map((m) => m._id),
@@ -97,9 +102,10 @@ router.post(
       "endDate",
       "repeatingDays",
       "timeOfDay",
+      "members",
     ]);
 
-    const { repeatingDays, startDate, endDate } = body;
+    const { repeatingDays, startDate, endDate, members = [] } = body;
 
     body.startDate = new Date(startDate);
     body.endDate = new Date(endDate);
@@ -116,6 +122,10 @@ router.post(
         moment(d).format("MM/DD/YYYY")
       );
     }
+
+    body.members = members.map((m) => {
+      return { memberId: m };
+    });
 
     const milestone = await new Milestone({
       ...body,
@@ -213,9 +223,10 @@ router.put(
       "endDate",
       "repeatingDays",
       "timeOfDay",
+      "members",
     ]);
 
-    const { repeatingDays, startDate, endDate } = body;
+    const { repeatingDays, startDate, endDate, members = [] } = body;
 
     body.startDate = new Date(startDate);
     body.endDate = new Date(endDate);
@@ -233,6 +244,9 @@ router.put(
       );
     }
 
+    body.members = members.map((m) => {
+      return { memberId: m };
+    });
     const milestone = await Milestone.findOneAndUpdate(
       {
         _id: id,

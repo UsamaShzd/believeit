@@ -28,6 +28,7 @@ exports.makeMilestone = (ms) => {
         "repeatingDays",
         "timeOfDay",
         "frequency",
+        "members",
       ]),
       occuringDate: moment(ms.startingDate).format("MM/DD/YYYY"),
       isCompleted: ms.completedDates.includes(
@@ -52,6 +53,7 @@ exports.makeMilestone = (ms) => {
         "repeatingDays",
         "timeOfDay",
         "frequency",
+        "members",
       ]),
       occuringDate: repeatingDate,
       isCompleted,

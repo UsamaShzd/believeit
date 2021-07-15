@@ -8,6 +8,7 @@ const createMilestoneSchema = yup.object().shape({
   frequency: yup.number().min(1).max(100).required(),
   repeatingDays: yup.array().of(yup.string().required()).required(),
   timeOfDay: yup.array().of(yup.string().required()).optional(),
+  members: yup.array().of(yup.string().required()).optional(),
 });
 
 const editMilestoneSchema = yup.object().shape({
@@ -17,6 +18,7 @@ const editMilestoneSchema = yup.object().shape({
   frequency: yup.number().min(1).max(100).required(),
   repeatingDays: yup.array().of(yup.string().required()).required(),
   timeOfDay: yup.array().of(yup.string().required()).optional(),
+  members: yup.array().of(yup.string().required()).optional(),
 });
 
 const changeMilestoneStatusSchema = yup.object().shape({
