@@ -54,6 +54,15 @@ const mileStoneSchema = new mongoose.Schema({
     default: [],
   },
 
+  members: [
+    new mongoose.Schema({
+      memberId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+      },
+    }),
+  ],
+
   isCompleted: {
     type: Boolean,
     default: false,
