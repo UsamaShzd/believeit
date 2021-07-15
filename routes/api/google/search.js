@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const _ = require("lodash");
+const urlMetadata = require("url-metadata");
 
 const ClickReport = require("../../../models/ClickReport");
 const requestValidator = require("../../../middlewares/requestValidator");
@@ -27,13 +28,25 @@ router.post(
         q: searchQuery,
       },
     });
+    const filtered = result.data.organic
+      .filter((blog) => {
+        if (blog.title && blog.url) return true;
+        return false;
+      })
+      .slice(0, 3);
 
-    const filtered = result.data.organic.filter((blog) => {
-      if (blog.title && blog.url) return true;
-      return false;
-    });
-
-    res.send(filtered.slice(0, 3));
+    const scrapped = [];
+    for (let i = 0; i < filtered.length; ++i) {
+      const article = filtered[i];
+      if (article.thumbnail) {
+        article.image = article.thumbnail;
+      } else {
+        const metaData = await urlMetadata(article.url);
+        article.image = metaData["og:image"] || metaData["twitter:image"] || "";
+      }
+      scrapped.push(article);
+    }
+    res.send(scrapped);
   }
 );
 
