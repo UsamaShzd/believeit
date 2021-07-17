@@ -1,18 +1,32 @@
+const path = require("path");
 const express = require("express");
-
+const axios = require("axios");
 const moment = require("moment");
+const { google } = require("googleapis");
 const authorize = require("../../middlewares/authorize");
 
 const _ = require("lodash");
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
+const androidpublisher = google.androidpublisher("v3");
+
 const sanitizeUser = require("../../sanitizers/user");
 
-const { FREE, MONTHLY } = require("../../enums/subscription_plans");
+const { FREE, MONTHLY, YEARLY } = require("../../enums/subscription_plans");
 const requestValidator = require("../../middlewares/requestValidator");
 
-const { stirpePaymentSchema } = require("../../validators/subscription");
+const {
+  stirpePaymentSchema,
+  monthlyGooglePaySchema,
+  monthlyApplePaySchema,
+} = require("../../validators/subscription");
+
+const applePayValidationUrl =
+  process.env.NODE_ENV === "development"
+    ? "https://sandbox.itunes.apple.com/verifyReceipt"
+    : "https://buy.itunes.apple.com/verifyReceipt";
+
 const router = express.Router();
 
 router.post("/subscribe_free_plan", authorize(), async (req, res) => {
@@ -31,18 +45,6 @@ router.post("/subscribe_free_plan", authorize(), async (req, res) => {
   await user.save();
   res.send(_.pick(user, ["subscription"]));
 });
-
-// router.get("/my_stripe_payment_methods", authorize(), async (req, res) => {
-//   //
-//   // const paymentMethod = await stripe.paymentMethods.retrieve(
-//   //   "pm_1IxAzF2eZvKYlo2CdRanIWVf"
-//   // );
-
-//   const { user } = req.authSession;
-//   const customer = await stripe.customers.retrieve(user.stripeCustomerId);
-
-//   res.send(customer);
-// });
 
 router.post(
   "/subscribe_monthly_plan/stripe",
@@ -102,4 +104,73 @@ router.post(
   }
 );
 
+router.post(
+  "/subscribe_monthly_plan_google_pay",
+  requestValidator(monthlyGooglePaySchema),
+  authorize(),
+  async (req, res) => {
+    //me.believeit.www
+
+    res.send(req.body);
+  }
+);
+
+router.post(
+  "/subscribe_monthly_plan_apple_pay",
+  requestValidator(monthlyApplePaySchema),
+  authorize(),
+  async (req, res) => {
+    //me.believeit.www
+
+    const { reciptData, password, excludeOldTransactions } = _.pick(req.body, [
+      "reciptData",
+      "password",
+      "excludeOldTransactions",
+    ]);
+
+    res.send(req.body);
+  }
+);
+
+router.post(
+  "/subscribe_yearly_plan_google_pay",
+  requestValidator(monthlyGooglePaySchema),
+  authorize(),
+  async (req, res) => {
+    const { purchaseToken, packageName, productId } = _.pick(req.body, [
+      "purchaseToken",
+      "packageName",
+      "productId",
+    ]);
+
+    const auth = new google.auth.GoogleAuth({
+      keyFile: path.join(__dirname, "../../google_service_account.json"),
+      scopes: ["https://www.googleapis.com/auth/androidpublisher"],
+    });
+
+    // Acquire an auth client, and bind it to all future calls
+    const authClient = await auth.getClient();
+    google.options({ auth: authClient });
+
+    res.send(req.body);
+
+    // const verificationUrl = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/subscriptions/${productId}/tokens/${purchaseToken}`;
+
+    // try {
+    //   const verificationResult = await axios.get(verificationUrl);
+    //   res.send(verificationResult.data);
+    // } catch (err) {
+    //   res.send(err.response.data);
+    // }
+  }
+);
+
+router.post(
+  "/subscribe_yearly_plan_apple_pay",
+  requestValidator(monthlyGooglePaySchema),
+  authorize(),
+  async (req, res) => {
+    //me.believeit.www
+  }
+);
 module.exports = router;

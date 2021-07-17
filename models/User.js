@@ -179,7 +179,31 @@ const userSchema = new mongoose.Schema({
       type: Boolean,
       default: true,
     },
+    textChatNotifications: {
+      type: Boolean,
+      default: true,
+    },
+    emailMilestoneNotifications: {
+      type: Boolean,
+      default: true,
+    },
+    textMilestoneNotifications: {
+      type: Boolean,
+      default: true,
+    },
 
+    affirmationReminderTime: {
+      amTime: {
+        type: String,
+        default: "07:00",
+      },
+      pmTime: {
+        type: String,
+        default: "20:00",
+      },
+    },
+
+    goalPlan: yup.string().required("Goal Plan time cannot be empty"),
     eCoaching: {
       numberOfNotifications: {
         type: Number,
@@ -187,9 +211,11 @@ const userSchema = new mongoose.Schema({
       },
       startTime: {
         type: String,
+        default: "07:00",
       },
       endTime: {
         type: String,
+        default: "20:00",
       },
     },
 
@@ -200,9 +226,41 @@ const userSchema = new mongoose.Schema({
       },
       startTime: {
         type: String,
+        default: "07:00",
       },
       endTime: {
         type: String,
+        default: "20:00",
+      },
+    },
+
+    motivationalQoutes: {
+      numberOfNotifications: {
+        type: Number,
+        default: 7,
+      },
+      startTime: {
+        type: String,
+        default: "07:00",
+      },
+      endTime: {
+        type: String,
+        default: "20:00",
+      },
+    },
+
+    extraAffirmations: {
+      numberOfNotifications: {
+        type: Number,
+        default: 7,
+      },
+      startTime: {
+        type: String,
+        default: "07:00",
+      },
+      endTime: {
+        type: String,
+        default: "20:00",
       },
     },
   },

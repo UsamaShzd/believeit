@@ -133,8 +133,15 @@ router.put(
 
     const body = _.pick(req.body, [
       "emailChatNotifications",
+      "textChatNotifications",
+      "emailMilestoneNotifications",
+      "textMilestoneNotifications",
+      "affirmationReminderTime",
+      "goalPlan",
       "eCoaching",
       "prayers",
+      "motivationalQoutes",
+      "extraAffirmations",
     ]);
 
     user.notificationSettings = body;
