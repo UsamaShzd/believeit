@@ -203,7 +203,16 @@ const userSchema = new mongoose.Schema({
       },
     },
 
-    goalPlan: yup.string().required("Goal Plan time cannot be empty"),
+    goalPlan: {
+      state: {
+        type: Boolean,
+        default: true,
+      },
+      reminderTime: {
+        type: String,
+        default: "12:00",
+      },
+    },
     eCoaching: {
       numberOfNotifications: {
         type: Number,
