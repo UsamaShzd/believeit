@@ -4,10 +4,9 @@ const stirpePaymentSchema = yup.object().shape({
   stripePaymentToken: yup.string().min(5).required(),
 });
 
-const monthlyGooglePaySchema = yup.object().shape({
+const googlePaySchema = yup.object().shape({
   purchaseToken: yup.string().required(),
-  packageName: yup.string().required(),
-  productId: yup.string().required(),
+  subscriptionId: yup.string().required(),
 });
 
 const monthlyApplePaySchema = yup.object().shape({
@@ -18,6 +17,6 @@ const monthlyApplePaySchema = yup.object().shape({
 
 module.exports = {
   stirpePaymentSchema,
-  monthlyGooglePaySchema,
+  googlePaySchema,
   monthlyApplePaySchema,
 };

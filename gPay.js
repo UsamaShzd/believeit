@@ -14,7 +14,7 @@ async function main() {
   google.options({ auth: authClient });
 
   try {
-    const res = await androidpublisher.purchases.subscriptions.get({
+    const res = await androidpublisher.purchases.subscriptions.acknowledge({
       // The package name of the application for which this subscription was purchased (for example, 'com.some.thing').
       packageName: "me.believeit.www",
       // The purchased subscription ID (for example, 'monthly001').
