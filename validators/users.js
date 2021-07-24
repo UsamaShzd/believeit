@@ -30,7 +30,12 @@ const updateUserNotificationsSchema = yup.object().shape({
   emailMilestoneNotifications: yup.boolean().required(),
   textMilestoneNotifications: yup.boolean().required(),
 
-  goalPlan: yup.string().required("Goal Plan time cannot be empty"),
+  goalPlan: yup.object().shape({
+    state: yup.boolean().required(),
+    reminderTime: yup
+      .string()
+      .required("Goal Plan Reminder time cannot be empty"),
+  }),
 
   affirmationReminderTime: yup.object().shape({
     amTime: yup.string().required("Affirmation AM time cannot be empty"),
