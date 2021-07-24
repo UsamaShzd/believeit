@@ -6,14 +6,17 @@ const stirpePaymentSchema = yup.object().shape({
 
 const googlePaySchema = yup.object().shape({
   purchaseToken: yup.string().required(),
-  subscriptionId: yup.string().required(),
+  subscriptionId: yup
+    .string()
+    .oneOf(["bi_premium_yearly", "bi_premium_monthly"])
+    .required(),
 });
 
 const applePaySchema = yup.object().shape({
   reciptData: yup.string().required(),
   password: yup.string().required(),
   excludeOldTransactions: yup.boolean().optional(),
-  subscriptionType: yup.string().required(),
+  subscriptionType: yup.string().oneOf(["yearly", "monthly"]).required(),
 });
 
 module.exports = {
