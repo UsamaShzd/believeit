@@ -11,15 +11,13 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const androidpublisher = google.androidpublisher("v3");
 
-const sanitizeUser = require("../../sanitizers/user");
-
 const { FREE, MONTHLY, YEARLY } = require("../../enums/subscription_plans");
 const requestValidator = require("../../middlewares/requestValidator");
 
 const {
   stirpePaymentSchema,
   googlePaySchema,
-  monthlyApplePaySchema,
+  applePaySchema,
 } = require("../../validators/subscription");
 
 const applePayValidationUrl =
@@ -105,23 +103,6 @@ router.post(
 );
 
 router.post(
-  "/subscribe_monthly_plan_apple_pay",
-  requestValidator(monthlyApplePaySchema),
-  authorize(),
-  async (req, res) => {
-    //me.believeit.www
-
-    const { reciptData, password, excludeOldTransactions } = _.pick(req.body, [
-      "reciptData",
-      "password",
-      "excludeOldTransactions",
-    ]);
-
-    res.send(req.body);
-  }
-);
-
-router.post(
   "/subscribe_plan_google_pay",
   requestValidator(googlePaySchema),
   authorize(),
@@ -196,11 +177,63 @@ router.post(
 );
 
 router.post(
-  "/subscribe_yearly_plan_apple_pay",
-  requestValidator(googlePaySchema),
+  "/subscribe_plan_apple_pay",
+  requestValidator(applePaySchema),
   authorize(),
   async (req, res) => {
-    //me.believeit.www
+    const {
+      reciptData,
+      password,
+      excludeOldTransactions = true,
+      subscriptionType,
+    } = _.pick(req.body, [
+      "reciptData",
+      "password",
+      "excludeOldTransactions",
+      "subscriptionType",
+    ]);
+
+    const applePayRes = await axios.post(applePayValidationUrl, {
+      "recipt-data": reciptData,
+      password,
+      excludeOldTransactions,
+    });
+
+    if (applePayRes.data.status !== 200)
+      return res
+        .status(400)
+        .send({ error: { message: "Invalid Recipt data!" } });
+
+    //
+    const latestRecipt = applePayRes.data.latest_receipt_info[0];
+
+    const expiryDate = latestRecipt.expires_date;
+    //give accesss
+
+    const { user } = req.authSession;
+    const startDate = moment();
+    const endDate = moment(expiryDate);
+
+    const SUB = subscriptionType === "yearly" ? YEARLY : MONTHLY;
+    if (user.subscription && user.subscription.type === SUB.name) {
+      user.subscription.type = SUB.name;
+      user.subscription.subscriptionStart = startDate.toDate();
+      user.subscription.subscriptionEnd = endDate.toDate();
+      user.subscription.isUnlimited = SUB.isUnlimited;
+      user.subscription.isTrial = false;
+      user.subscription.maxActiveGoals = SUB.maxActiveGoals;
+    } else {
+      user.subscription = {
+        type: SUB.name,
+        subscriptionStart: startDate.toDate(),
+        subscriptionEnd: endDate.toDate(),
+        isUnlimited: SUB.isUnlimited,
+        isTrial: false,
+        maxActiveGoals: SUB.maxActiveGoals,
+      };
+    }
+    await user.save();
+    res.send(user.subscription);
   }
 );
 module.exports = router;

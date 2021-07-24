@@ -9,14 +9,15 @@ const googlePaySchema = yup.object().shape({
   subscriptionId: yup.string().required(),
 });
 
-const monthlyApplePaySchema = yup.object().shape({
+const applePaySchema = yup.object().shape({
   reciptData: yup.string().required(),
   password: yup.string().required(),
   excludeOldTransactions: yup.boolean().optional(),
+  subscriptionType: yup.string().required(),
 });
 
 module.exports = {
   stirpePaymentSchema,
   googlePaySchema,
-  monthlyApplePaySchema,
+  applePaySchema,
 };
