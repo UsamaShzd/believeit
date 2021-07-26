@@ -13,6 +13,7 @@ const createGoalSchema = yup.object().shape({
   song: yup.string().optional(),
   toPlay: yup.string().min(3).max(200).optional(),
   isPublic: yup.boolean().optional(),
+  articleSuggestions: yup.boolean().optional(),
 });
 
 const editGoalSchema = yup.object().shape({
@@ -27,6 +28,7 @@ const editGoalSchema = yup.object().shape({
   song: yup.string().optional(),
   toPlay: yup.string().min(3).max(200).optional(),
   isPublic: yup.boolean().optional(),
+  articleSuggestions: yup.boolean().optional(),
 });
 
 const changeGoalStatusSchema = yup.object().shape({

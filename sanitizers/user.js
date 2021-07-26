@@ -18,5 +18,6 @@ module.exports = (user) => {
     "topHobbies",
     "ethnicity",
     "notificationSettings",
+    "dateOfBirth",
   ]);
 };

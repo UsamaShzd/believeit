@@ -86,6 +86,7 @@ router.post(
       "song",
       "toPlay",
       "isPublic",
+      "articleSuggestions",
     ]);
 
     const { preDefinedGoalRef, accomplishingDate } = body;
@@ -303,6 +304,7 @@ router.put(
       "song",
       "toPlay",
       "isPublic",
+      "articleSuggestions",
     ]);
 
     const { user } = req.authSession;

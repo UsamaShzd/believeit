@@ -81,6 +81,10 @@ const goalSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  articleSuggestions: {
+    type: Boolean,
+    default: true,
+  },
 
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
