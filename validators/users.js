@@ -17,6 +17,7 @@ const updateUserDetails = yup.object().shape({
   firstname: yup.string().trim().min(5).max(100).required(),
   lastname: yup.string().trim().min(5).max(100).required(),
   gender: yup.string().optional(),
+  dateOfBirth: yup.date().required(),
   relationshipStatus: yup.string().optional(),
   employmentStatus: yup.string().optional(),
   numberOfchildrens: yup.number().optional(),

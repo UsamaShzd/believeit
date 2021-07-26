@@ -51,6 +51,10 @@ const userSchema = new mongoose.Schema({
     enum: ["male", "female"],
   },
 
+  dateOfBirth: {
+    type: Date,
+  },
+
   relationshipStatus: {
     type: String,
   },

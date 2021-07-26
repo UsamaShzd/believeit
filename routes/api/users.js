@@ -70,6 +70,7 @@ router.put(
       "numberOfchildrens",
       "topHobbies",
       "ethnicity",
+      "dateOfBirth",
     ]);
 
     const { user } = req.authSession;
