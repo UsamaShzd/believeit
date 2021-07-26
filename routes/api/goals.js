@@ -67,7 +67,7 @@ router.post(
     }).count();
 
     if (acitveGoalsCount >= subscription.maxActiveGoals)
-      return res.send({
+      return res.status(400).send({
         error: {
           message: `You cannot have more than ${subscription.maxActiveGoals} incomplete goals.`,
         },
