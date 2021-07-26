@@ -38,6 +38,7 @@ const updateUserNotificationsSchema = yup.object().shape({
   }),
 
   affirmationReminderTime: yup.object().shape({
+    state: yup.boolean().required(),
     amTime: yup.string().required("Affirmation AM time cannot be empty"),
     pmTime: yup.string().required("Affirmation PM time cannot be empty"),
   }),
@@ -45,6 +46,7 @@ const updateUserNotificationsSchema = yup.object().shape({
   eCoaching: yup
     .object()
     .shape({
+      state: yup.boolean().required(),
       numberOfNotifications: yup.number().min(0).max(7).required(),
       startTime: yup.string().required("start time cannot be empty"),
       endTime: yup
@@ -63,6 +65,7 @@ const updateUserNotificationsSchema = yup.object().shape({
   prayers: yup
     .object()
     .shape({
+      state: yup.boolean().required(),
       numberOfNotifications: yup.number().min(0).max(7).required(),
       startTime: yup.string().required("start time cannot be empty"),
       endTime: yup
@@ -81,6 +84,7 @@ const updateUserNotificationsSchema = yup.object().shape({
   motivationalQoutes: yup
     .object()
     .shape({
+      state: yup.boolean().required(),
       numberOfNotifications: yup.number().min(0).max(7).required(),
       startTime: yup.string().required("start time cannot be empty"),
       endTime: yup
@@ -99,6 +103,7 @@ const updateUserNotificationsSchema = yup.object().shape({
   extraAffirmations: yup
     .object()
     .shape({
+      state: yup.boolean().required(),
       numberOfNotifications: yup.number().min(0).max(7).required(),
       startTime: yup.string().required("start time cannot be empty"),
       endTime: yup

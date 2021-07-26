@@ -193,6 +193,10 @@ const userSchema = new mongoose.Schema({
     },
 
     affirmationReminderTime: {
+      state: {
+        type: Boolean,
+        default: true,
+      },
       amTime: {
         type: String,
         default: "07:00",
@@ -214,6 +218,10 @@ const userSchema = new mongoose.Schema({
       },
     },
     eCoaching: {
+      state: {
+        type: Boolean,
+        default: true,
+      },
       numberOfNotifications: {
         type: Number,
         default: 7,
@@ -229,6 +237,10 @@ const userSchema = new mongoose.Schema({
     },
 
     prayers: {
+      state: {
+        type: Boolean,
+        default: true,
+      },
       numberOfNotifications: {
         type: Number,
         default: 7,
@@ -244,6 +256,10 @@ const userSchema = new mongoose.Schema({
     },
 
     motivationalQoutes: {
+      state: {
+        type: Boolean,
+        default: true,
+      },
       numberOfNotifications: {
         type: Number,
         default: 7,
@@ -259,6 +275,10 @@ const userSchema = new mongoose.Schema({
     },
 
     extraAffirmations: {
+      state: {
+        type: Boolean,
+        default: true,
+      },
       numberOfNotifications: {
         type: Number,
         default: 7,
