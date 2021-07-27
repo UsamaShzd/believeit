@@ -148,8 +148,23 @@ router.get(
 );
 
 router.get("/", async (req, res) => {
-  const affirmations = await Affirmation.find();
-  res.send(affirmations);
+  let { pageNum = 1, pageSize = 10 } = req.query;
+
+  pageSize = parseInt(pageSize);
+  pageNum = parseInt(pageNum);
+
+  const offset = pageSize * (pageNum - 1);
+
+  const query = {};
+
+  let affirmations = await Affirmation.find(query)
+    .sort("-_id")
+    .skip(offset)
+    .limit(pageSize);
+
+  const totalCount = await Affirmation.find(query).count();
+  const hasMore = offset + pageSize < totalCount;
+  res.send({ hasMore, pageSize, pageNum, list: affirmations });
 });
 
 router.post(
