@@ -139,8 +139,23 @@ router.get(
 );
 
 router.get("/", async (req, res) => {
-  const qoutations = await Qoutation.find();
-  res.send(qoutations);
+  let { pageNum = 1, pageSize = 10 } = req.query;
+
+  pageSize = parseInt(pageSize);
+  pageNum = parseInt(pageNum);
+
+  const offset = pageSize * (pageNum - 1);
+
+  const query = {};
+
+  let qoutations = await Qoutation.find(query)
+    .sort("-_id")
+    .skip(offset)
+    .limit(pageSize);
+
+  const totalCount = await Qoutation.find(query).count();
+  const hasMore = offset + pageSize < totalCount;
+  res.send({ hasMore, pageSize, pageNum, list: qoutations });
 });
 
 router.post(
