@@ -18,13 +18,21 @@ router.get("/my_catgory_scores", authorize(), async (req, res) => {
   const { user } = req.authSession;
   const categories = await GoalCategory.find();
 
+  const { categoryStars = {}, categoryScore = {} } = user;
+
   const result = categories.map(({ _id, name, color }) => {
-    const { categoryScore = {} } = user;
-    return { name, color, _id, score: categoryScore[`${_id}`] || 0 };
+    return {
+      name,
+      color,
+      _id,
+      score: categoryScore[`${_id}`] || 0,
+      stars: categoryStars[`${_id}`] || 0,
+    };
   });
 
   res.send(result);
 });
+
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
 

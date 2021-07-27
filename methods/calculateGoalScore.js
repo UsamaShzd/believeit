@@ -10,7 +10,7 @@ const StrengthOfBelief = require("../models/questions/StrengthOfBelief");
 const WillPower = require("../models/questions/WillPower");
 
 //categoryCalculator
-// const claculateCategoryAverageScore = require("./claculateCategoryAverageScore");
+const claculateCategoryAverageScore = require("./claculateCategoryAverageScore");
 
 module.exports = async (id, calculateCategoryScore = true) => {
   const goal = await Goal.findById(id);
@@ -86,6 +86,6 @@ module.exports = async (id, calculateCategoryScore = true) => {
 
   await goal.save();
 
-  // if (calculateCategoryScore) claculateCategoryAverageScore(goal.createdBy);
+  if (calculateCategoryScore) claculateCategoryAverageScore(goal.createdBy);
   return goal;
 };

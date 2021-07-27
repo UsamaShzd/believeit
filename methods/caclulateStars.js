@@ -8,7 +8,7 @@ module.exports = async (id) => {
 
   const goalCategories = await GoalCategory.find();
 
-  const scoreObj = {};
+  const starsObj = {};
 
   for (let i = 0; i < goalCategories.length; ++i) {
     const category = goalCategories[i];
@@ -20,10 +20,10 @@ module.exports = async (id) => {
       isCompleted: true,
     }).count();
 
-    scoreObj[`${category._id}`] = thisCategoryGoalsCount || 0;
+    starsObj[`${category._id}`] = thisCategoryGoalsCount || 0;
   }
 
-  user.categoryScore = scoreObj;
+  user.categoryStars = starsObj;
 
   await user.save();
 };

@@ -166,7 +166,7 @@ router.post(
     users = users.map((u) => {
       const usr = _.pick(
         u,
-        (USER_PUBLIC_FIELDS + " categoryScore _id").split(" ")
+        (USER_PUBLIC_FIELDS + " categoryScore categoryStars _id").split(" ")
       );
 
       if (usr.categoryScore) {

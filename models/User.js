@@ -168,6 +168,10 @@ const userSchema = new mongoose.Schema({
     type: Object,
   },
 
+  categoryStars: {
+    type: Object,
+  },
+
   wellnessScore: {
     type: Number,
     default: 0,
