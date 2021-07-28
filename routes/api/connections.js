@@ -201,12 +201,13 @@ router.post(
             _id,
             name,
             color,
-            score: usr.categoryStars[key],
+            stars: usr.categoryStars[key],
           });
         }
         usr.categoryStars = stars;
       }
 
+      console.log(usr);
       return usr;
     });
 
