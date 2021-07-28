@@ -169,45 +169,64 @@ router.post(
         (USER_PUBLIC_FIELDS + " categoryScore categoryStars _id").split(" ")
       );
 
-      if (usr.categoryScore) {
-        const categoryScores = [];
-        for (let key in usr.categoryScore) {
-          const category = goalCategories.find((gc) => {
-            return gc._id.toHexString() === key;
-          });
+      // if (usr.categoryScore) {
+      //   const categoryScores = [];
+      //   for (let key in usr.categoryScore) {
+      //     const category = goalCategories.find((gc) => {
+      //       return gc._id.toHexString() === key;
+      //     });
 
-          if (!category) continue;
-          const { _id, name, color } = category;
-          categoryScores.push({
-            _id,
-            name,
-            color,
-            score: usr.categoryScore[key],
-          });
+      //     if (!category) continue;
+      //     const { _id, name, color } = category;
+      //     categoryScores.push({
+      //       _id,
+      //       name,
+      //       color,
+      //       score: usr.categoryScore[key],
+      //     });
+      //   }
+      //   usr.categoryScore = categoryScores;
+      // }
+
+      usr.categoryScore = goalCategories.map((goalCategory) => {
+        if (usr.categoryScore) {
+          goalCategory.score = usr.categoryScore[`${goalCategory._id}`] || 0;
+        } else {
+          goalCategory.score = 0;
         }
-        usr.categoryScore = categoryScores;
-      }
 
-      if (usr.categoryStars) {
-        const stars = [];
-        for (let key in usr.categoryStars) {
-          const category = goalCategories.find((gc) => {
-            return gc._id.toHexString() === key;
-          });
+        return goalCategory;
+      });
 
-          if (!category) continue;
-          const { _id, name, color } = category;
-          stars.push({
-            _id,
-            name,
-            color,
-            stars: usr.categoryStars[key],
-          });
+      // if (usr.categoryStars) {
+      //   const stars = [];
+      //   for (let key in usr.categoryStars) {
+      //     const category = goalCategories.find((gc) => {
+      //       return gc._id.toHexString() === key;
+      //     });
+
+      //     if (!category) continue;
+      //     const { _id, name, color } = category;
+      //     stars.push({
+      //       _id,
+      //       name,
+      //       color,
+      //       stars: usr.categoryStars[key],
+      //     });
+      //   }
+      //   usr.categoryStars = stars;
+      // }
+
+      usr.categoryStars = goalCategories.map((goalCategory) => {
+        if (usr.categoryStars) {
+          goalCategory.stars = usr.categoryStars[`${goalCategory._id}`] || 0;
+        } else {
+          goalCategory.stars = 0;
         }
-        usr.categoryStars = stars;
-      }
 
-      console.log(usr);
+        return goalCategory;
+      });
+
       return usr;
     });
 
