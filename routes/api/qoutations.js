@@ -120,16 +120,38 @@ router.get("/listing/:id", async (req, res) => {
 
   const offset = pageSize * (pageNum - 1);
 
-  const query = { "category._id": id };
+  const query = { "category._id": mongoose.Types.ObjectId(id) };
 
-  let qoutations = await Qoutation.find(query)
-    .sort("-_id")
-    .skip(offset)
-    .limit(pageSize);
+  const pipeline = [
+    { $match: query },
+    { $sort: { _id: -1 } },
+    { $skip: offset },
+    { $limit: pageSize },
+    {
+      $lookup: {
+        from: "saveditems",
+        localField: "_id",
+        foreignField: "content",
+        as: "savedItem",
+      },
+    },
+  ];
+
+  const qoutations = await Qoutation.aggregate(pipeline);
 
   const totalCount = await Qoutation.find(query).count();
+
   const hasMore = offset + pageSize < totalCount;
-  res.send({ hasMore, pageSize, pageNum, list: qoutations });
+  res.send({
+    hasMore,
+    pageSize,
+    pageNum,
+    list: qoutations.map((qoute) => {
+      qoute.saved = qoute.savedItem.length > 0 ? true : false;
+      delete qoute.savedItem;
+      return qoute;
+    }),
+  });
 });
 
 router.get(
