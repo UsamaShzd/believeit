@@ -185,6 +185,11 @@ router.get(
   }
 );
 
+router.get("/", async (req, res) => {
+  const qoutations = await Qoutation.find();
+  res.send(qoutations);
+});
+
 router.post(
   "/",
   authorize(ADMIN),

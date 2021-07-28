@@ -194,6 +194,11 @@ router.get(
   }
 );
 
+router.get("/", async (req, res) => {
+  const affirmations = await Affirmation.find();
+  res.send(affirmations);
+});
+
 router.post(
   "/",
   authorize(ADMIN),
