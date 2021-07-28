@@ -107,6 +107,31 @@ router.get("/saved_qoutations", authorize(), async (req, res) => {
   res.send(result);
 });
 
+router.get("/listing/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!validateObjectId(id))
+    return res.status(404).send({ error: { message: "Invalid Category Id." } });
+
+  let { pageNum = 1, pageSize = 10 } = req.query;
+
+  pageSize = parseInt(pageSize);
+  pageNum = parseInt(pageNum);
+
+  const offset = pageSize * (pageNum - 1);
+
+  const query = { "category._id": id };
+
+  let qoutations = await Qoutation.find(query)
+    .sort("-_id")
+    .skip(offset)
+    .limit(pageSize);
+
+  const totalCount = await Qoutation.find(query).count();
+  const hasMore = offset + pageSize < totalCount;
+  res.send({ hasMore, pageSize, pageNum, list: qoutations });
+});
+
 router.get(
   "/:id",
   authorize("", { authentication: false }),
@@ -137,26 +162,6 @@ router.get(
     res.send(result);
   }
 );
-
-router.get("/", async (req, res) => {
-  let { pageNum = 1, pageSize = 10 } = req.query;
-
-  pageSize = parseInt(pageSize);
-  pageNum = parseInt(pageNum);
-
-  const offset = pageSize * (pageNum - 1);
-
-  const query = {};
-
-  let qoutations = await Qoutation.find(query)
-    .sort("-_id")
-    .skip(offset)
-    .limit(pageSize);
-
-  const totalCount = await Qoutation.find(query).count();
-  const hasMore = offset + pageSize < totalCount;
-  res.send({ hasMore, pageSize, pageNum, list: qoutations });
-});
 
 router.post(
   "/",
