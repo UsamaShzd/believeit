@@ -6,7 +6,7 @@ const GoalCategory = require("../../models/GoalCategory");
 const Goal = require("../../models/Goal");
 const Milestone = require("../../models/Milestone");
 const SubMilestone = require("../../models/SubMilestone");
-const PreDefinedGoal = require("../../models/PreDefinedGoal");
+
 const PreDefinedMilestone = require("../../models/PreDefinedMilestone");
 const PreDefinedSubMilestone = require("../../models/PreDefinedSubMilestone");
 
@@ -34,7 +34,8 @@ const USER_PUBLIC_FIELDS =
   "firstname lastname image.thumbnailUrl image.imageUrl image.aspectRatio";
 
 router.get("/get_my_goals", authorize(), async (req, res) => {
-  const { is_completed } = req.query;
+  const { is_completed, current_date = moment().format("MM/DD/YYYY") } =
+    req.query;
   const { user } = req.authSession;
 
   const query = { createdBy: user._id };
@@ -43,12 +44,23 @@ router.get("/get_my_goals", authorize(), async (req, res) => {
     query.isCompleted = is_completed === "1" ? true : false;
   }
 
-  const goals = await Goal.find(query).populate(
+  let goals = await Goal.find(query).populate(
     "members.memberId",
     USER_PUBLIC_FIELDS
   );
 
-  res.send(goals);
+  const result = [];
+  for (let i = 0; i < goals.length; ++i) {
+    const goal = goals[i];
+
+    const milestones = await Milestone.find({
+      goal: goal._id,
+      repeatingDates: current_date,
+    });
+    result.push({ ...goal._doc, todaysPlan: milestones });
+  }
+
+  res.send(result);
 });
 
 router.post(
