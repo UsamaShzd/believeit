@@ -130,8 +130,8 @@ router.get("/listing/:id", async (req, res) => {
   const pipeline = [
     { $match: query },
     { $sort: { _id: -1 } },
-    { $skip: offset },
-    { $limit: pageSize },
+    // { $skip: offset },
+    // { $limit: pageSize },
     {
       $lookup: {
         from: "saveditems",
