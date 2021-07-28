@@ -188,6 +188,25 @@ router.post(
         usr.categoryScore = categoryScores;
       }
 
+      if (usr.categoryStars) {
+        const stars = [];
+        for (let key in usr.categoryStars) {
+          const category = goalCategories.find((gc) => {
+            return gc._id.toHexString() === key;
+          });
+
+          if (!category) continue;
+          const { _id, name, color } = category;
+          stars.push({
+            _id,
+            name,
+            color,
+            score: usr.categoryStars[key],
+          });
+        }
+        usr.categoryStars = stars;
+      }
+
       return usr;
     });
 
