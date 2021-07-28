@@ -159,7 +159,7 @@ router.post(
 
     let users = await User.find(query)
       .sort(`-categoryScore.${category}`)
-      .select(USER_PUBLIC_FIELDS + " categoryScore")
+      .select(USER_PUBLIC_FIELDS + " categoryScore categoryStars")
       .skip(offset)
       .limit(pageSize);
 
