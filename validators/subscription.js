@@ -14,7 +14,7 @@ const googlePaySchema = yup.object().shape({
 
 const applePaySchema = yup.object().shape({
   reciptData: yup.string().required(),
-  password: yup.string().optional(),
+  password: yup.string().required(),
   excludeOldTransactions: yup.boolean().optional(),
   subscriptionType: yup.string().oneOf(["yearly", "monthly"]).required(),
 });
