@@ -10,4 +10,5 @@ module.exports = Object.freeze([
   "REDIS_CONNECTION_URL",
   "STRIPE_SECRET_KEY",
   "ZEN_SERP_API",
+  "APPLE_PAY_MODE",
 ]);

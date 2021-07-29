@@ -21,7 +21,7 @@ const {
 } = require("../../validators/subscription");
 
 const applePayValidationUrl =
-  process.env.NODE_ENV === "production"
+  process.env.APPLE_PAY_MODE === "sandbox"
     ? "https://sandbox.itunes.apple.com/verifyReceipt"
     : "https://buy.itunes.apple.com/verifyReceipt";
 
