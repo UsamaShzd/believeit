@@ -199,6 +199,8 @@ router.post(
       excludeOldTransactions,
     });
 
+    console.log("Apple Pay res => ", applePayRes.data);
+
     if (applePayRes.data.status !== 200)
       return res
         .status(400)
