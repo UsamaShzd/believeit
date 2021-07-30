@@ -48,7 +48,7 @@ const updateUserNotificationsSchema = yup.object().shape({
     .object()
     .shape({
       state: yup.boolean().required(),
-      numberOfNotifications: yup.number().min(0).max(7).required(),
+      numberOfNotifications: yup.number().min(0).max(10).required(),
       startTime: yup.string().required("start time cannot be empty"),
       endTime: yup
         .string()
@@ -67,7 +67,7 @@ const updateUserNotificationsSchema = yup.object().shape({
     .object()
     .shape({
       state: yup.boolean().required(),
-      numberOfNotifications: yup.number().min(0).max(7).required(),
+      numberOfNotifications: yup.number().min(0).max(10).required(),
       startTime: yup.string().required("start time cannot be empty"),
       endTime: yup
         .string()
@@ -86,7 +86,7 @@ const updateUserNotificationsSchema = yup.object().shape({
     .object()
     .shape({
       state: yup.boolean().required(),
-      numberOfNotifications: yup.number().min(0).max(7).required(),
+      numberOfNotifications: yup.number().min(0).max(10).required(),
       startTime: yup.string().required("start time cannot be empty"),
       endTime: yup
         .string()
@@ -105,7 +105,7 @@ const updateUserNotificationsSchema = yup.object().shape({
     .object()
     .shape({
       state: yup.boolean().required(),
-      numberOfNotifications: yup.number().min(0).max(7).required(),
+      numberOfNotifications: yup.number().min(0).max(10).required(),
       startTime: yup.string().required("start time cannot be empty"),
       endTime: yup
         .string()
