@@ -194,7 +194,7 @@ router.post(
     ]);
 
     const applePayRes = await axios.post(applePayValidationUrl, {
-      "recipt-data": reciptData,
+      "receipt-data": reciptData,
       password,
       excludeOldTransactions,
     });
