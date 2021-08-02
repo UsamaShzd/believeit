@@ -202,7 +202,7 @@ router.post(
     const applePayRes = await axios.post(applePayValidationUrl, {
       "receipt-data": reciptData,
       password,
-      excludeOldTransactions,
+      "exclude-old-transactions": excludeOldTransactions,
     });
 
     if (applePayRes.status !== 200)

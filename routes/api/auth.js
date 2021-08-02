@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const _ = require("lodash");
 
@@ -64,7 +65,7 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
     const applePayRes = await axios.post(applePayValidationUrl, {
       "receipt-data": user.subscription.paymentToken,
       password: "80e181131eec446489cd8bdedfe0c777",
-      excludeOldTransactions: true,
+      "exclude-old-transactions": true,
     });
 
     console.log("Apple Pay Res => ", applePayRes.data);
