@@ -27,7 +27,7 @@ const sanitizeUser = require("../../sanitizers/user");
 const router = express.Router();
 
 const { google } = require("googleapis");
-
+const androidpublisher = google.androidpublisher("v3");
 const applePayValidationUrl =
   process.env.APPLE_PAY_MODE === "sandbox"
     ? "https://sandbox.itunes.apple.com/verifyReceipt"
