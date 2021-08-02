@@ -67,6 +67,8 @@ apis.forEach(({ route, fieldName }) => {
       );
 
       await clarityOnPurpose.save();
+
+      console.log("Purpose => ", clarityOnPurpose);
       user.clarityOnPurposeScore = clarityOnPurpose.totalClarityScore;
       await user.save();
 
