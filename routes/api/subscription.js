@@ -155,9 +155,9 @@ router.post(
       user.subscription.maxActiveGoals = SUB.maxActiveGoals;
     } else {
       user.subscription = {
-        paymentMethod = "google_pay",
-        paymentToken = purchaseToken,
-        subscriptionId = subscriptionId,
+        paymentMethod: "google_pay",
+        paymentToken: purchaseToken,
+        subscriptionId: subscriptionId,
         type: SUB.name,
         subscriptionStart: startDate.toDate(),
         subscriptionEnd: endDate.toDate(),
@@ -232,8 +232,9 @@ router.post(
       user.subscription.maxActiveGoals = SUB.maxActiveGoals;
     } else {
       user.subscription = {
-        paymentMethod = "apple_pay",
-        paymentToken = reciptData,
+        paymentMethod: "apple_pay",
+        paymentToken: reciptData,
+        subscriptionId: subscriptionType,
         type: SUB.name,
         subscriptionStart: startDate.toDate(),
         subscriptionEnd: endDate.toDate(),
