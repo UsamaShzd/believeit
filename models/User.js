@@ -134,6 +134,19 @@ const userSchema = new mongoose.Schema({
   },
 
   subscription: {
+    paymentMethod: {
+      type: String,
+      enum: ["google_pay", "apple_pay"],
+    },
+
+    paymentToken: {
+      type: String,
+    },
+
+    subscriptionId: {
+      type: String,
+    },
+
     type: {
       type: String,
       trim: true,

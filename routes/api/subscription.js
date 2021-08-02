@@ -144,6 +144,9 @@ router.post(
 
     const SUB = subscriptionId === "bi_premium_yearly" ? YEARLY : MONTHLY;
     if (user.subscription && user.subscription.type === SUB.name) {
+      user.subscription.paymentMethod = "google_pay";
+      user.subscription.paymentToken = purchaseToken;
+      user.subscription.subscriptionId = subscriptionId;
       user.subscription.type = SUB.name;
       user.subscription.subscriptionStart = startDate.toDate();
       user.subscription.subscriptionEnd = endDate.toDate();
@@ -152,6 +155,9 @@ router.post(
       user.subscription.maxActiveGoals = SUB.maxActiveGoals;
     } else {
       user.subscription = {
+        paymentMethod = "google_pay",
+        paymentToken = purchaseToken,
+        subscriptionId = subscriptionId,
         type: SUB.name,
         subscriptionStart: startDate.toDate(),
         subscriptionEnd: endDate.toDate(),
@@ -199,8 +205,6 @@ router.post(
       excludeOldTransactions,
     });
 
-    
-
     if (applePayRes.status !== 200)
       return res
         .status(400)
@@ -218,6 +222,8 @@ router.post(
 
     const SUB = subscriptionType === "yearly" ? YEARLY : MONTHLY;
     if (user.subscription && user.subscription.type === SUB.name) {
+      user.subscription.paymentMethod = "apple_pay";
+      user.subscription.paymentToken = reciptData;
       user.subscription.type = SUB.name;
       user.subscription.subscriptionStart = startDate.toDate();
       user.subscription.subscriptionEnd = endDate.toDate();
@@ -226,6 +232,8 @@ router.post(
       user.subscription.maxActiveGoals = SUB.maxActiveGoals;
     } else {
       user.subscription = {
+        paymentMethod = "apple_pay",
+        paymentToken = reciptData,
         type: SUB.name,
         subscriptionStart: startDate.toDate(),
         subscriptionEnd: endDate.toDate(),
