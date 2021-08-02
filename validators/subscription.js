@@ -1,7 +1,7 @@
 const yup = require("yup");
 
 const stirpePaymentSchema = yup.object().shape({
-  stripePaymentToken: yup.string().min(5).required(),
+  stripePaymentToken: yup.string().min(1).required(),
 });
 
 const googlePaySchema = yup.object().shape({

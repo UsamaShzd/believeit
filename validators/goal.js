@@ -1,7 +1,7 @@
 const yup = require("yup");
 
 const createGoalSchema = yup.object().shape({
-  title: yup.string().min(5).max(200).required(),
+  title: yup.string().min(1).max(200).required(),
   goalCategory: yup.string().objectId().required(),
   preDefinedGoalRef: yup.string().optional(),
   iAm: yup.string().min(1).max(200).optional(),
@@ -11,13 +11,13 @@ const createGoalSchema = yup.object().shape({
   image: yup.string().optional(),
   audio: yup.string().optional(),
   song: yup.string().optional(),
-  toPlay: yup.string().min(3).max(200).optional(),
+  toPlay: yup.string().min(1).max(200).optional(),
   isPublic: yup.boolean().optional(),
   articleSuggestions: yup.boolean().optional(),
 });
 
 const editGoalSchema = yup.object().shape({
-  title: yup.string().min(5).max(200).required(),
+  title: yup.string().min(1).max(200).required(),
   goalCategory: yup.string().objectId().required(),
   iAm: yup.string().min(1).max(200).optional(),
   accomplishingDate: yup.date().required(),
@@ -26,7 +26,7 @@ const editGoalSchema = yup.object().shape({
   image: yup.string().optional(),
   audio: yup.string().optional(),
   song: yup.string().optional(),
-  toPlay: yup.string().min(3).max(200).optional(),
+  toPlay: yup.string().min(1).max(200).optional(),
   isPublic: yup.boolean().optional(),
   articleSuggestions: yup.boolean().optional(),
 });

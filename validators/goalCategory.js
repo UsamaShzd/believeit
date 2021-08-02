@@ -1,7 +1,7 @@
 const yup = require("yup");
 
 const createGoalCategorySchema = yup.object().shape({
-  name: yup.string().trim().min(3).max(100).required(),
+  name: yup.string().trim().min(1).max(100).required(),
   color: yup
     .string()
     .trim()
