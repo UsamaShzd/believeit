@@ -20,14 +20,66 @@ const jwt = require("../../services/jwt");
 
 const sendEmailVerificationEmail = require("../../helpers/sendEmailVerificationEmail");
 const sendPasswordResetEmail = require("../../helpers/sendPasswordResetEmail");
-
+const axios = require("axios");
 const sanitizeUser = require("../../sanitizers/user");
 
 const router = express.Router();
 
+const { google } = require("googleapis");
+
+const applePayValidationUrl =
+  process.env.APPLE_PAY_MODE === "sandbox"
+    ? "https://sandbox.itunes.apple.com/verifyReceipt"
+    : "https://buy.itunes.apple.com/verifyReceipt";
+
 // @route /me
-router.get("/me", authorize("", { emailVerifid: false }), (req, res) => {
-  res.send(sanitizeUser(req.authSession.user));
+router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
+  const { user } = req.authSession;
+
+  if (user.subscription.type === "FREE") return res.send(sanitizeUser(user));
+
+  if (user.subscription.paymentMethod === "google_pay") {
+    const auth = new google.auth.GoogleAuth({
+      keyFile: path.join(__dirname, "../../google_service_account.json"),
+      scopes: ["https://www.googleapis.com/auth/androidpublisher"],
+    });
+
+    // Acquire an auth client, and bind it to all future calls
+    const authClient = await auth.getClient();
+    google.options({ auth: authClient });
+
+    const googleSubRes = await androidpublisher.purchases.subscriptions.get({
+      // The package name of the application for which this subscription was purchased (for example, 'com.some.thing').
+      packageName: "me.believeit.www",
+      // The purchased subscription ID (for example, 'monthly001').
+      subscriptionId: user.subscription.subscriptionId,
+      // The token provided to the user's device when the subscription was purchased.
+      token: user.subscription.paymentToken,
+    });
+
+    console.log("google pay res => ", googleSubRes.data);
+  }
+
+  if (user.subscription.paymentMethod === "apple_pay") {
+    const applePayRes = await axios.post(applePayValidationUrl, {
+      "receipt-data": user.subscription.paymentToken,
+      password: "80e181131eec446489cd8bdedfe0c777",
+      excludeOldTransactions: true,
+    });
+
+    console.log("Apple Pay Res => ", applePayRes.data);
+
+    // if (applePayRes.status !== 200)
+    //   return res
+    //     .status(400)
+    //     .send({ error: { message: "Invalid Recipt data!" } });
+
+    //
+    // const latestRecipt = applePayRes.data.latest_receipt_info[0];
+
+    // const expiryDate = latestRecipt.expires_date;
+  }
+  res.send(sanitizeUser(user));
 });
 
 // @route /signup
