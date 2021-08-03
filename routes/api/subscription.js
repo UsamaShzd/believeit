@@ -213,7 +213,7 @@ router.post(
     //
     const latestRecipt = applePayRes.data.latest_receipt_info[0];
 
-    const expiryDate = latestRecipt.expires_date;
+    // const expiryDate = latestRecipt.expires_date;
     //give accesss
 
     const { user } = req.authSession;
@@ -226,7 +226,7 @@ router.post(
       user.subscription.paymentToken = reciptData;
       user.subscription.type = SUB.name;
       user.subscription.subscriptionStart = startDate.toDate();
-      user.subscription.subscriptionEnd = endDate.toDate();
+      // user.subscription.subscriptionEnd = endDate.toDate();
       user.subscription.isUnlimited = SUB.isUnlimited;
       user.subscription.isTrial = false;
       user.subscription.maxActiveGoals = SUB.maxActiveGoals;
@@ -237,7 +237,7 @@ router.post(
         subscriptionId: subscriptionType,
         type: SUB.name,
         subscriptionStart: startDate.toDate(),
-        subscriptionEnd: endDate.toDate(),
+        // subscriptionEnd: endDate.toDate(),
         isUnlimited: SUB.isUnlimited,
         isTrial: false,
         maxActiveGoals: SUB.maxActiveGoals,
