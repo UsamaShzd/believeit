@@ -1,6 +1,7 @@
 const path = require("path");
 const express = require("express");
 const _ = require("lodash");
+const moment = require("moment");
 
 const User = require("../../models/User");
 const AuthSession = require("../../models/AuthSession");
@@ -37,7 +38,13 @@ const applePayValidationUrl =
 router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
   const { user } = req.authSession;
 
-  if (user.subscription.type === "FREE") return res.send(sanitizeUser(user));
+  let isPremium = false;
+  if (user.subscription.type === "FREE")
+    return res.send({ ...sanitizeUser(user), isPremium });
+
+  const currentTimeStamp = moment().valueOf();
+
+  let endTimeStamp = 0;
 
   if (user.subscription.paymentMethod === "google_pay") {
     const auth = new google.auth.GoogleAuth({
@@ -58,7 +65,12 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
       token: user.subscription.paymentToken,
     });
 
-    console.log("google pay res => ", googleSubRes.data);
+    endTimeStamp = parseInt(googleSubRes.data.expiryTimeMillis);
+    if(
+      // currentTimeStamp < endTimeStamp && 
+      googleSubRes.data.paymentState == 1) {
+      isPremium = true
+    }
   }
 
   if (user.subscription.paymentMethod === "apple_pay") {
@@ -68,19 +80,14 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
       "exclude-old-transactions": true,
     });
 
-    console.log("Apple Pay Res => ", applePayRes.data);
+    const latestRecipt = applePayRes.data.latest_receipt_info[0];
+    endTimeStamp = parseInt(latestRecipt.expires_date_ms);
 
-    // if (applePayRes.status !== 200)
-    //   return res
-    //     .status(400)
-    //     .send({ error: { message: "Invalid Recipt data!" } });
-
-    //
-    // const latestRecipt = applePayRes.data.latest_receipt_info[0];
-
-    // const expiryDate = latestRecipt.expires_date;
+    if(currentTimeStamp < endTimeStamp) {
+      isPremium = true
+    }
   }
-  res.send(sanitizeUser(user));
+  res.send({ ...sanitizeUser(user), isPremium });
 });
 
 // @route /signup

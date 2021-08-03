@@ -1,6 +1,6 @@
 const _ = require("lodash");
 
-const isPremium = require("../methods/isPremium");
+// const isPremium = require("../methods/isPremium");
 module.exports = (user) => {
   const sanitized = _.pick(user, [
     "_id",
@@ -23,7 +23,7 @@ module.exports = (user) => {
     "dateOfBirth",
   ]);
 
-  if (user.subscription) sanitized.isPremium = isPremium(user.subscription);
+  // if (user.subscription) sanitized.isPremium = isPremium(user.subscription);
 
   return sanitized;
 };
