@@ -8,6 +8,9 @@ const AuthSession = require("../../models/AuthSession");
 
 const authorize = require("../../middlewares/authorize");
 const requestValidator = require("../../middlewares/requestValidator");
+
+const { FREE } = require("../../enums/subscription_plans");
+
 const {
   signupSchema,
   loginSchema,
@@ -71,7 +74,7 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
       // currentTimeStamp < endTimeStamp && 
       googleSubRes.data.paymentState == 1) {
       isPremium = true
-    }
+    } 
   }
 
   if (user.subscription.paymentMethod === "apple_pay") {
@@ -87,6 +90,13 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
     if(currentTimeStamp < endTimeStamp) {
       isPremium = true
     }
+  }
+
+  if(!isPremium) {
+    user.subscriptiontype =  FREE.name,
+    user.subscription.isTrial =  false,
+    user.subscriptionisUnlimited = FREE.isUnlimited,
+    await user.save();
   }
   res.send({ ...sanitizeUser(user), isPremium });
 });
