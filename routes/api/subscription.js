@@ -218,7 +218,7 @@ router.post(
 
     const { user } = req.authSession;
     const startDate = moment();
-    const endDate = moment(expiryDate);
+    // const endDate = moment(expiryDate);
 
     const SUB = subscriptionType === "yearly" ? YEARLY : MONTHLY;
     if (user.subscription && user.subscription.type === SUB.name) {
