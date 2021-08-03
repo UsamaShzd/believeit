@@ -45,7 +45,7 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
   if (user.subscription.type === "FREE")
     return res.send({ ...sanitizeUser(user), isPremium });
 
-  const currentTimeStamp = moment().valueOf();
+  const currentTimeStamp = Date.now();
 
   let endTimeStamp = 0;
 
@@ -89,6 +89,7 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
     //
     const latestRecipt = applePayRes.data.latest_receipt_info[0];
     console.log("Latest reciept => ", latestRecipt)
+    console.log("Current Time Stamp => ", currentTimeStamp)
     console.log("END TIME STAMP => ", latestRecipt.expires_date_ms)
     
     endTimeStamp = parseInt(latestRecipt.expires_date_ms) || 0;
