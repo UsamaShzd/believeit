@@ -84,7 +84,12 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
       "exclude-old-transactions": true,
     });
 
+
+    console.log("Apple pay res => ", applePayRes);
+    //
     const latestRecipt = applePayRes.data.latest_receipt_info[0];
+
+    
     endTimeStamp = parseInt(latestRecipt.expires_date_ms) || 0;
 
     if(currentTimeStamp < endTimeStamp) {
