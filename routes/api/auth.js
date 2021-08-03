@@ -65,6 +65,7 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
       token: user.subscription.paymentToken,
     });
 
+    console.log("Google Sub Data => ", googleSubRes.data)
     endTimeStamp = parseInt(googleSubRes.data.expiryTimeMillis);
     if(
       // currentTimeStamp < endTimeStamp && 
@@ -81,7 +82,7 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
     });
 
     const latestRecipt = applePayRes.data.latest_receipt_info[0];
-    endTimeStamp = parseInt(latestRecipt.expires_date_ms);
+    endTimeStamp = parseInt(latestRecipt.expires_date_ms) || 0;
 
     if(currentTimeStamp < endTimeStamp) {
       isPremium = true
