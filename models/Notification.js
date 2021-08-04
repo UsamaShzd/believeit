@@ -14,7 +14,8 @@ const notificationSchema = new mongoose.Schema({
       "e_coaching_notification",
       "affirmation_reminder_notification",
       "motivational_qoute_notification",
-      "extra_affirmation_notification"
+      "extra_affirmation_notification",
+      "goal_plan_reminder_notification"
     ],
     required: true,
   },

@@ -97,6 +97,11 @@ module.exports = async () => {
           }
         };
         break;
+
+      case "goal_plan_reminder_notification":
+        push_notification.title = "Goal Plan Reminder";
+        push_notification.body = "Work on your goal plans, complete today's Milestones and say Affirmations.";
+        break;
     }
     sendPushNotifications(push_notification);
   });
