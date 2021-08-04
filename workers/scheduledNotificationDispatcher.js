@@ -16,7 +16,7 @@ module.exports = async () => {
   scheduledNotifications.forEach(async (scheduledNotif) => {
     //creating notification in database
 
-    const { reciever, type, prayer, eCoaching, goal } = scheduledNotif;
+    const { reciever, type, prayer, eCoaching, goal , qoutation} = scheduledNotif;
 
     const notificationBody = {
       reciever,
@@ -32,6 +32,10 @@ module.exports = async () => {
         break;
       case "affirmation_reminder_notification":
         notificationBody.goal = goal;
+        break;
+
+      case "motivational_qoute_notification":
+        notificationBody.qoutation = qoutation;
         break;
     }
 
@@ -82,7 +86,17 @@ module.exports = async () => {
               _id: `${goal._id}`
             }
           };
-        break
+        break;
+      case "motivational_qoute_notification":
+        push_notification.title = "Motivational Qoutation";
+        push_notification.body = qoutation.qoutation;
+        push_notification.data = {
+          qoutation: {
+            qoutation: qoutation.qoutation,
+            _id: `${qoutation._id}`
+          }
+        };
+        break;
     }
     sendPushNotifications(push_notification);
   });

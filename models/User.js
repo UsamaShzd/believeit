@@ -238,6 +238,7 @@ const userSchema = new mongoose.Schema({
         default: "12:00",
       },
     },
+    
     eCoaching: {
       state: {
         type: Boolean,

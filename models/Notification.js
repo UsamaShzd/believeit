@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Prayer = require("./Prayer");
-const Goal = require("./Goal")
+const Goal = require("./Goal");
+const Qoutation = require("./Qoutation")
+
 
 const notificationSchema = new mongoose.Schema({
   type: {
@@ -9,7 +11,8 @@ const notificationSchema = new mongoose.Schema({
       "goal_membership_request",
       "prayer_notification",
       "e_coaching_notification",
-      "affirmation_reminder_notification"
+      "affirmation_reminder_notification",
+      "motivational_qoute_notification"
     ],
     required: true,
   },
@@ -50,6 +53,8 @@ const notificationSchema = new mongoose.Schema({
 
   goal: Goal.schema,
   
+  qoutation: Qoutation.schema,
+
   eCoaching: {
     type: String,
   },
