@@ -32,7 +32,6 @@ module.exports = async () => {
     const scheduledNotifs = schedule.map((dispatchAt, index) => {
       const goal = goals[index];
 
-  
       return {
         type: "affirmation_reminder_notification",
         reciever: user._id,

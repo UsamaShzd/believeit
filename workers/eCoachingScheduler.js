@@ -18,6 +18,7 @@ const getScheduleForNotifications = require("../helpers/getScheduleForNotificati
 
 module.exports = async () => {
   const users = await User.find({
+    "notificationSettings.eCoaching.state": true,
     "notificationSettings.eCoaching.numberOfNotifications": { $gt: 0 },
   }).select("notificationSettings.eCoaching");
 
