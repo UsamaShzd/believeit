@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Prayer = require("./Prayer");
+const Goal = require("./Goal")
 
 const notificationSchema = new mongoose.Schema({
   type: {
@@ -8,6 +9,7 @@ const notificationSchema = new mongoose.Schema({
       "goal_membership_request",
       "prayer_notification",
       "e_coaching_notification",
+      "affirmation_reminder_notification"
     ],
     required: true,
   },
@@ -46,6 +48,8 @@ const notificationSchema = new mongoose.Schema({
 
   prayer: Prayer.schema,
 
+  goal: Goal.schema,
+  
   eCoaching: {
     type: String,
   },

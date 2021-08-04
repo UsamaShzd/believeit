@@ -1,16 +1,20 @@
 const mongoose = require("mongoose");
 const Prayer = require("./Prayer");
+const Goal = require("./Goal")
 
 const scheduledNotificationSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ["prayer_notification", "e_coaching_notification"],
+    enum: [
+      "prayer_notification", 
+      "e_coaching_notification",
+      "affirmation_reminder_notification"
+    ],
   },
 
   reciever: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-
     ref: "user",
   },
 
@@ -20,6 +24,8 @@ const scheduledNotificationSchema = new mongoose.Schema({
   },
 
   prayer: Prayer.schema,
+
+  goal: Goal.schema,
 
   eCoaching: {
     type: String,
