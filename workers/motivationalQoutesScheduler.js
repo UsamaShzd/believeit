@@ -31,6 +31,6 @@ module.exports = async () => {
     });
 
     //saving scheduled notification;
-    await ScheduledNotification.insertMany(scheduledNotifs);
+   await ScheduledNotification.insertMany(scheduledNotifs);
   });
 };
