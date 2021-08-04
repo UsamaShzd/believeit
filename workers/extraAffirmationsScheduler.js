@@ -30,6 +30,8 @@ module.exports = async () => {
       };
     });
 
+
+
     //saving scheduled notification;
    await ScheduledNotification.insertMany(scheduledNotifs);
   });
