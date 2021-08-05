@@ -287,6 +287,22 @@ router.put(
   }
 );
 
+
+router.delete("/delete_complete_plan/:id", authorize(), async(req, res) => {
+  const { id } = req.params;
+
+  if (!validateObjectId(id))
+    return res.status(404).send({ error: { message: "Goal not found!" } });
+
+  const milestones = await Milestone.deleteMany({goal: id});
+
+  if (!milestones)
+    return res.status(404).send({ error: { message: "Milestone not found!" } });
+
+  res.send({message: "Plan deleted successfully"});
+});
+
+
 router.delete("/:id", authorize(), async (req, res) => {
   const { id } = req.params;
 
