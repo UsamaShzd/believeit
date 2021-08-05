@@ -177,6 +177,33 @@ router.put(
   }
 );
 
+router.put(
+  "/unmark_day_as_completed/:id",
+  requestValidator(markDayAsCompletedSchema),
+  authorize(),
+  async (req, res) => {
+    const { id } = req.params;
+
+    if (!validateObjectId(id))
+      return res
+        .status(404)
+        .send({ error: { message: "Milestone not found!" } });
+
+    const { completionDate } = _.pick(req.body, ["completionDate"]);
+    const milestone = await Milestone.findByIdAndUpdate(
+      id,
+      {
+        $pull: {
+          completedDates: completionDate,
+        },
+      },
+      { new: true }
+    );
+
+    res.send(milestone);
+  }
+);
+
 // router.put(
 //   "/change_status/:id",
 //   requestValidator(changeMilestoneStatusSchema),
