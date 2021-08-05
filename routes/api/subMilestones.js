@@ -171,6 +171,34 @@ router.put(
   }
 );
 
+
+router.put(
+  "/unmark_as_completed/:id",
+  requestValidator(markDayAsCompletedSchema),
+  authorize(),
+  async (req, res) => {
+    const { id } = req.params;
+
+    if (!validateObjectId(id))
+      return res
+        .status(404)
+        .send({ error: { message: "Sub Milestone not found!" } });
+
+    const { completionDate } = _.pick(req.body, ["completionDate"]);
+    const milestone = await SubMilestone.findByIdAndUpdate(
+      id,
+      {
+        $pull: {
+          completedDates: completionDate,
+        },
+      },
+      { new: true }
+    );
+
+    res.send(milestone);
+  }
+);
+
 router.delete("/delete_sub_milestone/:id", authorize(), async (req, res) => {
   const { id } = req.params;
 
