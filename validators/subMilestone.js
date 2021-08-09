@@ -1,12 +1,12 @@
 const yup = require("yup");
 
 const createSubMilestoneSchema = yup.object().shape({
-  title: yup.string().trim().min(1).max(500).required(),
+  title: yup.string().trim().min(1).required(),
   milestone: yup.string().objectId().required(),
 });
 
 const editSubMilestoneSchema = yup.object().shape({
-  title: yup.string().trim().min(1).max(500).required(),
+  title: yup.string().trim().min(1).required(),
 });
 
 const changeSubMilestoneStatusSchema = yup.object().shape({

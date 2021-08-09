@@ -2,7 +2,7 @@ const yup = require("yup");
 
 const createPostSchema = yup.object().shape({
   type: yup.string().trim().required(),
-  title: yup.string().trim().min(1).max(150).required(),
+  title: yup.string().trim().min(1).required(),
   youtubeVideo: yup.string().when("type", {
     is: "youtube_video",
     then: yup.string().required(),
@@ -15,18 +15,18 @@ const createPostSchema = yup.object().shape({
 
   description: yup.string().when("type", {
     is: "blog",
-    then: yup.string().min(1).max(500).required(),
+    then: yup.string().min(1).required(),
   }),
 
   link: yup.string().when("type", {
     is: "blog",
-    then: yup.string().trim().min(1).max(5000).required(),
+    then: yup.string().trim().min(1).required(),
   }),
 });
 
 const editPostSchema = yup.object().shape({
   type: yup.string().trim().required(),
-  title: yup.string().trim().min(1).max(150).required(),
+  title: yup.string().trim().min(1).required(),
   youtubeVideo: yup.string().when("type", {
     is: "youtube_video",
     then: yup.string().required(),
@@ -39,12 +39,12 @@ const editPostSchema = yup.object().shape({
 
   description: yup.string().when("type", {
     is: "blog",
-    then: yup.string().min(1).max(500).required(),
+    then: yup.string().min(1).required(),
   }),
 
   link: yup.string().when("type", {
     is: "blog",
-    then: yup.string().trim().min(1).max(5000).required(),
+    then: yup.string().trim().min(1).required(),
   }),
 });
 

@@ -1,7 +1,7 @@
 const yup = require("yup");
 
 const createPreDefinedSubMilestoneSchema = yup.object().shape({
-  title: yup.string().min(1).max(200).required(),
+  title: yup.string().min(1).required(),
   preDefinedMilestone: yup.string().objectId().required(),
 });
 
