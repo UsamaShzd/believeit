@@ -27,7 +27,7 @@ router.get("/list", async (req, res) => {
     query.name = new RegExp(search, "i");
   }
   const categories = await AffirmationCategory.find(query)
-    .sort("-_id")
+    .sort("-isFree name")
     .skip(offset)
     .limit(pageSize);
 
@@ -54,7 +54,7 @@ router.get("/:id", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const categories = await AffirmationCategory.find().sort("name");
+  const categories = await AffirmationCategory.find().sort("-isFree name");
   res.send(categories);
 });
 
