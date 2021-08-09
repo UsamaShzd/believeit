@@ -16,7 +16,8 @@ module.exports = async () => {
   scheduledNotifications.forEach(async (scheduledNotif) => {
     //creating notification in database
 
-    const { reciever, type, prayer, eCoaching, goal , qoutation, affirmation} = scheduledNotif;
+    const { reciever, type, prayer, eCoaching, goal, qoutation, affirmation } =
+      scheduledNotif;
 
     const notificationBody = {
       reciever,
@@ -81,23 +82,23 @@ module.exports = async () => {
         };
         break;
       case "affirmation_reminder_notification":
-          push_notification.title = "Affirmation Reminder";
-          push_notification.body = "Say Affirmation for " + goal.title;
-          push_notification.data = {
-            goal: {
-              title: goal.title,
-              _id: `${goal._id}`
-            }
-          };
+        push_notification.title = "Affirmation Reminder";
+        push_notification.body = "Say Affirmation for " + goal.title;
+        push_notification.data = {
+          goal: {
+            title: goal.title,
+            _id: `${goal._id}`,
+          },
+        };
         break;
       case "motivational_qoute_notification":
-        push_notification.title = "Motivational Qoutation";
+        push_notification.title = "Motivational Quote";
         push_notification.body = qoutation.qoutation;
         push_notification.data = {
           qoutation: {
             qoutation: qoutation.qoutation,
-            _id: `${qoutation._id}`
-          }
+            _id: `${qoutation._id}`,
+          },
         };
         break;
 
@@ -107,14 +108,15 @@ module.exports = async () => {
         push_notification.data = {
           affirmation: {
             affirmation: affirmation.affirmation,
-            _id: `${affirmation._id}`
-          }
+            _id: `${affirmation._id}`,
+          },
         };
         break;
 
       case "goal_plan_reminder_notification":
         push_notification.title = "Goal Plan Reminder";
-        push_notification.body = "Work on your goal plans, complete today's Milestones and say Affirmations.";
+        push_notification.body =
+          "Work on your goal plans, complete today's Milestones and say Affirmations.";
         break;
     }
     sendPushNotifications(push_notification);
