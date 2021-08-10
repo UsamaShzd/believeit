@@ -137,6 +137,12 @@ router.get("/listing/:id", async (req, res) => {
     },
   ];
 
+  pipeline.push({
+    $match: {
+      savedItem: { $exists: true, $type: 'array', $ne: [] }
+    }
+  });
+
   const qoutations = await Qoutation.aggregate(pipeline);
 
   const totalCount = await Qoutation.find(query).count();
