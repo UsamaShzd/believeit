@@ -61,6 +61,12 @@ router.get("/saved_posts", authorize(), async (req, res) => {
     },
   });
 
+  pipeline.push({
+    $match: {
+      post: { $exists: true, $type: 'array', $ne: [] }
+    }
+  });
+
   if (search) {
     pipeline.push({ $match: { "post.title": new RegExp(search, "i") } });
 
