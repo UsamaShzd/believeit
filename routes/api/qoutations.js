@@ -90,10 +90,10 @@ router.get("/saved_qoutations", authorize(), async (req, res) => {
 
   pipeline.push({
     $match: {
-      savedItem: { $exists: true, $type: 'array', $ne: [] }
+      qoutation: { $exists: true, $type: 'array', $ne: [] }
     }
   });
-  
+
   if (search) {
     pipeline.push({
       $match: { "qoutation.qoutation": new RegExp(search, "i") },
