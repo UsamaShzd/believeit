@@ -91,6 +91,13 @@ router.get("/saved_affirmations", authorize(), async (req, res) => {
       foreignField: "_id",
       as: "affirmation",
     },
+  
+  });
+
+  pipeline.push({
+    $match: {
+      affirmation: { $exists: true, $type: 'array', $ne: [] }
+    }
   });
 
   if (search) {
