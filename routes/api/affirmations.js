@@ -2,7 +2,7 @@ const express = require("express");
 const _ = require("lodash");
 const mongoose = require("mongoose");
 const Affirmation = require("../../models/Affirmation");
-const AffirmationCategory = require("../../models/AffirmationCategory");
+const AffirmationCategory = require("../../models/AffirmationSubCategory");
 
 const authorize = require("../../middlewares/authorize");
 const requestValidator = require("../../middlewares/requestValidator");
