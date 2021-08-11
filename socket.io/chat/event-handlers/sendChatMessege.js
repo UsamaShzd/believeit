@@ -79,20 +79,16 @@ module.exports = (socket) => {
       const clients = await socket.adapter.sockets(new Set([memberId]));
 
       if (clients.size === 0) {
-       
         offlineUsers.push(memberId);
         offlineUsersMap[memberId] = 1;
       }
     }
-    console.log("Offline Users => ",offlineUsers)
-    console.log("Offline Users Map => ",offlineUsersMap)
+    console.log("Offline Users => ", offlineUsers);
+    console.log("Offline Users Map => ", offlineUsersMap);
     if (offlineUsers.length === 0) return;
 
-
-    console.log("Offline Users => ",offlineUsers)
+    console.log("Offline Users => ", offlineUsers);
     const pushtokens = await getPushTokens(offlineUsers);
-
-
 
     //construct push notification
     const push_notification = {
@@ -103,16 +99,18 @@ module.exports = (socket) => {
           : `${user.firstname} ${user.lastname}`,
 
       body: chatMessage.message,
-      data: _.pick(chatMessage, [
-        "_id",
-        "chatRoom",
-        "messageType",
-        "customIdentifier",
-        "createdAt",
-      ]),
+      data: {
+        ..._.pick(chatMessage, [
+          "_id",
+          "chatRoom",
+          "messageType",
+          "customIdentifier",
+          "createdAt",
+        ]),
+        type: "chat_message_notificatoin",
+      },
       sound: "default",
     };
-
 
     console.log("Push Notificadtion => ", push_notification);
     sendPushNotifications(push_notification);

@@ -30,10 +30,11 @@ router.get("/list", async (req, res) => {
   if (parent) {
     query.parent = parent;
   }
-  const categories = await AffirmationSubCategory.find(query)
-    .sort("-isFree name")
-    .skip(offset)
-    .limit(pageSize);
+  const categories = await AffirmationSubCategory.find(query).sort(
+    "-isFree name"
+  );
+  // .skip(offset)
+  // .limit(pageSize);
 
   const totalCount = await AffirmationSubCategory.find(query).count();
   const hasMore = offset + pageSize < totalCount;
