@@ -16,7 +16,7 @@ const validateObjectId = require("../../helpers/validateObjectId");
 const router = express.Router();
 
 router.get("/list", async (req, res) => {
-  let { pageSize = 10, pageNum = 1, search = "" } = req.query;
+  let { pageSize = 10, pageNum = 1, search = "", parent = "" } = req.query;
   pageSize = parseInt(pageSize);
   pageNum = parseInt(pageNum);
   const offset = pageSize * (pageNum - 1);
@@ -25,6 +25,10 @@ router.get("/list", async (req, res) => {
 
   if (search) {
     query.name = new RegExp(search, "i");
+  }
+
+  if (parent) {
+    query.parent = parent;
   }
   const categories = await AffirmationSubCategory.find(query)
     .sort("-isFree name")
