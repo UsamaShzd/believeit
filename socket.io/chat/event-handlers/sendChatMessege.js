@@ -102,6 +102,7 @@ module.exports = (socket) => {
       data: {
         ..._.pick(chatMessage, [
           "_id",
+          "sender",
           "chatRoom",
           "messageType",
           "customIdentifier",
