@@ -119,8 +119,8 @@ module.exports = async () => {
           "Work on your goal plans, complete today's Milestones and say Affirmations.";
         break;
     }
-
-    push_notification.body.type = type;
+    if(!push_notification.data) push_notification.data = {}
+    push_notification.data.type = type;
     sendPushNotifications(push_notification);
   });
 };
