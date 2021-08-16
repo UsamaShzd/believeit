@@ -37,6 +37,7 @@ router.post("/subscribe_free_plan", authorize(), async (req, res) => {
     isUnlimited: FREE.isUnlimited,
     subscriptionStart: currentDate,
     subscriptionEnd: null,
+    maxActiveGoals = FREE.maxActiveGoals,
   };
 
   user.subscription = plan;

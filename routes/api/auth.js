@@ -68,13 +68,13 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
       token: user.subscription.paymentToken,
     });
 
-    console.log("Google Sub Data => ", googleSubRes.data)
     endTimeStamp = parseInt(googleSubRes.data.expiryTimeMillis);
-    if(
-      // currentTimeStamp < endTimeStamp && 
-      googleSubRes.data.paymentState == 1) {
-      isPremium = true
-    } 
+    if (
+      // currentTimeStamp < endTimeStamp &&
+      googleSubRes.data.paymentState == 1
+    ) {
+      isPremium = true;
+    }
   }
 
   if (user.subscription.paymentMethod === "apple_pay") {
@@ -84,25 +84,20 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
       "exclude-old-transactions": true,
     });
 
-
-    console.log("Apple pay res => ", applePayRes.data);
-    //
     const latestRecipt = applePayRes.data.latest_receipt_info[0];
-    console.log("Latest reciept => ", latestRecipt)
-    console.log("Current Time Stamp => ", currentTimeStamp)
-    console.log("END TIME STAMP => ", latestRecipt.expires_date_ms)
-    
+
     endTimeStamp = parseInt(latestRecipt.expires_date_ms) || 0;
 
-    if(currentTimeStamp < endTimeStamp) {
-      isPremium = true
+    if (currentTimeStamp < endTimeStamp) {
+      isPremium = true;
     }
   }
 
-  if(!isPremium) {
-    user.subscription.type =  FREE.name,
-    user.subscription.isTrial =  false,
-    user.subscription.isUnlimited = FREE.isUnlimited,
+  if (!isPremium) {
+    user.subscription.type = FREE.name;
+    user.subscription.isTrial = false;
+    user.subscription.isUnlimited = FREE.isUnlimited;
+    user.subscription.maxActiveGoals = FREE.maxActiveGoals;
     await user.save();
   }
   res.send({ ...sanitizeUser(user), isPremium });
