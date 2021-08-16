@@ -18,6 +18,13 @@ exports.getDatesOfRepeatingDays = (startDate, endDate, repeatingDays = []) => {
 exports.makeMilestone = (ms) => {
   //if repeating
   if (ms.repeatingDays.length === 0)
+
+  console.log("**********");
+  console.log("STARTING DATE => ", ms.startingDate);
+  const momentDate = moment(ms.startingDate).format("MM/DD/YYYY");
+  console.log("MOMENT DATE => ", momentDate);
+
+
     return {
       ..._.pick(ms, [
         "_id",
@@ -37,8 +44,9 @@ exports.makeMilestone = (ms) => {
       isRepeating: false,
     };
 
-  //if occuring on multiple days.
 
+
+  //if occuring on multiple days.
   const result = [];
   ms.repeatingDates.forEach((repeatingDate) => {
     let isCompleted = ms.completedDates.includes(repeatingDate);
