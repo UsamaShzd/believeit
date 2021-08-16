@@ -9,6 +9,16 @@ const affirmationCategorySchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+
+  parent: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "affirmationcategory",
+    default: null,
+  },
+  hasChildren: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const AffirmationCategory = mongoose.model(

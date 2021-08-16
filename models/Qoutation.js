@@ -9,6 +9,10 @@ const qoutationSchema = new mongoose.Schema({
   category: {
     type: QouteCategory.schema,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Qoutatuin = mongoose.model("qoutation", qoutationSchema);

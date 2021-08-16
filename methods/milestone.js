@@ -18,11 +18,6 @@ exports.getDatesOfRepeatingDays = (startDate, endDate, repeatingDays = []) => {
 exports.makeMilestone = (ms) => {
   //if repeating
   if (ms.repeatingDays.length === 0)
-
-
-
-
-
     return {
       ..._.pick(ms, [
         "_id",
@@ -41,8 +36,6 @@ exports.makeMilestone = (ms) => {
       ),
       isRepeating: false,
     };
-
-
 
   //if occuring on multiple days.
   const result = [];

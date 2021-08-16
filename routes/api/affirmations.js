@@ -2,7 +2,7 @@ const express = require("express");
 const _ = require("lodash");
 const mongoose = require("mongoose");
 const Affirmation = require("../../models/Affirmation");
-const AffirmationCategory = require("../../models/AffirmationSubCategory");
+const AffirmationCategory = require("../../models/AffirmationCategory");
 
 const authorize = require("../../middlewares/authorize");
 const requestValidator = require("../../middlewares/requestValidator");
@@ -91,13 +91,12 @@ router.get("/saved_affirmations", authorize(), async (req, res) => {
       foreignField: "_id",
       as: "affirmation",
     },
-  
   });
 
   pipeline.push({
     $match: {
-      affirmation: { $exists: true, $type: 'array', $ne: [] }
-    }
+      affirmation: { $exists: true, $type: "array", $ne: [] },
+    },
   });
 
   if (search) {

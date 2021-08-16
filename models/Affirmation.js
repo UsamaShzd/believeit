@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const AffirmationSubCategory = require("./AffirmationSubCategory");
+const AffirmationCategory = require("./AffirmationCategory");
 
 const affirmationSchema = new mongoose.Schema({
   affirmation: {
@@ -7,7 +7,12 @@ const affirmationSchema = new mongoose.Schema({
     trim: true,
   },
   category: {
-    type: AffirmationSubCategory.schema,
+    type: AffirmationCategory.schema,
+  },
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 

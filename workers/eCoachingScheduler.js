@@ -46,17 +46,25 @@ module.exports = async () => {
       const tips = calculatedTips[randomIndex];
       calculatedTips.splice(randomIndex, 1);
 
-      tips.forEach((tip) => {
-        if (schedule[tipCount]) {
-          scheduledNotifs.push({
-            type: "e_coaching_notification",
-            reciever: user._id,
-            eCoaching: tip,
-            dispatchAt: schedule[tipCount],
-          });
-        }
-        tipCount++;
+      const tip = tips[Math.floor(Math.random() * tips.length)];
+      scheduledNotifs.push({
+        type: "e_coaching_notification",
+        reciever: user._id,
+        eCoaching: tip,
+        dispatchAt: schedule[tipCount],
       });
+      tipCount++;
+      // tips.forEach((tip) => {
+      //   if (schedule[tipCount]) {
+      //     scheduledNotifs.push({
+      //       type: "e_coaching_notification",
+      //       reciever: user._id,
+      //       eCoaching: tip,
+      //       dispatchAt: schedule[tipCount],
+      //     });
+      //   }
+      //   tipCount++;
+      // });
     }
 
     // saving scheduled notification;
