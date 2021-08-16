@@ -23,8 +23,8 @@ exports.makeMilestone = (ms) => {
   console.log("**********");
 
   console.log("MS => ", ms);
-  console.log("STARTING DATE => ", ms.startingDate);
-  const momentDate = moment(ms.startingDate).format("MM/DD/YYYY");
+  console.log("STARTING DATE => ", ms.startDate);
+  const momentDate = moment(ms.startDate).format("MM/DD/YYYY");
   console.log("MOMENT DATE => ", momentDate);
 
 
@@ -40,9 +40,9 @@ exports.makeMilestone = (ms) => {
         "frequency",
         "members",
       ]),
-      occuringDate: moment(ms.startingDate).format("MM/DD/YYYY"),
+      occuringDate: moment(ms.startDate).format("MM/DD/YYYY"),
       isCompleted: ms.completedDates.includes(
-        moment(ms.startingDate).format("MM/DD/YYYY")
+        moment(ms.startDate).format("MM/DD/YYYY")
       ),
       isRepeating: false,
     };
