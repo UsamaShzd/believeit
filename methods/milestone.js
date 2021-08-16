@@ -19,7 +19,10 @@ exports.makeMilestone = (ms) => {
   //if repeating
   if (ms.repeatingDays.length === 0)
 
+
   console.log("**********");
+
+  console.log("MS => ", ms);
   console.log("STARTING DATE => ", ms.startingDate);
   const momentDate = moment(ms.startingDate).format("MM/DD/YYYY");
   console.log("MOMENT DATE => ", momentDate);
