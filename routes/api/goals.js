@@ -396,6 +396,17 @@ router.put(
   }
 );
 
+router.delete("/delete_goal/:id", authorize(), async (req, res) => {
+  const { id } = req.params;
+  const { user } = req.authSession;
+
+  const goal = await Goal.findOneAndRemove({ createdBy: user._id, _id: id });
+
+  if (!goal)
+    return res.status(404).send({ error: { message: "Goal Not Found." } });
+
+  res.send(goal);
+});
 function splitDateIntoEqualIntervals(startDate, endData, numberOfIntervals) {
   let diff = endData.getTime() - startDate.getTime();
   let intervalLength = diff / numberOfIntervals;

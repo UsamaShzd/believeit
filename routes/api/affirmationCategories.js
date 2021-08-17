@@ -99,8 +99,6 @@ router.put(
 
     const body = _.pick(req.body, ["name", "isFree", "parent"]);
 
-    console.log(body);
-
     if (!body.parent) body.parent = null;
 
     const categoryBeforeEditing = await AffirmationCategory.findById(id);
