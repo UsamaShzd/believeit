@@ -8,7 +8,7 @@ const getScheduleForNotifications = require("../helpers/getScheduleForNotificati
 
 module.exports = async () => {
   const users = await User.find({
-    ethnicity: /muslim/i,
+    $or: [{ ethnicity: /.*muslim.*/i }, { ethnicity: /.*islam.*/i }],
     "notificationSettings.prayers.state": true,
     "notificationSettings.prayers.numberOfNotifications": { $gt: 0 },
   }).select("notificationSettings.prayers");
