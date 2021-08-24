@@ -63,6 +63,24 @@ router.get("/get_my_goals", authorize(), async (req, res) => {
   res.send(result);
 });
 
+router.get("/get_single_goal/:id", authorize(), async (req, res) => {
+  const { id } = req.params;
+
+  const goal = await Goal.findById(id).populate(
+    "members.memberId",
+    USER_PUBLIC_FIELDS
+  );
+
+  if (!goal)
+    return res.status(404).send({ error: { message: "Goal Not Found." } });
+
+  const milestones = await Milestone.find({
+    goal: goal._id,
+    repeatingDates: current_date,
+  });
+  res.getDatesOfRepeatingDays({ ...goal._doc, todaysPlan: milestones });
+});
+
 router.post(
   "/create_goal",
   requestValidator(createGoalSchema),
@@ -269,6 +287,7 @@ router.put(
     res.send(goal);
   }
 );
+
 router.put(
   "/change_status/:id",
   requestValidator(changeGoalStatusSchema),
@@ -407,6 +426,7 @@ router.delete("/delete_goal/:id", authorize(), async (req, res) => {
 
   res.send(goal);
 });
+
 function splitDateIntoEqualIntervals(startDate, endData, numberOfIntervals) {
   let diff = endData.getTime() - startDate.getTime();
   let intervalLength = diff / numberOfIntervals;
