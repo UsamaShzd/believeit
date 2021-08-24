@@ -28,28 +28,55 @@ router.post(
         q: searchQuery,
       },
     });
-    const filtered = result.data.organic
-      .filter((blog) => {
-        if (blog.title && blog.url) return true;
-        return false;
-      })
-      .slice(0, 3);
+
+    let filtered = [];
+
+    //filtering
+    for (let i = 0; i < result.data.organic.length; ++i) {
+      const blog = result.data.organic[i];
+      if (blog.title && blog.url) {
+        const { title, thumbnail, url, description } = blog;
+        filtered.push({ title, thumbnail, url, description });
+      }
+    }
+
+    filtered = filtered.slice(0, 3);
+    //// filtering done
 
     const scrapped = [];
-    for (let i = 0; i < filtered.length; ++i) {
-      const article = filtered[i];
-      if (article.thumbnail) {
-        article.image = article.thumbnail;
-      } else {
-        const metaData = await urlMetadata(article.url);
-        article.image = metaData["og:image"] || metaData["twitter:image"] || "";
-      }
-      scrapped.push(article);
+
+    if (filtered[0]) {
+      scrapped[0] = await loadArticleThumbnail(filtered[0]);
     }
+
+    if (filtered[1]) {
+      scrapped[1] = await loadArticleThumbnail(filtered[1]);
+    }
+
+    if (filtered[2]) {
+      scrapped[2] = await loadArticleThumbnail(filtered[2]);
+    }
+
     res.send(scrapped);
   }
 );
 
+const loadArticleThumbnail = async (article) => {
+  if (article.thumbnail) {
+    article.image = article.thumbnail;
+  } else {
+    const metaData = await urlMetadata(article.url);
+
+    article.image = metaData["og:image"] || metaData["twitter:image"] || "";
+
+    article.description =
+      metaData["description"] ||
+      metaData["og:description"] ||
+      article.description ||
+      "";
+  }
+  return article;
+};
 router.post(
   "/track_article_click",
   authorize(),

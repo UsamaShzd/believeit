@@ -4,8 +4,7 @@ const prayerScheduler = require("./cron-jobs/prayerScheduler");
 const affirmationReminderScheduler = require("./cron-jobs/affirmationReminderScheduler");
 const motivationalQoutesScheduler = require("./cron-jobs/motivationalQoutesScheduler");
 
-const extraAffirmationsScheduler = require("./cron-jobs/extraAffirmationsScheduler")
-
+const extraAffirmationsScheduler = require("./cron-jobs/extraAffirmationsScheduler");
 
 module.exports = () => {
   notificationDispatcher();
@@ -15,10 +14,10 @@ module.exports = () => {
   prayerScheduler();
 
   affirmationReminderScheduler();
-  
+
   motivationalQoutesScheduler();
 
   extraAffirmationsScheduler();
-  
+
   console.log("Cron Jobs started");
 };

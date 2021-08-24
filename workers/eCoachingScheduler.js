@@ -33,7 +33,11 @@ module.exports = async () => {
       createdBy: user._id,
     }).select("_id createdBy");
 
+    if (goals.length === 0) return;
+
     const randomGoal = goals[Math.floor(Math.random() * goals.length)];
+
+    console.log("Random Goal => ", randomGoal);
 
     const calculatedTips = (await calculateGoalTips(randomGoal)) || [];
 
