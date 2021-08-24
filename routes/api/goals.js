@@ -65,7 +65,7 @@ router.get("/get_my_goals", authorize(), async (req, res) => {
 
 router.get("/get_single_goal/:id", authorize(), async (req, res) => {
   const { id } = req.params;
-
+  const current_date = moment().format("MM/DD/YYYY");
   const goal = await Goal.findById(id).populate(
     "members.memberId",
     USER_PUBLIC_FIELDS
