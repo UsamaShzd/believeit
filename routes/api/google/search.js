@@ -43,21 +43,40 @@ router.post(
     filtered = filtered.slice(0, 3);
     //// filtering done
 
-    const scrapped = [];
+    let article1, article2, article3;
 
-    if (filtered[0]) {
-      scrapped[0] = await loadArticleThumbnail(filtered[0]);
+    try {
+      console.log("1st loaded");
+      if (filtered[0]) {
+        article1 = await loadArticleThumbnail(filtered[0]);
+      }
+      console.log("2nd loaded");
+      if (filtered[1]) {
+        article2 = await loadArticleThumbnail(filtered[1]);
+      }
+      console.log("3rd loaded");
+      if (filtered[2]) {
+        article3 = await loadArticleThumbnail(filtered[2]);
+      }
+
+      const scrapped = [];
+
+      if (article1) {
+        scrapped.push(article1);
+      }
+
+      if (article2) {
+        scrapped.push(article2);
+      }
+
+      if (article3) {
+        scrapped.push(article3);
+      }
+
+      return res.send(scrapped);
+    } catch (err) {
+      return res.send(filtered);
     }
-
-    if (filtered[1]) {
-      scrapped[1] = await loadArticleThumbnail(filtered[1]);
-    }
-
-    if (filtered[2]) {
-      scrapped[2] = await loadArticleThumbnail(filtered[2]);
-    }
-
-    res.send(scrapped);
   }
 );
 
@@ -65,15 +84,19 @@ const loadArticleThumbnail = async (article) => {
   if (article.thumbnail) {
     article.image = article.thumbnail;
   } else {
-    const metaData = await urlMetadata(article.url);
+    try {
+      const metaData = await urlMetadata(article.url);
 
-    article.image = metaData["og:image"] || metaData["twitter:image"] || "";
+      article.image = metaData["og:image"] || metaData["twitter:image"] || "";
 
-    article.description =
-      metaData["description"] ||
-      metaData["og:description"] ||
-      article.description ||
-      "";
+      article.description =
+        metaData["description"] ||
+        metaData["og:description"] ||
+        article.description ||
+        "";
+    } catch (err) {
+      console.log("Failed TO load -> ", article.title);
+    }
   }
   return article;
 };

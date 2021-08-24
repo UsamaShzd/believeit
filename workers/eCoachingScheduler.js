@@ -37,8 +37,6 @@ module.exports = async () => {
 
     const randomGoal = goals[Math.floor(Math.random() * goals.length)];
 
-    console.log("Random Goal => ", randomGoal);
-
     const calculatedTips = (await calculateGoalTips(randomGoal)) || [];
 
     const scheduledNotifs = [];

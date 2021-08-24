@@ -8,12 +8,12 @@ const scheduledNotificationSchema = new mongoose.Schema({
   type: {
     type: String,
     enum: [
-      "prayer_notification", 
+      "prayer_notification",
       "e_coaching_notification",
       "affirmation_reminder_notification",
       "motivational_qoute_notification",
       "extra_affirmation_notification",
-      "goal_plan_reminder_notification"
+      "goal_plan_reminder_notification",
     ],
   },
 

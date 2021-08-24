@@ -10,7 +10,7 @@ const { sendPushNotifications } = require("../services/expo/pushNotification");
 
 module.exports = async () => {
   const scheduledNotifications = await ScheduledNotification.find({
-    dispatchAt: { $lte: new Date() },
+    dispatchAt: { $lte: Date.now() },
   });
 
   scheduledNotifications.forEach(async (scheduledNotif) => {
