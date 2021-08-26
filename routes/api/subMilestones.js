@@ -119,7 +119,7 @@ router.put(
 
 router.put(
   "/edit_sub_milestone/:id",
-  authorize(ADMIN),
+  authorize(),
   requestValidator(editSubMilestoneSchema),
   async (req, res) => {
     const { id } = req.params;
