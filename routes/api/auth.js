@@ -97,7 +97,7 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
     user.subscription.type = FREE.name;
     user.subscription.isTrial = false;
     user.subscription.isUnlimited = FREE.isUnlimited;
-    user.subscription.maxActiveGoals = FREE.maxActiveGoals;
+    user.subscription.maxActiveGoals = 1;
     await user.save();
   }
   res.send({ ...sanitizeUser(user), isPremium });
