@@ -6,9 +6,7 @@ module.exports = ({ startTime, endTime, numberOfNotifications }) => {
   const start = moment(startTime, "HH:mm");
   const end = moment(endTime, "HH:mm");
 
-  let diff = Math.round(
-    moment.duration(end.diff(start)).minutes() / numberOfNotifications
-  );
+  let diff = Math.round(end.diff(start, "minute") / numberOfNotifications);
 
   diff = diff < MIN_INTERVAL ? MIN_INTERVAL : diff;
 

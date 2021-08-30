@@ -71,7 +71,7 @@ const socketIO = require("./services/socketIO");
 require("./socket.io/configure")(socketIO.initialize(server));
 
 if (process.env.NODE_ENV !== "test") {
-  const port = process.env.PORT || 8080;
+  const port = process.env.PORT || 8000;
   server.listen(port, () => {
     console.log(
       `Server is listening on port ${port} in ${NODE_ENV} environment.`
