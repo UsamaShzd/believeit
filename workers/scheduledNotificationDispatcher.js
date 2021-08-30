@@ -1,3 +1,4 @@
+const moment = require("moment");
 const _ = require("lodash");
 
 const ScheduledNotification = require("../models/ScheduledNotification");
@@ -10,7 +11,7 @@ const { sendPushNotifications } = require("../services/expo/pushNotification");
 
 module.exports = async () => {
   const scheduledNotifications = await ScheduledNotification.find({
-    dispatchAt: { $lte: Date.now() },
+    dispatchAt: { $lte: moment().toDate() },
   });
 
   scheduledNotifications.forEach(async (scheduledNotif) => {
