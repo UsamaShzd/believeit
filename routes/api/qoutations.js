@@ -113,7 +113,7 @@ router.get("/saved_qoutations", authorize(), async (req, res) => {
   res.send(result);
 });
 
-router.get("/listing/:id", async (req, res) => {
+router.get("/listing/:id", authorize(), async (req, res) => {
   const { id } = req.params;
 
   if (!validateObjectId(id))
@@ -150,12 +150,16 @@ router.get("/listing/:id", async (req, res) => {
   const totalCount = await Qoutation.find(query).count();
 
   const hasMore = offset + pageSize < totalCount;
+  const {user}= req.authSession();
   res.send({
     hasMore,
     pageSize,
     pageNum,
     list: qoutations.map((qoute) => {
-      qoute.saved = qoute.savedItem.length > 0 ? true : false;
+      const saved  = qoute.savedItem.find(s => {
+        return `${s.savedBy}` === `${user._id}`
+      })
+      qoute.saved = saved ? true : false;
       delete qoute.savedItem;
       return qoute;
     }),

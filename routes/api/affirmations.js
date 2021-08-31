@@ -118,7 +118,7 @@ router.get("/saved_affirmations", authorize(), async (req, res) => {
   res.send(result);
 });
 
-router.get("/listing/:id", async (req, res) => {
+router.get("/listing/:id", authorize(), async (req, res) => {
   const { id } = req.params;
 
   if (!validateObjectId(id))
@@ -153,12 +153,18 @@ router.get("/listing/:id", async (req, res) => {
   const totalCount = await Affirmation.find(query).count();
 
   const hasMore = offset + pageSize < totalCount;
+
+  const {user} = req.authSession;
   res.send({
     hasMore,
     pageSize,
     pageNum,
     list: affirmations.map((affirmation) => {
-      affirmation.saved = affirmation.savedItem.length > 0 ? true : false;
+
+      const saved  = affirmation.savedItem.find(s => {
+        return `${s.savedBy}` === `${user._id}`
+      })
+      affirmation.saved = saved ? true : false;
       delete affirmation.savedItem;
       return affirmation;
     }),
