@@ -73,6 +73,30 @@ router.get("/my_chat_rooms", authorize(), async (req, res) => {
   res.send(rooms);
 });
 
+router.get("/get_room/:id", authorize(), async (req, res) => {
+  const { id } = req.params;
+  if (!validateObjectId(id))
+    return res.status(400).send({
+      error: {
+        message: "Invalid Room Id",
+      },
+    });
+
+  const room = await ChatRoom.findById(id).populate(
+    "members.memberId",
+    USER_PUBLIC_FIELDS
+  );
+
+  if (!room)
+    return res.status(404).send({
+      error: {
+        message: "Room Not Found.",
+      },
+    });
+
+  res.send(room);
+});
+
 router.get(
   "/get_private_chat_room/:memberId",
   authorize(),
