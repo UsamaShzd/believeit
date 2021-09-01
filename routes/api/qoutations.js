@@ -90,8 +90,8 @@ router.get("/saved_qoutations", authorize(), async (req, res) => {
 
   pipeline.push({
     $match: {
-      qoutation: { $exists: true, $type: 'array', $ne: [] }
-    }
+      qoutation: { $exists: true, $type: "array", $ne: [] },
+    },
   });
 
   if (search) {
@@ -143,22 +143,20 @@ router.get("/listing/:id", authorize(), async (req, res) => {
     },
   ];
 
-
-
   const qoutations = await Qoutation.aggregate(pipeline);
 
   const totalCount = await Qoutation.find(query).count();
 
   const hasMore = offset + pageSize < totalCount;
-  const {user}= req.authSession();
+  const { user } = req.authSession;
   res.send({
     hasMore,
     pageSize,
     pageNum,
     list: qoutations.map((qoute) => {
-      const saved  = qoute.savedItem.find(s => {
-        return `${s.savedBy}` === `${user._id}`
-      })
+      const saved = qoute.savedItem.find((s) => {
+        return `${s.savedBy}` === `${user._id}`;
+      });
       qoute.saved = saved ? true : false;
       delete qoute.savedItem;
       return qoute;
