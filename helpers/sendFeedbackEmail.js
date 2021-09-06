@@ -7,7 +7,7 @@ module.exports = async ({
   message = "",
 }) => {
   mailer.sendMail({
-    to: `${email}, ${process.env.SMTP_EMAIL}`,
+    to: `${email}, app.admin@believeit.me`,
     subject, // Subject line
     text: "Feedback Email", // plain text body
     template: "email/feedback",
