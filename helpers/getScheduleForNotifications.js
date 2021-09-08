@@ -1,10 +1,11 @@
-const moment = require("moment");
+const moment = require("moment-timezone");
 
-const MIN_INTERVAL = 20;
+const MIN_INTERVAL = 1;
 
-module.exports = ({ startTime, endTime, numberOfNotifications }) => {
-  const start = moment(startTime, "HH:mm");
-  const end = moment(endTime, "HH:mm");
+module.exports = ({ startTime, endTime, numberOfNotifications, timezone }) => {
+  const current = moment.tz(timezone);
+  const start = moment.tz(startTime, "HH:mm", timezone);
+  const end = moment.tz(endTime, "HH:mm", timezone);
 
   let diff = Math.round(end.diff(start, "minute") / numberOfNotifications);
 
@@ -17,5 +18,7 @@ module.exports = ({ startTime, endTime, numberOfNotifications }) => {
     start.add(diff || MIN_INTERVAL, "minutes");
   }
 
-  return schedule;
+  return schedule.filter((s) => {
+    return s.getTime() > current.toDate().getTime();
+  });
 };
