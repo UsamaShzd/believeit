@@ -7,6 +7,6 @@ module.exports = () => {
   //every 5 minutes
   const timeExpression = cronTime.every(5).minutes();
   cron.schedule(timeExpression, () => {
-    // scheduledNotificationDispatcher();
+    scheduledNotificationDispatcher();
   });
 };
