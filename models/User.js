@@ -113,6 +113,10 @@ const userSchema = new mongoose.Schema({
     enum: Object.entries(roles).map((role) => role[1]),
   },
 
+  timezone: {
+    type: String,
+  },
+
   activeGoals: {
     type: Number,
     default: 0,

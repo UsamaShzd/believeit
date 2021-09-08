@@ -38,9 +38,19 @@ const applePayValidationUrl =
     : "https://buy.itunes.apple.com/verifyReceipt";
 
 const createUserSessionAndSendResponse = async (req, res) => {
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-  console.log("IP Address => ", ip);
   const { user } = req;
+  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
+  if (ip) {
+    satelize.satelize({ ip }, function (err, geoData) {
+      if (err) {
+        return console.log(err);
+      }
+      var { timezone } = JSON.parse(geoData);
+      user.timezone = timezone;
+      await user.save();
+    });
+  }
   const session = await new AuthSession({
     user: user._id,
     createdAt: new Date(),
