@@ -33,7 +33,8 @@ const schedulePrayers = async (user) => {
   //saving scheduled notification;
   await ScheduledNotification.insertMany(scheduledNotifs);
 };
-module.exports = async (timezone) => {
+
+const cronWorker = async (timezone) => {
   const users = await User.find({
     $or: [{ ethnicity: /.*muslim.*/i }, { ethnicity: /.*islam.*/i }],
     timezone,
@@ -42,4 +43,8 @@ module.exports = async (timezone) => {
   }).select("notificationSettings.prayers timezone");
 
   users.forEach(schedulePrayers);
+};
+module.exports = {
+  cronWorker,
+  schedulePrayers,
 };

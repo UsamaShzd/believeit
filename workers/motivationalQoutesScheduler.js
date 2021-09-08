@@ -28,7 +28,8 @@ const scheduleMotivationlQoutes = async (user) => {
   //saving scheduled notification;
   await ScheduledNotification.insertMany(scheduledNotifs);
 };
-module.exports = async (timezone) => {
+
+const cronWorker = async (timezone) => {
   const users = await User.find({
     timezone,
     "notificationSettings.motivationalQoutes.state": true,
@@ -36,4 +37,9 @@ module.exports = async (timezone) => {
   }).select("notificationSettings.motivationalQoutes timezone");
 
   users.forEach(scheduleMotivationlQoutes);
+};
+
+module.exports = {
+  cronWorker,
+  scheduleMotivationlQoutes,
 };

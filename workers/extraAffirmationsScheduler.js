@@ -27,7 +27,8 @@ const scheduleExtraAffirmations = async (user) => {
   //saving scheduled notification;
   await ScheduledNotification.insertMany(scheduledNotifs);
 };
-module.exports = async (timezone) => {
+
+const cronWorker = async (timezone) => {
   const users = await User.find({
     timezone,
     "notificationSettings.extraAffirmations.state": true,
@@ -36,3 +37,5 @@ module.exports = async (timezone) => {
 
   users.forEach(scheduleExtraAffirmations);
 };
+
+module.exports = { cronWorker, scheduleExtraAffirmations };

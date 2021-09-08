@@ -16,67 +16,6 @@ const e_coaching_tip_mapping = require("../enums/e_coaching_tip_mapping");
 
 const getScheduleForNotifications = require("../helpers/getScheduleForNotifications");
 
-const scheduleEcoaching = async (user) => {
-  const { notificationSettings, timezone } = user;
-  const schedule = getScheduleForNotifications({
-    ...notificationSettings.eCoaching,
-    timezone,
-  });
-
-  let goals = await Goal.find({
-    isCompleted: false,
-    createdBy: user._id,
-  }).select("_id createdBy");
-
-  if (goals.length === 0) return;
-
-  const randomGoal = goals[Math.floor(Math.random() * goals.length)];
-
-  const calculatedTips = (await calculateGoalTips(randomGoal)) || [];
-
-  const scheduledNotifs = [];
-
-  let tipCount = 0;
-
-  while (tipCount < schedule.length && calculatedTips.length > 0) {
-    const randomIndex = Math.floor(Math.random() * calculatedTips.length);
-    const tips = calculatedTips[randomIndex];
-    calculatedTips.splice(randomIndex, 1);
-
-    const tip = tips[Math.floor(Math.random() * tips.length)];
-    scheduledNotifs.push({
-      type: "e_coaching_notification",
-      reciever: user._id,
-      eCoaching: tip,
-      dispatchAt: schedule[tipCount],
-    });
-    tipCount++;
-    // tips.forEach((tip) => {
-    //   if (schedule[tipCount]) {
-    //     scheduledNotifs.push({
-    //       type: "e_coaching_notification",
-    //       reciever: user._id,
-    //       eCoaching: tip,
-    //       dispatchAt: schedule[tipCount],
-    //     });
-    //   }
-    //   tipCount++;
-    // });
-  }
-
-  // saving scheduled notification;
-  await ScheduledNotification.insertMany(scheduledNotifs);
-};
-module.exports = async (timezone) => {
-  const users = await User.find({
-    timezone,
-    "notificationSettings.eCoaching.state": true,
-    "notificationSettings.eCoaching.numberOfNotifications": { $gt: 0 },
-  }).select("notificationSettings.eCoaching timezone");
-
-  users.forEach(scheduleEcoaching);
-};
-
 const calculateGoalTips = async (goal) => {
   const wellness =
     (await Wellness.findOne({ answeredBy: goal.createdBy })) || {};
@@ -192,4 +131,70 @@ const calculateGoalTips = async (goal) => {
   }
 
   return calculatedTips;
+};
+
+const scheduleEcoaching = async (user) => {
+  const { notificationSettings, timezone } = user;
+  const schedule = getScheduleForNotifications({
+    ...notificationSettings.eCoaching,
+    timezone,
+  });
+
+  let goals = await Goal.find({
+    isCompleted: false,
+    createdBy: user._id,
+  }).select("_id createdBy");
+
+  if (goals.length === 0) return;
+
+  const randomGoal = goals[Math.floor(Math.random() * goals.length)];
+
+  const calculatedTips = (await calculateGoalTips(randomGoal)) || [];
+
+  const scheduledNotifs = [];
+
+  let tipCount = 0;
+
+  while (tipCount < schedule.length && calculatedTips.length > 0) {
+    const randomIndex = Math.floor(Math.random() * calculatedTips.length);
+    const tips = calculatedTips[randomIndex];
+    calculatedTips.splice(randomIndex, 1);
+
+    const tip = tips[Math.floor(Math.random() * tips.length)];
+    scheduledNotifs.push({
+      type: "e_coaching_notification",
+      reciever: user._id,
+      eCoaching: tip,
+      dispatchAt: schedule[tipCount],
+    });
+    tipCount++;
+    // tips.forEach((tip) => {
+    //   if (schedule[tipCount]) {
+    //     scheduledNotifs.push({
+    //       type: "e_coaching_notification",
+    //       reciever: user._id,
+    //       eCoaching: tip,
+    //       dispatchAt: schedule[tipCount],
+    //     });
+    //   }
+    //   tipCount++;
+    // });
+  }
+
+  // saving scheduled notification;
+  await ScheduledNotification.insertMany(scheduledNotifs);
+};
+
+const cronWorker = async (timezone) => {
+  const users = await User.find({
+    timezone,
+    "notificationSettings.eCoaching.state": true,
+    "notificationSettings.eCoaching.numberOfNotifications": { $gt: 0 },
+  }).select("notificationSettings.eCoaching timezone");
+
+  users.forEach(scheduleEcoaching);
+};
+module.exports = {
+  cronWorker,
+  scheduleEcoaching,
 };
