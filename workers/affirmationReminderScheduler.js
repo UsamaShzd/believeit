@@ -1,4 +1,3 @@
-const moment = require("moment");
 const User = require("../models/User");
 const Goal = require("../models/Goal");
 
@@ -6,7 +5,7 @@ const ScheduledNotification = require("../models/ScheduledNotification");
 
 const getScheduleForNotifications = require("../helpers/getScheduleForNotifications");
 
-export const scheduleAffirmation = async (user) => {
+const scheduleAffirmation = async (user) => {
   const { affirmationReminderTime } = user.notificationSettings;
 
   const goals = await Goal.find({
@@ -20,6 +19,7 @@ export const scheduleAffirmation = async (user) => {
     numberOfNotifications: goals.length,
     startTime: affirmationReminderTime.amTime,
     endTime: affirmationReminderTime.pmTime,
+    timezone: user.timezone,
   });
 
   const scheduledNotifs = schedule.map((dispatchAt, index) => {
@@ -41,7 +41,7 @@ module.exports = async (timezone) => {
   const users = await User.find({
     "notificationSettings.affirmationReminderTime.state": true,
     timezone,
-  }).select("notificationSettings.affirmationReminderTime");
+  }).select("notificationSettings.affirmationReminderTime timezone");
 
   users.forEach(scheduleAffirmation);
 };

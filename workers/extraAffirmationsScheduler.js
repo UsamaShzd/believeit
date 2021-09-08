@@ -1,4 +1,3 @@
-const moment = require("moment");
 const User = require("../models/User");
 const Affirmation = require("../models/Affirmation");
 
@@ -6,33 +5,34 @@ const ScheduledNotification = require("../models/ScheduledNotification");
 
 const getScheduleForNotifications = require("../helpers/getScheduleForNotifications");
 
-module.exports = async () => {
+const scheduleExtraAffirmations = async (user) => {
+  const { notificationSettings, timezone } = user;
+  const afffirmations = await Affirmation.find({});
+  const schedule = getScheduleForNotifications({
+    ...notificationSettings.extraAffirmations,
+    timezone,
+  });
+
+  const scheduledNotifs = schedule.map((dispatchAt) => {
+    const affirmation =
+      afffirmations[Math.floor(Math.random() * afffirmations.length)];
+    return {
+      type: "extra_affirmation_notification",
+      reciever: user._id,
+      affirmation,
+      dispatchAt,
+    };
+  });
+
+  //saving scheduled notification;
+  await ScheduledNotification.insertMany(scheduledNotifs);
+};
+module.exports = async (timezone) => {
   const users = await User.find({
+    timezone,
     "notificationSettings.extraAffirmations.state": true,
     "notificationSettings.extraAffirmations.numberOfNotifications": { $gt: 0 },
-  }).select("notificationSettings.extraAffirmations");
+  }).select("notificationSettings.extraAffirmations timezone");
 
-
-  const afffirmations = await Affirmation.find({});
-
-  users.forEach(async (user) => {
-    const { notificationSettings } = user;
-
-    const schedule = getScheduleForNotifications(notificationSettings.extraAffirmations);
-
-    const scheduledNotifs = schedule.map((dispatchAt) => {
-      const affirmation = afffirmations[Math.floor(Math.random() * afffirmations.length)];
-      return {
-        type: "extra_affirmation_notification",
-        reciever: user._id,
-        affirmation,
-        dispatchAt,
-      };
-    });
-
-
-
-    //saving scheduled notification;
-   await ScheduledNotification.insertMany(scheduledNotifs);
-  });
+  users.forEach(scheduleExtraAffirmations);
 };
