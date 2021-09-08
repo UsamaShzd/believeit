@@ -42,7 +42,7 @@ const createUserSessionAndSendResponse = async (req, res) => {
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
   if (ip) {
-    satelize.satelize({ ip }, function (err, geoData) {
+    satelize.satelize({ ip }, async function (err, geoData) {
       if (err) {
         return console.log(err);
       }
