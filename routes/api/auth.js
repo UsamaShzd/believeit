@@ -1,7 +1,7 @@
 const path = require("path");
 const express = require("express");
+const satelize = require("satelize");
 const _ = require("lodash");
-const moment = require("moment");
 
 const User = require("../../models/User");
 const AuthSession = require("../../models/AuthSession");
@@ -36,6 +36,19 @@ const applePayValidationUrl =
   process.env.APPLE_PAY_MODE === "sandbox"
     ? "https://sandbox.itunes.apple.com/verifyReceipt"
     : "https://buy.itunes.apple.com/verifyReceipt";
+
+const createUserSessionAndSendResponse = async (req, res) => {
+  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+  console.log("IP Address => ", ip);
+  const { user } = req;
+  const session = await new AuthSession({
+    user: user._id,
+    createdAt: new Date(),
+  }).save();
+  const token = jwt.encrypt({ _id: session._id });
+  res.header("token", token).header("Access-Control-Expose-Headers", "token");
+  res.send({ token, user: sanitizeUser(user) });
+};
 
 // @route /me
 router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
@@ -104,49 +117,66 @@ router.get("/me", authorize("", { emailVerifid: false }), async (req, res) => {
 });
 
 // @route /signup
-router.post("/signup", requestValidator(signupSchema), async (req, res) => {
-  const body = _.pick(req.body, ["firstname", "lastname", "email", "password"]);
+router.post(
+  "/signup",
+  requestValidator(signupSchema),
+  async (req, res, next) => {
+    const body = _.pick(req.body, [
+      "firstname",
+      "lastname",
+      "email",
+      "password",
+    ]);
 
-  //check if user exists
-  const previousUser = await User.findOne({ email: body.email });
-  if (previousUser)
-    return res.status(409).send({
-      error: {
-        message: "User already exists!",
-      },
-    });
+    //check if user exists
+    const previousUser = await User.findOne({ email: body.email });
+    if (previousUser)
+      return res.status(409).send({
+        error: {
+          message: "User already exists!",
+        },
+      });
 
-  const user = new User({ ...body, createdAt: new Date() });
-  user.password = await user.hashPassword(body.password);
-  await user.save();
-  sendEmailVerificationEmail(user);
-  createUserSessionAndSendResponse(res, user);
-});
+    const user = new User({ ...body, createdAt: new Date() });
+    user.password = await user.hashPassword(body.password);
+    await user.save();
+    sendEmailVerificationEmail(user);
+
+    req.user = user;
+    next();
+  },
+  createUserSessionAndSendResponse
+);
 
 // @route /signin
-router.post("/signin", requestValidator(loginSchema), async (req, res) => {
-  const { email, password } = _.pick(req.body, ["email", "password"]);
+router.post(
+  "/signin",
+  requestValidator(loginSchema),
+  async (req, res, next) => {
+    const { email, password } = _.pick(req.body, ["email", "password"]);
 
-  //check if user exists
-  const user = await User.findOne({ email });
-  if (!user)
-    return res.status(404).send({
-      error: {
-        message: "Invalid email or password!",
-      },
-    });
+    //check if user exists
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(404).send({
+        error: {
+          message: "Invalid email or password!",
+        },
+      });
 
-  //check password
-  const isPasswordCorrect = await user.comparePassword(password);
-  if (!isPasswordCorrect)
-    return res.status(404).send({
-      error: {
-        message: "Invalid email or password!",
-      },
-    });
-
-  createUserSessionAndSendResponse(res, user);
-});
+    //check password
+    const isPasswordCorrect = await user.comparePassword(password);
+    if (!isPasswordCorrect)
+      return res.status(404).send({
+        error: {
+          message: "Invalid email or password!",
+        },
+      });
+    req.user = user;
+    next();
+  },
+  createUserSessionAndSendResponse
+);
 
 // @route /resend_verification_email
 router.post(
@@ -313,16 +343,5 @@ router.delete("/signout", authorize(), async (req, res) => {
   await authSession.save();
   res.send({ message: "Signout successfull." });
 });
-
-const createUserSessionAndSendResponse = async (res, user) => {
-  const session = await new AuthSession({
-    user: user._id,
-    createdAt: new Date(),
-  }).save();
-
-  const token = jwt.encrypt({ _id: session._id });
-  res.header("token", token).header("Access-Control-Expose-Headers", "token");
-  res.send({ token, user: sanitizeUser(user) });
-};
 
 module.exports = router;
