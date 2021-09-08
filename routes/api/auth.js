@@ -26,6 +26,7 @@ const sendEmailVerificationEmail = require("../../helpers/sendEmailVerificationE
 const sendPasswordResetEmail = require("../../helpers/sendPasswordResetEmail");
 const axios = require("axios");
 const sanitizeUser = require("../../sanitizers/user");
+const reScheduleNotifications = require("../../helpers/reScheduleNotifications");
 
 const router = express.Router();
 
@@ -146,6 +147,7 @@ router.post(
     sendEmailVerificationEmail(user);
 
     req.user = user;
+    reScheduleNotifications(user);
     next();
   },
   createUserSessionAndSendResponse

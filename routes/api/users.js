@@ -12,6 +12,7 @@ const {
   updateUserDetails,
   updateUserNotificationsSchema,
 } = require("../../validators/users");
+const reScheduleNotifications = require("../../helpers/reScheduleNotifications");
 
 const sanitizeUser = require("../../sanitizers/user");
 
@@ -147,6 +148,7 @@ router.put(
 
     user.notificationSettings = body;
     await user.save();
+    reScheduleNotifications(user);
     res.send(user.notificationSettings);
   }
 );
