@@ -1,11 +1,11 @@
 const express = require("express");
 
-const prayerScheduler = require("../../../workers/prayerScheduler");
+const { cronWorker } = require("../../../workers/prayerScheduler");
 
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  prayerScheduler();
+  cronWorker();
   res.send({ status: "ok" });
 });
 module.exports = router;
