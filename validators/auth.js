@@ -2,10 +2,12 @@ const yup = require("yup");
 
 const email = yup.string().trim().email().min(1).max(100).required();
 const password = yup.string().trim().min(1).max(25).required();
+const timezone = yup.string().trim().min(1).max(255).optional();
 
 exports.loginSchema = yup.object().shape({
   email,
   password,
+  timezone,
 });
 
 exports.signupSchema = yup.object().shape({
@@ -13,6 +15,7 @@ exports.signupSchema = yup.object().shape({
   lastname: yup.string().trim().min(1).max(100).required(),
   email,
   password,
+  timezone,
 });
 
 exports.verifyEmailSchema = yup.object().shape({

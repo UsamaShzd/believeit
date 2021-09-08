@@ -1,6 +1,5 @@
 const path = require("path");
 const express = require("express");
-const satelize = require("satelize");
 const _ = require("lodash");
 
 const User = require("../../models/User");
@@ -38,18 +37,11 @@ const applePayValidationUrl =
     : "https://buy.itunes.apple.com/verifyReceipt";
 
 const createUserSessionAndSendResponse = async (req, res) => {
+  const { timezone } = _.pick(req.body, ["timezone"]);
   const { user } = req;
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-
-  if (ip) {
-    satelize.satelize({ ip }, async function (err, geoData) {
-      if (err) {
-        return console.log(err);
-      }
-      var { timezone } = JSON.parse(geoData);
-      user.timezone = timezone;
-      await user.save();
-    });
+  if (timezone) {
+    user.timezone = timezone;
+    await user.save();
   }
   const session = await new AuthSession({
     user: user._id,
@@ -136,6 +128,7 @@ router.post(
       "lastname",
       "email",
       "password",
+      "timezone",
     ]);
 
     //check if user exists
@@ -182,6 +175,7 @@ router.post(
           message: "Invalid email or password!",
         },
       });
+
     req.user = user;
     next();
   },
