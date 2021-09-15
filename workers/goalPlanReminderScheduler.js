@@ -8,7 +8,9 @@ const scheduleGoalPlanReminder = async (user) => {
   await new ScheduledNotification({
     type: "goal_plan_reminder_notification",
     reciever: user._id,
-    dispatchAt: moment.tz(goalPlan.reminderTime, "HH:mm", timezone).toDate(),
+    dispatchAt: moment
+      .tz(goalPlan.reminderTime, "HH:mm", user.timezone)
+      .toDate(),
   }).save();
 };
 const cronWorker = async (timezone) => {
