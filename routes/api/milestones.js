@@ -5,6 +5,7 @@ const moment = require("moment");
 
 const Milestone = require("../../models/Milestone");
 const SubMilestone = require("../../models/SubMilestone");
+const Goal = require("../../models/Goal");
 
 const authorize = require("../../middlewares/authorize");
 const requestValidator = require("../../middlewares/requestValidator");
@@ -131,7 +132,7 @@ router.post(
       ...body,
       createdBy: user._id,
     }).save();
-
+    if (milestone) calculateGoalCompletion(milestone.goal);
     res.send(makeMilestone(milestone));
   }
 );
@@ -172,7 +173,7 @@ router.put(
       },
       { new: true }
     );
-
+    if (milestone) calculateGoalCompletion(milestone.goal);
     res.send(milestone);
   }
 );
@@ -199,7 +200,7 @@ router.put(
       },
       { new: true }
     );
-
+    if (milestone) calculateGoalCompletion(milestone.goal);
     res.send(milestone);
   }
 );
@@ -283,25 +284,25 @@ router.put(
       { new: true }
     );
 
+    if (milestone) calculateGoalCompletion(milestone.goal);
+
     res.send(makeMilestone(milestone));
   }
 );
 
-
-router.delete("/delete_complete_plan/:id", authorize(), async(req, res) => {
+router.delete("/delete_complete_plan/:id", authorize(), async (req, res) => {
   const { id } = req.params;
 
   if (!validateObjectId(id))
     return res.status(404).send({ error: { message: "Goal not found!" } });
 
-  const milestones = await Milestone.deleteMany({goal: id});
+  const milestones = await Milestone.deleteMany({ goal: id });
 
   if (!milestones)
     return res.status(404).send({ error: { message: "Milestone not found!" } });
 
-  res.send({message: "Plan deleted successfully"});
+  res.send({ message: "Plan deleted successfully" });
 });
-
 
 router.delete("/:id", authorize(), async (req, res) => {
   const { id } = req.params;
@@ -316,5 +317,35 @@ router.delete("/:id", authorize(), async (req, res) => {
 
   res.send(milestone);
 });
+
+const calculateGoalCompletion = async (goal) => {
+  const milestones = await Milestone.find({
+    goal,
+  });
+
+  let result = [];
+
+  milestones.forEach((ms) => {
+    const calculatedMilestone = makeMilestone(ms);
+    if (!Array.isArray(calculatedMilestone))
+      return result.push(calculatedMilestone);
+
+    calculatedMilestone.forEach((cMs) => {
+      result.push(cMs);
+    });
+  });
+
+  let completedCount = 0;
+
+  result.forEach((ms) => {
+    if (ms.isCompleted) ++completedCount;
+  });
+
+  let percentage = Math.ceil((completedCount / result.length) * 100);
+
+  if (percentage > 100) percentage = 100;
+
+  await Goal.findByIdAndUpdate(goal, { completion: percentage });
+};
 
 module.exports = router;
