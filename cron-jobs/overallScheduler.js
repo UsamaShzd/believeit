@@ -6,14 +6,15 @@ const User = require("../models/User");
 const reScheduleNotifications = require("../helpers/reScheduleNotifications");
 
 module.exports = () => {
-  //every 5 minutes
+  //every 3 hours
   const timeExpression = cronTime.every(3).hours();
-
   cron.schedule(timeExpression, async () => {
     const users = await User.find({});
 
-    users.forEach((user) => {
-      reScheduleNotifications(user);
-    });
+    for (let i = 0; i < users.length; ++i) {
+      if (users[i]) {
+        await reScheduleNotifications(users[i]);
+      }
+    }
   });
 };

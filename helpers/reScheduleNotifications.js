@@ -18,14 +18,17 @@ const { schedulePrayers } = require("../workers/prayerScheduler");
 module.exports = async (user) => {
   await ScheduledNotification.deleteMany({ reciever: user._id });
 
-  [
+  const tasks = [
     scheduleAffirmation,
     scheduleEcoaching,
-    // scheduleExtraAffirmations,
+    scheduleExtraAffirmations,
     scheduleGoalPlanReminder,
     scheduleMotivationlQoutes,
     schedulePrayers,
-  ].forEach((scheduler) => {
-    scheduler(user);
-  });
+  ];
+
+  for (let i = 0; i < tasks.length; ++i) {
+    const task = tasks[i];
+    if (task) await task(user);
+  }
 };
