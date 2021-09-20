@@ -7,7 +7,7 @@ const reScheduleNotifications = require("../helpers/reScheduleNotifications");
 
 module.exports = () => {
   //every 3 hours
-  const timeExpression = cronTime.every(3).hours();
+  const timeExpression = cronTime.every(1).hours();
   cron.schedule(timeExpression, async () => {
     const users = await User.find({});
 
