@@ -135,6 +135,9 @@ const calculateGoalTips = async (goal) => {
 
 const scheduleEcoaching = async (user) => {
   const { notificationSettings, timezone } = user;
+
+  if (!notificationSettings.eCoaching.state) return;
+
   const schedule = getScheduleForNotifications({
     ...notificationSettings.eCoaching,
     timezone,

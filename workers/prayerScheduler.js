@@ -9,6 +9,8 @@ const getScheduleForNotifications = require("../helpers/getScheduleForNotificati
 const schedulePrayers = async (user) => {
   const { notificationSettings, timezone } = user;
 
+  if (!notificationSettings.prayers) return;
+
   const today = moment.tz(timezone).format("dddd").toLocaleLowerCase();
 
   const prayers = await Prayer.find({

@@ -6,18 +6,20 @@ const motivationalQoutesScheduler = require("./cron-jobs/motivationalQoutesSched
 
 const extraAffirmationsScheduler = require("./cron-jobs/extraAffirmationsScheduler");
 
+const overallScheduler = require("./cron-jobs/overallScheduler");
+
 module.exports = () => {
   notificationDispatcher();
 
-  eCoachingScheduler();
+  // eCoachingScheduler();
 
-  prayerScheduler();
+  // prayerScheduler();
 
-  affirmationReminderScheduler();
+  // affirmationReminderScheduler();
 
-  motivationalQoutesScheduler();
+  // motivationalQoutesScheduler();
 
-  extraAffirmationsScheduler();
-
+  // extraAffirmationsScheduler();
+  overallScheduler();
   console.log("Cron Jobs started");
 };

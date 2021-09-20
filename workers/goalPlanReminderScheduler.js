@@ -5,6 +5,9 @@ const ScheduledNotification = require("../models/ScheduledNotification");
 
 const scheduleGoalPlanReminder = async (user) => {
   const { goalPlan } = user.notificationSettings;
+
+  if (!goalPlan.state) return;
+
   await new ScheduledNotification({
     type: "goal_plan_reminder_notification",
     reciever: user._id,

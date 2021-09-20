@@ -7,6 +7,7 @@ const getScheduleForNotifications = require("../helpers/getScheduleForNotificati
 
 const scheduleAffirmation = async (user) => {
   const { affirmationReminderTime } = user.notificationSettings;
+  if (!affirmationReminderTime.state) return;
 
   const goals = await Goal.find({
     createdBy: user._id,

@@ -7,6 +7,9 @@ const getScheduleForNotifications = require("../helpers/getScheduleForNotificati
 
 const scheduleExtraAffirmations = async (user) => {
   const { notificationSettings, timezone } = user;
+
+  if (!notificationSettings.extraAffirmations.state) return;
+
   const afffirmations = await Affirmation.find({});
   const schedule = getScheduleForNotifications({
     ...notificationSettings.extraAffirmations,

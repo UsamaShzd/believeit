@@ -8,6 +8,8 @@ const getScheduleForNotifications = require("../helpers/getScheduleForNotificati
 
 const scheduleMotivationlQoutes = async (user) => {
   const { notificationSettings, timezone } = user;
+
+  if (!notificationSettings.motivationalQoutes.state) return;
   const qoutations = await Qoutation.find({});
 
   const schedule = getScheduleForNotifications({
