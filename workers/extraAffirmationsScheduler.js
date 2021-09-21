@@ -10,22 +10,25 @@ const scheduleExtraAffirmations = async (user) => {
 
   if (!notificationSettings.extraAffirmations.state) return;
 
-  const afffirmations = await Affirmation.find({});
   const schedule = getScheduleForNotifications({
     ...notificationSettings.extraAffirmations,
     timezone,
   });
 
-  const scheduledNotifs = schedule.map((dispatchAt) => {
-    const affirmation =
-      afffirmations[Math.floor(Math.random() * afffirmations.length)];
-    return {
+  const scheduledNotifs = [];
+  for (let i = 0; i < schedule.length; ++i) {
+    const afffirmations = await Affirmation.aggregate([
+      { $sample: { size: 1 } },
+    ]);
+    const affirmation = afffirmations[0];
+
+    scheduledNotifs.push({
       type: "extra_affirmation_notification",
       reciever: user._id,
       affirmation,
-      dispatchAt,
-    };
-  });
+      dispatchAt: schedule[i],
+    });
+  }
 
   //saving scheduled notification;
   await ScheduledNotification.insertMany(scheduledNotifs);
