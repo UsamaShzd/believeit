@@ -112,8 +112,7 @@ module.exports = (socket) => {
     sendPushNotifications(push_notification);
 
     //update offline user's chat count
-
-    const offlineUsersList = await User.updateMany(
+    await User.updateMany(
       { _id: { $in: offlineUsers } },
       { $inc: { chatCount: 1 } }
     );
@@ -131,6 +130,10 @@ module.exports = (socket) => {
     await chatRoom.save();
 
     //sending email
+
+    const offlineUsersList = await User.find({ _id: { $in: offlineUsers } });
+
+    if (offlineUsersList <= 0) return;
     offlineUsersList.forEach((offUser) => {
       if (
         offUser.notificationSettings &&
