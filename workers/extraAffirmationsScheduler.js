@@ -20,12 +20,12 @@ const scheduleExtraAffirmations = async (user) => {
     const afffirmations = await Affirmation.aggregate([
       { $sample: { size: 1 } },
     ]);
-    const affirmation = afffirmations[0];
+    if (afffirmations.length === 0) return;
 
     scheduledNotifs.push({
       type: "extra_affirmation_notification",
       reciever: user._id,
-      affirmation,
+      affirmation: afffirmations[0],
       dispatchAt: schedule[i],
     });
   }

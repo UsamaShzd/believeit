@@ -13,24 +13,28 @@ const schedulePrayers = async (user) => {
 
   const today = moment.tz(timezone).format("dddd").toLocaleLowerCase();
 
-  const prayers = await Prayer.find({
-    prayerDays: { $in: [today, "anytime"] },
-  });
-
   const schedule = getScheduleForNotifications({
     ...notificationSettings.prayers,
     timezone,
   });
 
-  const scheduledNotifs = schedule.map((dispatchAt) => {
-    const prayer = prayers[Math.floor(Math.random() * prayers.length)];
-    return {
+  const scheduledNotifs = [];
+  for (let i = 0; i < schedule.length; ++i) {
+    const prayers = await Prayer.aggregate([
+      { $match: { prayerDays: { $in: [today, "anytime"] } } },
+      { $sample: { size: 1 } },
+    ]);
+    if (prayers.length === 0) return;
+
+    scheduledNotifs.push({
       type: "prayer_notification",
       reciever: user._id,
-      prayer,
-      dispatchAt,
-    };
-  });
+      prayer: prayers[0],
+      dispatchAt: schedule[i],
+    });
+  }
+
+  console.log("Prayer Notification => ", scheduledNotifs);
 
   //saving scheduled notification;
   await ScheduledNotification.insertMany(scheduledNotifs);

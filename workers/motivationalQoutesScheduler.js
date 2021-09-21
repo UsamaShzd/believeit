@@ -10,23 +10,24 @@ const scheduleMotivationlQoutes = async (user) => {
   const { notificationSettings, timezone } = user;
 
   if (!notificationSettings.motivationalQoutes.state) return;
-  const qoutations = await Qoutation.find({});
 
   const schedule = getScheduleForNotifications({
     ...notificationSettings.motivationalQoutes,
     timezone,
   });
 
-  const scheduledNotifs = schedule.map((dispatchAt) => {
-    const qoutation = qoutations[Math.floor(Math.random() * qoutations.length)];
-    return {
+  const scheduledNotifs = [];
+  for (let i = 0; i < schedule.length; ++i) {
+    const qoutations = await Qoutation.aggregate([{ $sample: { size: 1 } }]);
+    if (qoutations.length === 0) return;
+
+    scheduledNotifs.push({
       type: "motivational_qoute_notification",
       reciever: user._id,
-      qoutation,
-      dispatchAt,
-    };
-  });
-
+      qoutation: qoutations[0],
+      dispatchAt: schedule[i],
+    });
+  }
   //saving scheduled notification;
   await ScheduledNotification.insertMany(scheduledNotifs);
 };
