@@ -1,7 +1,6 @@
 const _ = require("lodash");
 const ChatRoom = require("../../../models/ChatRoom");
 const ChatMessage = require("../../../models/ChatMessage");
-const AuthSession = require("../../../models/AuthSession");
 const User = require("../../../models/User");
 
 const getPushTokens = require("../../../helpers/getPushTokens");
@@ -9,7 +8,7 @@ const getPushTokens = require("../../../helpers/getPushTokens");
 const {
   sendPushNotifications,
 } = require("../../../services/expo/pushNotification");
-
+const sendChatMessageEmail = require("../../../helpers/sendChatMessageEmail");
 const { sendChatMessageSchema } = require("../../../validators/chat/message");
 
 const USER_PUBLIC_FIELDS =
@@ -83,11 +82,8 @@ module.exports = (socket) => {
         offlineUsersMap[memberId] = 1;
       }
     }
-    console.log("Offline Users => ", offlineUsers);
-    console.log("Offline Users Map => ", offlineUsersMap);
     if (offlineUsers.length === 0) return;
 
-    console.log("Offline Users => ", offlineUsers);
     const pushtokens = await getPushTokens(offlineUsers);
 
     //construct push notification
@@ -113,12 +109,11 @@ module.exports = (socket) => {
       sound: "default",
     };
 
-    console.log("Push Notificadtion => ", push_notification);
     sendPushNotifications(push_notification);
 
     //update offline user's chat count
 
-    await User.updateMany(
+    const offlineUsersList = await User.updateMany(
       { _id: { $in: offlineUsers } },
       { $inc: { chatCount: 1 } }
     );
@@ -134,5 +129,19 @@ module.exports = (socket) => {
       return mem;
     });
     await chatRoom.save();
+
+    //sending email
+    offlineUsersList.forEach((offUser) => {
+      if (
+        offUser.notificationSettings &&
+        offUser.notificationSettings.emailChatNotifications
+      ) {
+        sendChatMessageEmail({
+          recieverEmail: offUser.email,
+          message: chatMessage.message,
+          senderName: `${user.firstname} ${user.lastname}`,
+        });
+      }
+    });
   });
 };
