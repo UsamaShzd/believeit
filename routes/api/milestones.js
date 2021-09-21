@@ -315,6 +315,7 @@ router.delete("/:id", authorize(), async (req, res) => {
   if (!milestone)
     return res.status(404).send({ error: { message: "Milestone not found!" } });
 
+  if (milestone) calculateGoalCompletion(milestone.goal);
   res.send(milestone);
 });
 
