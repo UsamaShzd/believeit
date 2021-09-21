@@ -34,8 +34,6 @@ const schedulePrayers = async (user) => {
     });
   }
 
-  console.log("Prayer Notification => ", scheduledNotifs);
-
   //saving scheduled notification;
   await ScheduledNotification.insertMany(scheduledNotifs);
 };
